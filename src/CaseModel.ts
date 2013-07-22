@@ -9,6 +9,10 @@ class CaseNote {
 	
 }
 
+enum CaseType {
+	Goal, Context, Strategy, Evidence
+}
+
 class CaseModel {
 	Argument : Argument;
 	Type  : CaseType;
