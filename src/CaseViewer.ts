@@ -70,6 +70,12 @@ class ElementShape {
 	
 }
 
+class CaseViewerConfig {
+
+}
+
+CaseViewerConfig = new CaseViserConfig();
+
 class CaseViewer {
 	ViewMap : Map<string, CaseView>;
 	
@@ -100,3 +106,12 @@ class CaseViewer {
 	
 }
 
+function StartCaseViewer(url : string, id : string) {
+	var loader = new ServerApi(url)
+	var JsonData = loader.GetCase(project, id);
+        var Argument = new Argument();
+	var model = new CaseDecoder().ParseJson(Argument, JsonData);
+	var CaseViewer = new CaseViewer(model);
+	var svg = document.getElementBy(id);
+	CaseViewer.Draw(svg);
+}
