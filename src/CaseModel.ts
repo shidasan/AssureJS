@@ -26,7 +26,7 @@ class CaseModel {
 	constructor(Argument : Argument, Parent : CaseModel, Type : CaseType, Label : string, Statement : string) {
 		this.Argument = Argument;
 		this.Type = Type;
-		this.Label = (Label == null) ? Context.NewLabel(Type) : Label;
+		this.Label = (Label == null) ? Argument.NewLabel(Type) : Label;
 		this.Statement = (Statement == null) ? "" : Statement;
 		this.Parent = Parent;
 		if(Parent != null) {
