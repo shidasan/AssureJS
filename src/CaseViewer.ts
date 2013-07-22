@@ -1,38 +1,40 @@
-
+/// <reference path="CaseModel.ts" />
+/// <reference path="../d.ts/jQuery.d.ts" />
+// <reference path="../d.ts/jQuery.svg.d.ts" />
 /* VIEW (MVC) */
 
 class HTMLDoc {
-        DocBase:  JQuery;
-        Width :   number;
-        Height :  number;
+    DocBase: JQuery;
+    Width: number;
+    Height: number;
 
-        Render (CaseViewer : CaseViewer, CaseModel : CaseModel) : void {
-                // todo
-                // set document from CaseModel
-				DocBase = $('<div></div>').width(CaseViewer.ElementWidth);
-				DocBase.Append($('<h4>' + CaseModel.Label + '</h4>'));
-				DocBase.Append($('<p>' + CaseModel.Statement + '</p>'));
-                InvokePlugInRender(CaseViewer, CaseModel, DocBase);
-                // set height
-				this.Width  = DocBase.width(); 
-				this.Height = DocBase.height();
+    Render(Viewer: CaseViewer, CaseModel: CaseModel): void {
+        var DocBase = $('<div>').width(CaseViewer.ElementWidth);
+        DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
+        DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
+        this.InvokePlugInRender(Viewer, CaseModel, DocBase);
+        // set height
+        this.Width = DocBase.width();
+        this.Height = DocBase.height();
+    }
+
+    InvokePlugInRender(CaseViewer: CaseViewer, CaseModel: CaseModel, DocBase: JQuery): void {
+        for (var anno in CaseModel.Annotations) {
+            var f = CaseViewer.GetPlugInRender(anno.Name);
+            DocBase.append(f(CaseViewer, CaseModel, anno));
         }
-
-        InvokePlugInRender(CaseViewer : CaseViewer, CaseModel : CaseModel, DocBase : JQuery) : void {
-                for(var anno in CaseModel.Annotations) {
-                       	var f = CaseViewer.GetPlugInRender(anno.Name);
-                        DocBase.append(f(CaseViewer, CaseModel, anno));
-                }
-                for(var note in CaseModel.Notes) {
-                        f = CaseViewer.GetPlugInRender(note.Name);
-                        DocBase.append(f(CaseViewer, CaseModel, note));
-                }
+        for (var note in CaseModel.Notes) {
+            var f = CaseViewer.GetPlugInRender(note.Name);
+            DocBase.append(f(CaseViewer, CaseModel, note));
         }
+    }
 
+    Resize(Viewer: CaseViewer, Source: CaseModel): void {
+    }
 }
 
 class SVGShape {
-	ParentView : CaseView;
+    ParentView: ElementShape;
 	Width  :   number;
 	Height :   number;
 	Shape  : any;	
@@ -51,17 +53,18 @@ class ElementShape {
 
 	AbsX : number;  //
 	AbsY : number;
-	x, y : number;
+    x: number;
+    y: number;
 	
-	constructor(CaseViewer CaseViewer, CaseModel : CaseModel) {
+	constructor(CaseViewer : CaseViewer, CaseModel : CaseModel) {
 		this.CaseViewer = CaseViewer;
-		this.CaseModel = CaseModel;
+        this.Source = CaseModel;
 		this.HTMLDoc = new HTMLDoc();
 		this.SVGShape = new SVGShape();
 	}
 	
 	Resize() : void {
-		HTMLDoc.Resize(this.CaseViewer, this.CaseModel);
+        this.HTMLDoc.Resize(this.CaseViewer, this.Source);
 		//SVGShape.Resize(this.CaseViewer, this.CaseModel, this.HTMLDoc);
 	}
 
@@ -77,24 +80,30 @@ class CaseViewerConfig {
 
 }
 
-CaseViewerConfig = new CaseViserConfig();
+var ViewerConfig = new CaseViewerConfig();
 
 class CaseViewer {
-	ViewMap : Map<string, CaseView>;
+    ViewMap: { [index: string]: ElementShape; }
+
+    static ElementWidth = 150;
 	
 	constructor(Source : CaseModel) {
-		this.ViewMap = new Map();
+        this.ViewMap = <any>[]; // a hack to avoid tsc's problem.
 		for(var model in Source) {
-			this.ViewMap[model.Label] = new CaseView(this, model);
+            this.ViewMap[model.Label] = new ElementShape(this, model);
 		}
-		Resize();
-	}
+		this.Resize();
+    }
+
+    GetPlugInRender(Name: string): (CaseViewer: CaseViewer, CaseModel: CaseModel, Node: string) => string {
+        return null; // TODO;
+    }
 	
 	Resize() : void {
 		for(var shape in this.ViewMap) {
 			shape.Resize();
 		}
-		LayoutElement();
+		this.LayoutElement();
 	}
 
 	LayoutElement() : void {
@@ -106,15 +115,31 @@ class CaseViewer {
 			shape.AppendHTMLElement(svg);
 		}
 	}
-	
+
 }
 
+class ServerApi {
+    constructor(url: string) {
+    }
+    GetCase(project: string, id: string): string {
+        return "[]";
+    }
+}
+class CaseDecoder {
+    constructor() {
+    }
+    ParseJson(argument: Argument, json: string) {
+    }
+}
+
+
 function StartCaseViewer(url : string, id : string) {
-	var loader = new ServerApi(url)
+    var loader = new ServerApi(url);
+    var project; // temp
 	var JsonData = loader.GetCase(project, id);
-        var Argument = new Argument();
+    var Argument = new Argument();
 	var model = new CaseDecoder().ParseJson(Argument, JsonData);
 	var CaseViewer = new CaseViewer(model);
-	var svg = document.getElementBy(id);
+	var svg = document.getElementById(id);
 	CaseViewer.Draw(svg);
 }
