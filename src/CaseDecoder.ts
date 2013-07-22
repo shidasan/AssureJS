@@ -47,7 +47,7 @@ class JsonParser extends Parser {
 		}
 		else {
 			Parent.Children.push(childCaseModel);
-			return parentNode;
+			return Parent;
 		}
 	}
 
@@ -82,8 +82,8 @@ class CaseDecoder {
 	}
 
 	ParseJson(Case : Case, JsonData : any) : CaseModel  {
-		var JsonParser : JsonParser = new JsonParser(Case);
-		var root : CaseModel = JsonParser.parse(JsonData);
+		var jsonParser : JsonParser = new JsonParser(Case);
+		var root : CaseModel = jsonParser.parse(JsonData);
 		return root;
 	}
 
