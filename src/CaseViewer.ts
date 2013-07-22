@@ -2,30 +2,33 @@
 /* VIEW (MVC) */
 
 class HTMLDoc {
-	Document: string;
-	Width :   number;
-	Height :  number;
-	
-	Render (CaseViewer : CaseViewer, CaseModel : CaseModel) : void {
-		// todo
-		// set document from CaseModel
-		this.Document += CaseModel.InvokeRender(CaseViewer)
-		// set height	
-	}
-	
-	InvokePlugInRender(CaseViewer : CaseViewer, CaseModel : CaseModel) : String {
-		var doc = "";
-		for(var anno in CaseModel.Annotations) {
-			f = CaseViewer.GetPlugInRender(anno.Name);
-			doc += f(CaseViewer, CaseModel, anno);
-		}
-		for(var note in CaseModel.Notes) {
-			f = CaseViewer.GetPlugInRender(note.Name);
-			doc += f(CaseViewer, CaseModel, note);
-		}
-		return doc;
-	}
-	
+        DocBase:  JQuery;
+        Width :   number;
+        Height :  number;
+
+        Render (CaseViewer : CaseViewer, CaseModel : CaseModel) : void {
+                // todo
+                // set document from CaseModel
+				DocBase = $('<div></div>').width(CaseViewer.ElementWidth);
+				DocBase.Append($('<h4>' + CaseModel.Label + '</h4>'));
+				DocBase.Append($('<p>' + CaseModel.Statement + '</p>'));
+                InvokePlugInRender(CaseViewer, CaseModel, DocBase);
+                // set height
+				this.Width  = DocBase.width(); 
+				this.Height = DocBase.height();
+        }
+
+        InvokePlugInRender(CaseViewer : CaseViewer, CaseModel : CaseModel, DocBase : JQuery) : void {
+                for(var anno in CaseModel.Annotations) {
+                       	var f = CaseViewer.GetPlugInRender(anno.Name);
+                        DocBase.append(f(CaseViewer, CaseModel, anno));
+                }
+                for(var note in CaseModel.Notes) {
+                        f = CaseViewer.GetPlugInRender(note.Name);
+                        DocBase.append(f(CaseViewer, CaseModel, note));
+                }
+        }
+
 }
 
 class SVGShape {
