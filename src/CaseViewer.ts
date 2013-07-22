@@ -1,6 +1,6 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
-/// <reference path="../d.ts/jQuery.d.ts" />
+/// <reference path="../d.ts/jquery.d.ts" />
 // <reference path="../d.ts/jQuery.svg.d.ts" />
 /* VIEW (MVC) */
 
@@ -159,7 +159,7 @@ function StartCaseViewer(url : string, id : string) {
 }
 
 $(function () {
-    var model = new CaseModel(null, null, CaseType.Goal, "G0", "Top Goal");
+    var model = new CaseModel(new Case(), null, CaseType.Goal, "G0", "Top Goal");
     var Viewer = new CaseViewer(model);
     var root: any = $("#svgroot");
     Viewer.Draw(root);

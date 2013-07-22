@@ -56,9 +56,10 @@ class PlugInManager {
 	
 }
 /** this is sample of ActionPlugIn */
+/*
 function OnClickApproval(CaseModel: CaseModel) : boolean {
 	CaseModel.SetAnnotation('@approval', CaseModel.Case.UserName);
 	return true; // resize, redraw
 }
 
-
+*/
