@@ -1,4 +1,4 @@
-///<reference path='../lib/jquery.d.ts'/>
+///<reference path='../d.ts/jquery.d.ts'/>
 
 export var default_success_callback = function(result) {
 	// do nothing

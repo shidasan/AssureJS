@@ -1,7 +1,6 @@
-require("CaseModel");
-
-declare class CaseModel {}
-declare class Argument {}
+/// <reference path="CaseModel.ts" />
+//declare class CaseModel {}
+//declare class Argument {}
 
 function OutputError(o : any) : void {
 		console.log("error: " + o);

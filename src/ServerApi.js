@@ -1,5 +1,5 @@
 define(["require", "exports"], function(require, exports) {
-    ///<reference path='../lib/jquery.d.ts'/>
+    ///<reference path='../d.ts/jquery.d.ts'/>
     exports.default_success_callback = function (result) {
     };
 
