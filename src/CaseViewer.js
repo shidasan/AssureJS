@@ -37,6 +37,10 @@ var HTMLDoc = (function () {
         this.Width = this.DocBase ? this.DocBase.width() : 0;
         this.Height = this.DocBase ? this.DocBase.height() : 0;
     };
+
+    HTMLDoc.prototype.SetPosition = function (x, y) {
+        this.DocBase.css({ top: x + "px", left: y + "px" });
+    };
     return HTMLDoc;
 })();
 
@@ -46,6 +50,11 @@ var SVGShape = (function () {
     SVGShape.prototype.Render = function (CaseViewer, CaseModel, HTMLDoc) {
         this.ShapeGroup = document.createSVGElement("g");
         this.ShapeGroup.setAttribute("transform", "translate(0,0)");
+        this.ArrowPath = document.createSVGElement("path");
+        this.ArrowPath.setAttribute("marker-end", "url(#Triangle-black)");
+        this.ArrowPath.setAttribute("fill", "none");
+        this.ArrowPath.setAttribute("stroke", "gray");
+        this.ArrowPath.setAttribute("d", "M0,0 C0,0 0,0 0,0");
     };
 
     SVGShape.prototype.Resize = function (CaseViewer, CaseModel, HTMLDoc) {
@@ -57,6 +66,19 @@ var SVGShape = (function () {
         var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix;
         mat.e = x;
         mat.f = y;
+    };
+
+    SVGShape.prototype.SetArrowPosition = function (x1, y1, x2, y2) {
+        var start = this.ArrowPath.pathSegList.getItem(0);
+        var curve = this.ArrowPath.pathSegList.getItem(1);
+        start.x = x1;
+        start.y = y1;
+        curve.x = x2;
+        curve.y = y2;
+        curve.x1 = (9 * x1 + x2) / 10;
+        curve.y1 = (y1 + y2) / 2;
+        curve.x2 = (9 * x2 + x1) / 10;
+        curve.y2 = (y1 + y2) / 2;
     };
 
     SVGShape.prototype.SetColor = function (fill, stroke) {
@@ -79,8 +101,8 @@ var GoalShape = (function (_super) {
 
     GoalShape.prototype.Resize = function (CaseViewer, CaseModel, HTMLDoc) {
         _super.prototype.Resize.call(this, CaseViewer, CaseModel, HTMLDoc);
-        this.BodyRect.attributes["width"] = this.Width;
-        this.BodyRect.attributes["height"] = this.Height;
+        this.BodyRect.setAttribute("width", this.Width.toString());
+        this.BodyRect.setAttribute("height", this.Height.toString());
     };
 
     GoalShape.prototype.SetColor = function (fill, stroke) {
@@ -209,14 +231,22 @@ var ElementShape = (function () {
     };
 
     ElementShape.prototype.AppendHTMLElement = function (svgroot, divroot) {
-        var content = this.HTMLDoc.DocBase;
-        divroot.append(content);
-        content.css({ top: this.AbsY + "px", left: this.AbsX + "px" });
+        divroot.append(this.HTMLDoc.DocBase);
+        this.HTMLDoc.SetPosition(this.AbsX, this.AbsY);
         this.Resize();
 
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
         this.SVGShape.SetColor("white", "black");
+
+        if (this.ParentShape != null) {
+            var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+            var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+            var x2 = this.AbsX + this.HTMLDoc.Width / 2;
+            var y2 = this.AbsY;
+            this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
+            svgroot.append(this.SVGShape.ArrowPath);
+        }
         return;
     };
     return ElementShape;
@@ -236,6 +266,12 @@ var CaseViewer = (function () {
         for (var elementkey in Source.ElementMap) {
             var element = Source.ElementMap[elementkey];
             this.ViewMap[element.Label] = new ElementShape(this, element);
+        }
+        for (var elementkey in Source.ElementMap) {
+            var element = Source.ElementMap[elementkey];
+            if (element.Parent != null) {
+                this.ViewMap[element.Label].ParentShape = this.ViewMap[element.Parent.Label];
+            }
         }
         this.Resize();
     }
