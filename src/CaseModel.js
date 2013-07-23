@@ -30,14 +30,14 @@ var CaseModel = (function () {
         this.Statement = (Statement == null) ? "" : Statement;
         this.Parent = Parent;
         if (Parent != null) {
-            Parent.AppendChildren(this);
+            Parent.AppendChild(this);
         }
         this.Children = [];
         this.Annotations = [];
         this.Notes = [];
         Case.ElementMap[this.Label] = this;
     }
-    CaseModel.prototype.AppendChildren = function (Node) {
+    CaseModel.prototype.AppendChild = function (Node) {
         this.Children.push(Node);
     };
 

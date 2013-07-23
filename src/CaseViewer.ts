@@ -47,9 +47,9 @@ class SVGShape {
 	Shape  : any;	
 
 	 Resize (CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc) : void {
-		 this.Width = HTMLDoc.Width;
-		 this.Height = HTMLDoc.Height;
-	 }
+		this.Width = HTMLDoc.Width;
+		this.Height = HTMLDoc.Height;
+	}
 
 }
 
@@ -130,11 +130,11 @@ class CaseViewer {
 		// TODO: ishii
 	}
 
-		Draw(svg : JQuery) : void {
-			for(var shape in this.ViewMap) {
-				this.ViewMap[shape].AppendHTMLElement(svg);
-			}
+	Draw(svg : JQuery) : void {
+		for(var shape in this.ViewMap) {
+			this.ViewMap[shape].AppendHTMLElement(svg);
 		}
+	}
 
 }
 

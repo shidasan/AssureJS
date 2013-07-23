@@ -37,7 +37,7 @@ class CaseModel {
 		this.Statement = (Statement == null) ? "" : Statement;
 		this.Parent = Parent;
 		if(Parent != null) {
-			Parent.AppendChildren(this);
+			Parent.AppendChild(this);
 		}
 		this.Children = [];
 		this.Annotations = [];
@@ -45,7 +45,7 @@ class CaseModel {
 		Case.ElementMap[this.Label] = this; // TODO: ensure consistensy of labels
 	}
 
-	AppendChildren(Node : CaseModel) : void {
+	AppendChild(Node : CaseModel) : void {
 		this.Children.push(Node);
 	}
 	
