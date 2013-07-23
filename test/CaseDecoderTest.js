@@ -90,5 +90,5 @@ test("CaseDecoderTest", function() {
 	var caseDecoder = new CaseDecoder();
 	var root = caseDecoder.ParseJson(testCase, JsonData);
 
-	ok(checkCaseModel(root), "Created CaseModel is not correct");
+	ok(checkCaseModel(root), "Created CaseModel is correct");
 });
