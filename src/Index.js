@@ -70,7 +70,7 @@ $(function () {
     var caseDecoder = new CaseDecoder();
     var root = caseDecoder.ParseJson(Case0, JsonData);
 
-    Case0.SetTopGoalLabel(root.Label);
+    Case0.SetElementTop(root);
     var Viewer = new CaseViewer(Case0);
     var shapelayer = document.getElementById("layer0");
     var contentlayer = document.getElementById("layer1");

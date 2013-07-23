@@ -102,8 +102,8 @@ var Case = (function () {
         this.IsModified = false;
         this.ElementMap = {};
     }
-    Case.prototype.SetTopGoalLabel = function (Label) {
-        this.TopGoalLabel = Label;
+    Case.prototype.SetElementTop = function (ElementTop) {
+        this.ElementTop = ElementTop;
     };
 
     Case.prototype.NewLabel = function (Type) {

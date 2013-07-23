@@ -78,7 +78,7 @@ $(function () {
 	var caseDecoder: CaseDecoder = new CaseDecoder();
 	var root: CaseModel = caseDecoder.ParseJson(Case0, JsonData);
 
-	Case0.SetTopGoalLabel(root.Label);
+	Case0.SetElementTop(root);
 	var Viewer = new CaseViewer(Case0);
 	var shapelayer = <SVGGElement><any>document.getElementById("layer0");
 	var contentlayer = <HTMLDivElement>document.getElementById("layer1");

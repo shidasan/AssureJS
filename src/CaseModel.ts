@@ -114,8 +114,8 @@ class Case {
 	}
 
 	/* Deprecated */
-	SetTopGoalLabel(Label : string) {
-		this.TopGoalLabel = Label;
+	SetElementTop(ElementTop : CaseModel) {
+		this.ElementTop = ElementTop;
 	}
 
 	NewLabel(Type : CaseType) : string {

@@ -28,6 +28,9 @@ class LayoutLandscape extends Layout {
 }
 
 class LayoutPortrait extends Layout {
+	X_MARGIN = 160;
+	Y_MARGIN = 160;
+
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
 	}
@@ -43,6 +46,8 @@ class LayoutPortrait extends Layout {
 	}
 
 	Init(Element: CaseModel, x : number, y : number) : void {
+		this.ViewMap[Element.Label].AbsX += x;
+		this.ViewMap[Element.Label].AbsY += y;
 	}
 
 	Traverse(Element: CaseModel, x : number, y : number) {
@@ -51,27 +56,27 @@ class LayoutPortrait extends Layout {
 		}
 
 		var i = 0;
-		i = this.hasContext(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+		i = this.GetContextIndex(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 		if(i != -1) { //emit context element data
 			this.ViewMap[Element.Label].AbsX += x;
 			this.ViewMap[Element.Label].AbsY += y;
-			this.ViewMap[Element.Label].AbsX += 50;
+			this.ViewMap[Element.Label].AbsX += this.X_MARGIN;
 			console.log(Element.Label);
 			console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
 			Element.Children = Element.Children.splice(i-1,1);
-			this.traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+			this.Traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 		} else {  //emit element data except context
-			if(Element.Label == "G1") {
-				this.ViewMap[Element.Label].AbsX += x;
-				this.ViewMap[Element.Label].AbsY += y;
-			}
+//			if(Element.Label == "G1") {
+//				this.ViewMap[Element.Label].AbsX += x;
+//				this.ViewMap[Element.Label].AbsY += y;
+//			}
 			if(Element.Children.length % 2 == 1) {
 //				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
-				this.emitOddNumberChildren(Element, x, y);
+				this.EmitOddNumberChildren(Element, x, y);
 			}
 			if(Element.Children.length % 2 == 0) {
 //				this.emitEvenNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
-				this.emitEvenNumberChildren(Element, x, y);
+				this.EmitEvenNumberChildren(Element, x, y);
 			}
 		}
 	}
@@ -81,19 +86,19 @@ class LayoutPortrait extends Layout {
 		for(var i in Node.Children) {
 			this.ViewMap[Node.Children[i].Label].AbsX = x;
 			this.ViewMap[Node.Children[i].Label].AbsY = y;
-			this.ViewMap[Node.Children[i].Label].AbsY += 160;
+			this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
 		}
 		var num = (n-1)/2;
 		var k = 0;
 		for(var j = -num; j <= num; j++) {
-			this.ViewMap[Node.Children[k].Label].AbsX += 160 * j;
+			this.ViewMap[Node.Children[k].Label].AbsX += this.X_MARGIN * j;
 			k++;
 		}
 
 		for(var i in Node.Children) {
 			console.log(Node.Children[i].Label);
 			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
-			this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+			this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
 		}
 		return;
 	}
@@ -113,12 +118,12 @@ class LayoutPortrait extends Layout {
 		for(var i in Node.Children) {
 			this.ViewMap[Node.Children[i].Label].AbsX += x;
 			this.ViewMap[Node.Children[i].Label].AbsY += y;
-			this.ViewMap[Node.Children[i].Label].AbsX += 160 * index[i];
-			this.ViewMap[Node.Children[i].Label].AbsY += 160;
+			this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN * index[i];
+			this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
 			console.log(Node.Children[i].Label);
 //			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
 			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
-			this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+			this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
 		}
 		return;
 	}
