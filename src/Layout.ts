@@ -154,16 +154,10 @@ class LayoutPortrait extends Layout {
 			Element.Children = Element.Children.splice(i-1,1);
 			this.Traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 		} else {  //emit element data except context
-//			if(Element.Label == "G1") {
-//				this.ViewMap[Element.Label].AbsX += x;
-//				this.ViewMap[Element.Label].AbsY += y;
-//			}
 			if(Element.Children.length % 2 == 1) {
-//				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 				this.EmitOddNumberChildren(Element, x, y);
 			}
 			if(Element.Children.length % 2 == 0) {
-//				this.emitEvenNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 				this.EmitEvenNumberChildren(Element, x, y);
 			}
 		}
@@ -209,7 +203,6 @@ class LayoutPortrait extends Layout {
 			this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN * index[i];
 			this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
 			console.log(Node.Children[i].Label);
-//			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
 			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
 			this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
 		}

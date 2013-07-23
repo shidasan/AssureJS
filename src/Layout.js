@@ -201,7 +201,6 @@ var LayoutPortrait = (function (_super) {
             this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN * index[i];
             this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
             console.log(Node.Children[i].Label);
-
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
             this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
         }
