@@ -105,23 +105,25 @@ class CaseModifiers {
 
 class Case {
 	CaseId : number;  // TODO
-	Ids : number[];
+	IdCounters : number[];
 	ElementMap : { [index: string]: CaseModel};
-    IsModified : boolean;
-    TopGoalLabel : string;
-	
+
+	IsModified : boolean;
+	TopGoalLabel : string;
+
 	constructor() {
-		this.Ids = [0, 0, 0, 0, 0];
+		this.IdCounters = [0, 0, 0, 0, 0];
 		this.IsModified = false;
 		this.ElementMap = {};
 	}
+
 	SetTopGoalLabel(Label : string) {
 		this.TopGoalLabel = Label;
 	}
 
 	NewLabel(Type : CaseType) : string {
-		this.Ids[Type] = this.Ids[Type] + 1;
-		return CaseType[Type].charAt(0) + this.Ids[Type]; // TODO G1, S1, E1, C1
+		this.IdCounters[Type] = this.IdCounters[Type] + 1;
+		return CaseType[Type].charAt(0) + this.IdCounters[Type]; // TODO G1, S1, E1, C1
 	}
 		
 	GetPlugInModifier(key : string) : (Case, CaseModel, string, any) => boolean {

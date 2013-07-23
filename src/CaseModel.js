@@ -60,7 +60,7 @@ var CaseModifierConfig = new CaseModifiers();
 
 var Case = (function () {
     function Case() {
-        this.Ids = [0, 0, 0, 0, 0];
+        this.IdCounters = [0, 0, 0, 0, 0];
         this.IsModified = false;
         this.ElementMap = {};
     }
@@ -69,8 +69,8 @@ var Case = (function () {
     };
 
     Case.prototype.NewLabel = function (Type) {
-        this.Ids[Type] = this.Ids[Type] + 1;
-        return CaseType[Type].charAt(0) + this.Ids[Type];
+        this.IdCounters[Type] = this.IdCounters[Type] + 1;
+        return CaseType[Type].charAt(0) + this.IdCounters[Type];
     };
 
     Case.prototype.GetPlugInModifier = function (key) {

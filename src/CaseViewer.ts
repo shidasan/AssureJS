@@ -1,5 +1,6 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
+/// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 // <reference path="../d.ts/jQuery.svg.d.ts" />
 /* VIEW (MVC) */
@@ -14,7 +15,7 @@ class HTMLDoc {
 			var parent = this.DocBase.parent();
 			if (parent != null) parent.remove(this.DocBase);
 		}
-		this.DocBase = $('<div>').css("position", "absolute");
+		this.DocBase = $('<div class="node">').css("position", "absolute");
 		this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
 		this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
 		this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
@@ -113,7 +114,7 @@ class GoalShape extends SVGShape {
 	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
 		super.Render(CaseViewer, CaseModel, HTMLDoc);
 		this.BodyRect = <SVGRectElement>document.createSVGElement("rect");
-		
+
 		this.ShapeGroup.appendChild(this.BodyRect);
 		this.Resize(CaseViewer, CaseModel, HTMLDoc);
 	}
@@ -408,7 +409,7 @@ class CaseViewer {
 		this.LayoutElement();
 	}
 
-	LayoutElement(): void {
+	LayoutElement() : void {
 		// TODO: ishii
 		var i = 0;
 		for (var shapekey in this.ViewMap) {
@@ -428,64 +429,3 @@ class CaseViewer {
 	}
 
 }
-
-class ServerApi {
-	constructor(url: string) {
-	}
-	GetCase(project: string, id: string): string {
-		return "[]";
-	}
-}
-
-function StartCaseViewer(url: string, id: string) {
-	var loader = new ServerApi(url);
-	var project; // temp
-	var JsonData = loader.GetCase(project, id);
-	var Argument = new Argument();
-	var model = new CaseDecoder().ParseJson(Argument, JsonData);
-	var CaseViewer = new CaseViewer(model);
-	var svg = document.getElementById(id);
-	CaseViewer.Draw(svg);
-}
-
-$(function () {
-
-	var JsonData = {
-			"DCaseName" : "test",
-			"NodeCount" : 2,
-			"TopGoalLabel" : "G1",
-			"NodeList": [
-				{
-					"Children": [
-						"S1"
-					],
-					"Statement": "",
-					"NodeType": 0,
-					"Label": "G1",
-					"Annotations" : [],
-					"Notes" : []
-				},
-				{
-					"Children": [
-					],
-					"Statement": "",
-					"NodeType": 2,
-					"Label": "S1",
-					"Annotations" : [],
-					"Notes" : []
-				},
-			]
-	}
-
-    var Case0: Case = new Case();
-    var caseDecoder: CaseDecoder = new CaseDecoder();
-    var root: CaseModel = caseDecoder.ParseJson(Case0, JsonData);
-
-
-    Case0.SetTopGoalLabel(root.Label);
-    var Viewer = new CaseViewer(Case0);
-    var svgroot: JQuery = $("#layer0");
-	var divroot: JQuery = $("#layer1");
-	var uiroot: JQuery = $("#layer2");
-    Viewer.Draw(svgroot, divroot);
-});

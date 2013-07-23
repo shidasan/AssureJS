@@ -6,6 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
+/// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 // <reference path="../d.ts/jQuery.svg.d.ts" />
 /* VIEW (MVC) */
@@ -20,7 +21,7 @@ var HTMLDoc = (function () {
             if (parent != null)
                 parent.remove(this.DocBase);
         }
-        this.DocBase = $('<div>').css("position", "absolute");
+        this.DocBase = $('<div class="node">').css("position", "absolute");
         this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
         this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
         this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
@@ -431,63 +432,4 @@ var CaseViewer = (function () {
     CaseViewer.ElementWidth = 150;
     return CaseViewer;
 })();
-
-var ServerApi = (function () {
-    function ServerApi(url) {
-    }
-    ServerApi.prototype.GetCase = function (project, id) {
-        return "[]";
-    };
-    return ServerApi;
-})();
-
-function StartCaseViewer(url, id) {
-    var loader = new ServerApi(url);
-    var project;
-    var JsonData = loader.GetCase(project, id);
-    var Argument = new Argument();
-    var model = new CaseDecoder().ParseJson(Argument, JsonData);
-    var CaseViewer = new CaseViewer(model);
-    var svg = document.getElementById(id);
-    CaseViewer.Draw(svg);
-}
-
-$(function () {
-    var JsonData = {
-        "DCaseName": "test",
-        "NodeCount": 2,
-        "TopGoalLabel": "G1",
-        "NodeList": [
-            {
-                "Children": [
-                    "S1"
-                ],
-                "Statement": "",
-                "NodeType": 0,
-                "Label": "G1",
-                "Annotations": [],
-                "Notes": []
-            },
-            {
-                "Children": [],
-                "Statement": "",
-                "NodeType": 2,
-                "Label": "S1",
-                "Annotations": [],
-                "Notes": []
-            }
-        ]
-    };
-
-    var Case0 = new Case();
-    var caseDecoder = new CaseDecoder();
-    var root = caseDecoder.ParseJson(Case0, JsonData);
-
-    Case0.SetTopGoalLabel(root.Label);
-    var Viewer = new CaseViewer(Case0);
-    var svgroot = $("#layer0");
-    var divroot = $("#layer1");
-    var uiroot = $("#layer2");
-    Viewer.Draw(svgroot, divroot);
-});
 //@ sourceMappingURL=CaseViewer.js.map
