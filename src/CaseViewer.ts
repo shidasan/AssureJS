@@ -44,13 +44,133 @@ class SVGShape {
 	ParentView: ElementShape;
 	Width: number;
 	Height: number;
-	Shape: any;
+	ShapeGroup: SVGGElement;
+
+	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		this.ShapeGroup = <SVGGElement>document.createSVGElement("g");
+		this.ShapeGroup.setAttribute("transform", "translate(0,0)");
+	}
 
 	Resize(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
 		this.Width = HTMLDoc.Width;
 		this.Height = HTMLDoc.Height;
 	}
 
+	SetPosition(x: number, y: number) {
+		var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix
+		mat.e = x;
+		mat.f = y;
+	}
+
+	SetColor(fill: string, stroke: string) {
+	}
+}
+
+class GoalShape extends SVGShape {
+	BodyRect: SVGRectElement;
+
+	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Render(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyRect = <SVGRectElement>document.createSVGElement("rect");
+		
+		this.ShapeGroup.appendChild(this.BodyRect);
+		this.Resize(CaseViewer, CaseModel, HTMLDoc);
+	}
+
+	Resize(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Resize(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyRect.attributes["width"] = this.Width;
+		this.BodyRect.attributes["height"] = this.Height;
+	}
+
+	SetColor(fill: string, stroke: string) {
+		this.BodyRect.setAttribute("fill", fill);
+		this.BodyRect.setAttribute("stroke", stroke);
+	}
+}
+
+class ContextShape extends SVGShape {
+	BodyRect: SVGRectElement;
+
+	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Render(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyRect = <SVGRectElement>document.createSVGElement("rect");
+		this.BodyRect.setAttribute("rx", "10");
+		this.BodyRect.setAttribute("ry", "10");
+		this.ShapeGroup.appendChild(this.BodyRect);
+		this.Resize(CaseViewer, CaseModel, HTMLDoc);
+	}
+
+	Resize(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Resize(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyRect.setAttribute("width", this.Width.toString());
+		this.BodyRect.setAttribute("height", this.Height.toString());
+	}
+
+	SetColor(fill: string, stroke: string) {
+		this.BodyRect.setAttribute("fill", fill);
+		this.BodyRect.setAttribute("stroke", stroke);
+	}
+}
+
+class StrategyShape extends SVGShape {
+	BodyPolygon: SVGPolygonElement;
+
+	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Render(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyPolygon = <SVGPolygonElement>document.createSVGElement("polygon");
+		this.ShapeGroup.appendChild(this.BodyPolygon);
+		this.Resize(CaseViewer, CaseModel, HTMLDoc);
+	}
+
+	Resize(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Resize(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyPolygon.setAttribute("points", "10,0 " + this.Width + ",0 " + (this.Width - 10) + "," + this.Height + " 0," + this.Height);
+	}
+
+	SetColor(fill: string, stroke: string) {
+		this.BodyPolygon.setAttribute("fill", fill);
+		this.BodyPolygon.setAttribute("stroke", stroke);
+	}
+}
+
+class EvidenceShape extends SVGShape {
+	BodyEllipse: SVGEllipseElement;
+
+	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Render(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyEllipse = <SVGEllipseElement>document.createSVGElement("ellipse");
+		this.ShapeGroup.appendChild(this.BodyEllipse);
+		this.Resize(CaseViewer, CaseModel, HTMLDoc);
+	}
+
+	Resize(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
+		super.Resize(CaseViewer, CaseModel, HTMLDoc);
+		this.BodyEllipse.setAttribute("cx", (this.Width / 2).toString());
+		this.BodyEllipse.setAttribute("cy", (this.Height / 2).toString());
+		this.BodyEllipse.setAttribute("rx", (this.Width / 2).toString());
+		this.BodyEllipse.setAttribute("ry", (this.Height / 2).toString());
+	}
+
+	SetColor(fill: string, stroke: string) {
+		this.BodyEllipse.setAttribute("fill", fill);
+		this.BodyEllipse.setAttribute("stroke", stroke);
+	}
+}
+
+class SVGShapeFactory {
+	static Create(Type: CaseType): SVGShape {
+		switch (Type) {
+			case CaseType.Goal:
+				return new GoalShape();
+			case CaseType.Context:
+				return new ContextShape();
+			case CaseType.Strategy:
+				return new StrategyShape();
+			case CaseType.Evidence:
+				return new EvidenceShape();
+		}
+	}
 }
 
 interface JQuery {
@@ -82,7 +202,8 @@ class ElementShape {
 		this.Source = CaseModel;
 		this.HTMLDoc = new HTMLDoc();
 		this.HTMLDoc.Render(CaseViewer, CaseModel);
-		this.SVGShape = new SVGShape();
+		this.SVGShape = SVGShapeFactory.Create(CaseModel.Type);
+		this.SVGShape.Render(CaseViewer, CaseModel, this.HTMLDoc);
 	}
 
 	Resize(): void {
@@ -98,12 +219,9 @@ class ElementShape {
 		// TODO
 		// if it has an parent, add an arrow element. 
 		//svg.rect(parent, this.AbsX, this.AbsY, this.HTMLDoc.Width, this.HTMLDoc.Height);
-		var rect = $(document.createSVGElement("rect")).attr({
-			fill: "none", stroke: "gray",
-			x: this.AbsX, y: this.AbsY, width: this.HTMLDoc.Width, height: this.HTMLDoc.Height,
-			//points: "0,0 0,0 0,0 0,0"
-		});
-		rect.appendTo(svgroot);
+		svgroot.append(this.SVGShape.ShapeGroup);
+		this.SVGShape.SetPosition(this.AbsX, this.AbsY);
+		this.SVGShape.SetColor("white", "black");
 		return; // TODO
 	}
 }
