@@ -46,7 +46,6 @@ class JsonParser extends Parser {
 			return childCaseModel;
 		}
 		else {
-			Parent.Children.push(childCaseModel);
 			return Parent;
 		}
 	}
