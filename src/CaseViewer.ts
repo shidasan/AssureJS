@@ -431,20 +431,42 @@ $(function () {
 
 	var pluginManager = new PlugInManager();
 
-	var Case0 = new Case();
-	var goal = new CaseModel(Case0, null, CaseType.Goal, null, "Top Goal");
-	var str = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy");
-//	var goal_a = new CaseModel(Case0, str, CaseType.Goal, null, "Goal_a");
-//	var goal_b = new CaseModel(Case0, str, CaseType.Goal, null, "Goal_b");
-//	var evi_a = new CaseModel(Case0, goal_a, CaseType.Evidence, null, "Evidence_a");
-//	var evi_b = new CaseModel(Case0, goal_b, CaseType.Evidence, null, "Evidence_b");
-//	var evi2 = new CaseModel(Case0, goal, CaseType.Evidence, null, "Evidence");
-//	var evi3 = new CaseModel(Case0, goal, CaseType.Evidence, null, "Evidence");
-	Case0.SetTopGoalLabel(goal.Label);
+	var JsonData = {
+			"DCaseName" : "test",
+			"NodeCount" : 2,
+			"TopGoalLabel" : "G1",
+			"NodeList": [
+				{
+					"Children": [
+						"S1"
+					],
+					"Statement": "Sample Goal",
+					"NodeType": 0,
+					"Label": "G1",
+					"Annotations" : [],
+					"Notes" : []
+				},
+				{
+					"Children": [
+					],
+					"Statement": "Sample Strategy",
+					"NodeType": 2,
+					"Label": "S1",
+					"Annotations" : [],
+					"Notes" : []
+				},
+			]
+	}
+
+	var Case0: Case = new Case();
+	var caseDecoder: CaseDecoder = new CaseDecoder();
+	var root: CaseModel = caseDecoder.ParseJson(Case0, JsonData);
+
+
+	Case0.SetTopGoalLabel(root.Label);
 	var Viewer = new CaseViewer(Case0);
 	var svgroot: JQuery = $("#svg1");
 	var divroot: JQuery = $("#div1");
 	Viewer.Draw(svgroot, divroot);
 	pluginManager.AddActionPlugIn("sample",new SamplePlugIn());
-});
-
+})
