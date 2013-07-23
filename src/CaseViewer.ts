@@ -42,11 +42,11 @@ class HTMLDoc {
 
 class SVGShape {
 	ParentView: ElementShape;
-	Width  :   number;
-	Height :   number;
-	Shape  : any;	
+	Width     : number;
+	Height    : number;
+	Shape     : any;
 
-	 Resize (CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc) : void {
+	Resize (CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc) : void {
 		this.Width = HTMLDoc.Width;
 		this.Height = HTMLDoc.Height;
 	}
@@ -105,9 +105,9 @@ var ViewerConfig = new CaseViewerConfig();
 class CaseViewer {
 	ViewMap: { [index: string]: ElementShape; };
 
-	 static ElementWidth = 150;
+	static ElementWidth = 150;
 
-	 constructor(Source : CaseModel) {
+	constructor(Source : CaseModel) {
 		this.ViewMap = <any>[]; // a hack to avoid tsc's problem.
 		for(var model in Source) {
 			this.ViewMap[model.Label] = new ElementShape(this, model);
