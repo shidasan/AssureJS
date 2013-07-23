@@ -5,3 +5,4 @@ src/PlugInManager.ts
 src/ServerApi.ts
 src/Index.ts
 plugins/SamplePlugin.ts
+test/CaseDecoderTest.ts
