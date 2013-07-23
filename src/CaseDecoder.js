@@ -47,7 +47,6 @@ var JsonParser = (function (_super) {
         if (Parent == null) {
             return childCaseModel;
         } else {
-            Parent.Children.push(childCaseModel);
             return Parent;
         }
     };
