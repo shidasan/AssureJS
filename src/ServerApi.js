@@ -1,7 +1,7 @@
-exports.default_success_callback = function (result) {
+var default_success_callback = function (result) {
 };
 
-exports.default_error_callback = function (req, stat, err) {
+var default_error_callback = function (req, stat, err) {
     alert("ajax error");
 };
 
@@ -17,8 +17,8 @@ var ServerAPI = (function () {
             params: params
         };
         var async = callback != null;
-        var callback = exports.default_success_callback;
-        var error_callback = exports.default_error_callback;
+        var callback = default_success_callback;
+        var error_callback = default_error_callback;
         var res = $.ajax({
             type: "POST",
             url: this.uri,
@@ -41,4 +41,3 @@ var ServerAPI = (function () {
     };
     return ServerAPI;
 })();
-

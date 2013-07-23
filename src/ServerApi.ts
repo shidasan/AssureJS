@@ -1,10 +1,10 @@
 ///<reference path='../d.ts/jquery.d.ts'/>
 
-export var default_success_callback = function(result) {
+var default_success_callback = function(result) {
 	// do nothing
 };
 
-export var default_error_callback = function(req, stat, err) {
+var default_error_callback = function(req, stat, err) {
 	alert("ajax error");
 };
 
@@ -41,7 +41,7 @@ class ServerAPI {
 			return JSON.parse(res.responseText).result;
 		}
 	}
-	
+
 	GetCase (ProjectName : string, CaseId : number) : Object {
 		return <Object> this.RemoteCall("getDCase", { dcaseId: CaseId });
 	}
