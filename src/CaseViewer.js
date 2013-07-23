@@ -319,8 +319,10 @@ var LayOut = (function () {
             Element.Children = Element.Children.splice(i - 1, 1);
             this.traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
         } else {
-            this.ViewMap[Element.Label].AbsX += x;
-            this.ViewMap[Element.Label].AbsY += y;
+            if (Element.Label == "G1") {
+                this.ViewMap[Element.Label].AbsX += x;
+                this.ViewMap[Element.Label].AbsY += y;
+            }
             if (Element.Children.length % 2 == 1) {
                 //				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
                 this.emitOddNumberChildren(Element, x, y);
@@ -370,7 +372,7 @@ var LayOut = (function () {
             this.ViewMap[Node.Children[i].Label].AbsX += x;
             this.ViewMap[Node.Children[i].Label].AbsY += y;
             this.ViewMap[Node.Children[i].Label].AbsX += 160 * index[i];
-            this.ViewMap[Node.Children[i].Label].AbsY += 120;
+            this.ViewMap[Node.Children[i].Label].AbsY += 160;
             console.log(Node.Children[i].Label);
 
             //			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
@@ -413,10 +415,6 @@ var CaseViewer = (function () {
 
     CaseViewer.prototype.LayoutElement = function () {
         // TODO: ishii
-        var i = 0;
-        for (var shapekey in this.ViewMap) {
-            this.ViewMap[shapekey].AbsY = (i++ * 200);
-        }
         var topElementShape = this.ViewMap[this.TopGoalLabel];
         var topElement = topElementShape.Source;
         var layout = new LayOut(this.ViewMap);
@@ -432,4 +430,23 @@ var CaseViewer = (function () {
     CaseViewer.ElementWidth = 150;
     return CaseViewer;
 })();
-//@ sourceMappingURL=CaseViewer.js.map
+
+var ServerApi = (function () {
+    function ServerApi(url) {
+    }
+    ServerApi.prototype.GetCase = function (project, id) {
+        return "[]";
+    };
+    return ServerApi;
+})();
+
+function StartCaseViewer(url, id) {
+    var loader = new ServerApi(url);
+    var project;
+    var JsonData = loader.GetCase(project, id);
+    var Argument = new Argument();
+    var model = new CaseDecoder().ParseJson(Argument, JsonData);
+    var CaseViewer = new CaseViewer(model);
+    var svg = document.getElementById(id);
+    CaseViewer.Draw(svg);
+}

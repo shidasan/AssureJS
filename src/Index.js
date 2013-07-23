@@ -8,24 +8,63 @@ $(function () {
 
     var JsonData = {
         "DCaseName": "test",
-        "NodeCount": 2,
+        "NodeCount": 6,
         "TopGoalLabel": "G1",
         "NodeList": [
             {
                 "Children": [
                     "S1"
                 ],
-                "Statement": "Sample Goal",
+                "Statement": "",
                 "NodeType": 0,
                 "Label": "G1",
                 "Annotations": [],
                 "Notes": []
             },
             {
-                "Children": [],
-                "Statement": "Sample Strategy",
+                "Children": [
+                    "G2",
+                    "G3"
+                ],
+                "Statement": "",
                 "NodeType": 2,
                 "Label": "S1",
+                "Annotations": [],
+                "Notes": []
+            },
+            {
+                "Children": [
+                    "E1"
+                ],
+                "Statement": "",
+                "NodeType": 0,
+                "Label": "G2",
+                "Annotations": [],
+                "Notes": []
+            },
+            {
+                "Children": [
+                    "E2"
+                ],
+                "Statement": "",
+                "NodeType": 0,
+                "Label": "G3",
+                "Annotations": [],
+                "Notes": []
+            },
+            {
+                "Children": [],
+                "Statement": "",
+                "NodeType": 3,
+                "Label": "E1",
+                "Annotations": [],
+                "Notes": []
+            },
+            {
+                "Children": [],
+                "Statement": "",
+                "NodeType": 3,
+                "Label": "E2",
                 "Annotations": [],
                 "Notes": []
             }
@@ -44,4 +83,3 @@ $(function () {
     Viewer.Draw(svgroot, divroot);
     pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
 });
-//@ sourceMappingURL=Index.js.map
