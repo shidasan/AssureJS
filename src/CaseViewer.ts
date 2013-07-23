@@ -40,7 +40,7 @@ class HTMLDoc {
 	}
 
 	SetPosition(x: number, y: number) {
-		this.DocBase.css({ top: x + "px", left: y + "px" });
+		this.DocBase.css({ left: x + "px", top: y + "px" });
 	}
 }
 
@@ -245,10 +245,10 @@ class ElementShape {
 		this.SVGShape.SetColor("white", "black");
 
 		if (this.ParentShape != null) {
-			var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-			var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
-			var x2 = this.AbsX + this.HTMLDoc.Width / 2;
-			var y2 = this.AbsY;
+			var x1 = this.AbsX + this.HTMLDoc.Width / 2;
+			var y1 = this.AbsY;
+			var x2 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+			var y2 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
 			this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
 			svgroot.append(this.SVGShape.ArrowPath);
 		}
