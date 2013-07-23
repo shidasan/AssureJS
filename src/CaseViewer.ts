@@ -280,9 +280,104 @@ class CaseViewerConfig {
 
 var ViewerConfig = new CaseViewerConfig();
 
+
+class LayOut {
+	static X_MARGIN = 160;
+	static Y_MARGIN = 120;
+
+	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
+	}
+
+    hasContext(Node : CaseModel, x : number, y : number) : number {
+		var i = 0
+			for(; i < Node.Children.length; i++) {
+				if(Node.Children[i].Type == CaseType.Context) {
+					return i;
+				}
+			}
+		return -1;
+	}
+
+	traverse(Element: CaseModel, x : number, y : number) {
+		if(Element.Children.length == 0) {
+			return;
+		}
+
+		var i = 0;
+		i = this.hasContext(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+		if(i != -1) { //emit context element data
+			this.ViewMap[Element.Label].AbsX += x;
+			this.ViewMap[Element.Label].AbsY += y;
+			this.ViewMap[Element.Label].AbsX += 50;
+			console.log(Element.Label);
+			console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
+			Element.Children = Element.Children.splice(i-1,1);
+			this.traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+		} else {  //emit element data except context
+			this.ViewMap[Element.Label].AbsX += x;
+			this.ViewMap[Element.Label].AbsY += y;
+			if(Element.Children.length % 2 == 1) {
+//				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+				this.emitOddNumberChildren(Element, x, y);
+			}
+			if(Element.Children.length % 2 == 0) {
+//				this.emitEvenNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+				this.emitEvenNumberChildren(Element, x, y);
+			}
+	    }
+	}
+
+    emitOddNumberChildren(Node : CaseModel, x : number, y : number) : void {
+		var n = Node.Children.length;
+		for(var i in Node.Children) {
+			this.ViewMap[Node.Children[i].Label].AbsX = x;
+			this.ViewMap[Node.Children[i].Label].AbsY = y;
+			this.ViewMap[Node.Children[i].Label].AbsY += 160;
+		}
+		var num = (n-1)/2;
+		var k = 0;
+		for(var j = -num; j <= num; j++) {
+			this.ViewMap[Node.Children[k].Label].AbsX += 160 * j;
+			k++;
+		}
+
+		for(var i in Node.Children) {
+			console.log(Node.Children[i].Label);
+			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
+			this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+		}
+		return;
+	}
+
+    emitEvenNumberChildren(Node : CaseModel, x : number, y : number) : void {
+		var n = Node.Children.length;
+		var num = n/2;
+		var index = new Array();
+
+		for(var j = -num; j <= num; j++) {
+			if(j == 0) {
+				continue;
+			}
+			index.push(j);
+		}
+
+		for(var i in Node.Children) {
+			this.ViewMap[Node.Children[i].Label].AbsX += x;
+			this.ViewMap[Node.Children[i].Label].AbsY += y;
+			this.ViewMap[Node.Children[i].Label].AbsX += 160 * index[i];
+			this.ViewMap[Node.Children[i].Label].AbsY += 120;
+			console.log(Node.Children[i].Label);
+//			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
+			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
+			this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+		}
+		return;
+	}
+}
+
 class CaseViewer {
 	ViewMap: { [index: string]: ElementShape; };
-
+    TopGoalLabel : string;
 	static ElementWidth = 150;
 
 	constructor(Source: Case) {
@@ -297,6 +392,7 @@ class CaseViewer {
 				this.ViewMap[element.Label].ParentShape = this.ViewMap[element.Parent.Label];
 			}
 		}
+		this.TopGoalLabel = Source.TopGoalLabel;
 		this.Resize();
 	}
 
@@ -317,6 +413,10 @@ class CaseViewer {
 		for (var shapekey in this.ViewMap) {
 			this.ViewMap[shapekey].AbsY = (i++ * 200);
 		}
+		var topElementShape = this.ViewMap[this.TopGoalLabel];
+		var topElement = topElementShape.Source;
+		var layout = new LayOut(this.ViewMap);
+		layout.traverse(topElement, 300, 0);
 	}
 
 	Draw(svg: JQuery, div: JQuery): void {
@@ -327,40 +427,24 @@ class CaseViewer {
 
 }
 
-//class ServerApi {
-//	constructor(url: string) {
-//	}
-//	GetCase(project: string, id: string): string {
-//		return "[]";
-//	}
-//}
-//
-//function StartCaseViewer(url : string, id : string) {
-//	var loader = new ServerApi(url);
-//	var project; // temp
-//	var JsonData = loader.GetCase(project, id);
-//	var Argument = new Argument();
-//	var model = new CaseDecoder().ParseJson(Argument, JsonData);
-//	var CaseViewer = new CaseViewer(model);
-//	var svg = document.getElementById(id);
-//	CaseViewer.Draw(svg);
-//}
-
 $(function () {
 
 	var pluginManager = new PlugInManager();
 
 	var Case0 = new Case();
 	var goal = new CaseModel(Case0, null, CaseType.Goal, null, "Top Goal");
-	var str0 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy0");
-	//var str1 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy1");
-	var sgoal0 = new CaseModel(Case0, str0, CaseType.Goal, null, "Sub Goal0");
-	var sgoal1 = new CaseModel(Case0, str0, CaseType.Goal, null, "Sub Goal1");
-	var evi0 = new CaseModel(Case0, sgoal0, CaseType.Evidence, null, "Evidence0");
-	var evi1 = new CaseModel(Case0, sgoal1, CaseType.Evidence, null, "Evidence1");
+	var str = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy");
+//	var goal_a = new CaseModel(Case0, str, CaseType.Goal, null, "Goal_a");
+//	var goal_b = new CaseModel(Case0, str, CaseType.Goal, null, "Goal_b");
+//	var evi_a = new CaseModel(Case0, goal_a, CaseType.Evidence, null, "Evidence_a");
+//	var evi_b = new CaseModel(Case0, goal_b, CaseType.Evidence, null, "Evidence_b");
+//	var evi2 = new CaseModel(Case0, goal, CaseType.Evidence, null, "Evidence");
+//	var evi3 = new CaseModel(Case0, goal, CaseType.Evidence, null, "Evidence");
+	Case0.SetTopGoalLabel(goal.Label);
 	var Viewer = new CaseViewer(Case0);
 	var svgroot: JQuery = $("#svg1");
 	var divroot: JQuery = $("#div1");
 	Viewer.Draw(svgroot, divroot);
 	pluginManager.AddActionPlugIn("sample",new SamplePlugIn());
 });
+
