@@ -38,17 +38,26 @@ class HTMLDoc {
 		this.Width = this.DocBase ? this.DocBase.width() : 0;
 		this.Height = this.DocBase ? this.DocBase.height() : 0;
 	}
+
+	SetPosition(x: number, y: number) {
+		this.DocBase.css({ top: x + "px", left: y + "px" });
+	}
 }
 
 class SVGShape {
-	ParentView: ElementShape;
 	Width: number;
 	Height: number;
 	ShapeGroup: SVGGElement;
+	ArrowPath: SVGPathElement;
 
 	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
 		this.ShapeGroup = <SVGGElement>document.createSVGElement("g");
 		this.ShapeGroup.setAttribute("transform", "translate(0,0)");
+		this.ArrowPath = <SVGPathElement>document.createSVGElement("path");
+		this.ArrowPath.setAttribute("marker-end", "url(#Triangle-black)");
+		this.ArrowPath.setAttribute("fill", "none");
+		this.ArrowPath.setAttribute("stroke", "gray");
+		this.ArrowPath.setAttribute("d", "M0,0 C0,0 0,0 0,0");
 	}
 
 	Resize(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
@@ -60,6 +69,19 @@ class SVGShape {
 		var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix
 		mat.e = x;
 		mat.f = y;
+	}
+
+	SetArrowPosition(x1: number, y1: number, x2: number, y2: number) {
+		var start = <SVGPathSegMovetoAbs>this.ArrowPath.pathSegList.getItem(0);
+		var curve = <SVGPathSegCurvetoCubicAbs>this.ArrowPath.pathSegList.getItem(1);
+		start.x = x1;
+		start.y = y1;
+		curve.x = x2;
+		curve.y = y2;
+		curve.x1 = (9 * x1 + x2) / 10;
+		curve.y1 = (y1 + y2) / 2;
+		curve.x2 = (9 * x2 + x1) / 10;
+		curve.y2 = (y1 + y2) / 2;
 	}
 
 	SetColor(fill: string, stroke: string) {
@@ -191,6 +213,7 @@ class ElementShape {
 	Source: CaseModel;
 	HTMLDoc: HTMLDoc;
 	SVGShape: SVGShape;
+	ParentShape: ElementShape;
 
 	AbsX: number = 0;  //
 	AbsY: number = 0;
@@ -212,16 +235,23 @@ class ElementShape {
 	}
 
 	AppendHTMLElement(svgroot: JQuery, divroot: JQuery): void {
-		var content = this.HTMLDoc.DocBase;
-		divroot.append(content);
-		content.css({ top: this.AbsY + "px", left: this.AbsX + "px" });
+		divroot.append(this.HTMLDoc.DocBase);
+		this.HTMLDoc.SetPosition(this.AbsX, this.AbsY);
 		this.Resize();
 		// TODO
 		// if it has an parent, add an arrow element. 
-		//svg.rect(parent, this.AbsX, this.AbsY, this.HTMLDoc.Width, this.HTMLDoc.Height);
 		svgroot.append(this.SVGShape.ShapeGroup);
 		this.SVGShape.SetPosition(this.AbsX, this.AbsY);
 		this.SVGShape.SetColor("white", "black");
+
+		if (this.ParentShape != null) {
+			var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+			var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+			var x2 = this.AbsX + this.HTMLDoc.Width / 2;
+			var y2 = this.AbsY;
+			this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
+			svgroot.append(this.SVGShape.ArrowPath);
+		}
 		return; // TODO
 	}
 }
@@ -243,6 +273,12 @@ class CaseViewer {
 		for (var elementkey in Source.ElementMap) {
 			var element = Source.ElementMap[elementkey];
 			this.ViewMap[element.Label] = new ElementShape(this, element);
+		}
+		for (var elementkey in Source.ElementMap) {
+			var element = Source.ElementMap[elementkey];
+			if (element.Parent != null) {
+				this.ViewMap[element.Label].ParentShape = this.ViewMap[element.Parent.Label];
+			}
 		}
 		this.Resize();
 	}
