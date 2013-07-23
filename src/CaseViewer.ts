@@ -421,8 +421,9 @@ class CaseViewer {
 	}
 
 	Draw(svg: JQuery, div: JQuery): void {
+		var rootgroup = $(document.createSVGElement("g")).appendTo(svg);
 		for (var shape in this.ViewMap) {
-			this.ViewMap[shape].AppendHTMLElement(svg, div);
+			this.ViewMap[shape].AppendHTMLElement(rootgroup, div);
 		}
 	}
 
@@ -483,7 +484,8 @@ $(function () {
 
     Case0.SetTopGoalLabel(root.Label);
     var Viewer = new CaseViewer(Case0);
-    var svgroot: JQuery = $("#svg1");
-    var divroot: JQuery = $("#div1");
+    var svgroot: JQuery = $("#layer0");
+	var divroot: JQuery = $("#layer1");
+	var uiroot: JQuery = $("#layer2");
     Viewer.Draw(svgroot, divroot);
 });

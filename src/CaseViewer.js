@@ -423,8 +423,9 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.Draw = function (svg, div) {
+        var rootgroup = $(document.createSVGElement("g")).appendTo(svg);
         for (var shape in this.ViewMap) {
-            this.ViewMap[shape].AppendHTMLElement(svg, div);
+            this.ViewMap[shape].AppendHTMLElement(rootgroup, div);
         }
     };
     CaseViewer.ElementWidth = 150;
@@ -484,8 +485,9 @@ $(function () {
 
     Case0.SetTopGoalLabel(root.Label);
     var Viewer = new CaseViewer(Case0);
-    var svgroot = $("#svg1");
-    var divroot = $("#div1");
+    var svgroot = $("#layer0");
+    var divroot = $("#layer1");
+    var uiroot = $("#layer2");
     Viewer.Draw(svgroot, divroot);
 });
 //@ sourceMappingURL=CaseViewer.js.map
