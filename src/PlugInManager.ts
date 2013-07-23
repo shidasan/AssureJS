@@ -3,18 +3,37 @@ class PlugIn {
 }
 
 class ActionPlugIn extends PlugIn {
-	IsEnabled : (caseViewer: CaseViewer, caseModel: CaseModel) => boolean;
-	Delegate  : (caseViewer: CaseViewer, caseModel: CaseModel) => boolean;
+	EventName: string;
+
+	IsEnabled(caseViewer: CaseViewer, caseModel: CaseModel) : boolean {
+		return true;
+	}
+
+	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
+		return true;
+	}
+
+	Event(): void {
+	}
 }
 
 class CheckerPlugIn extends PlugIn {
-	IsEnabled : (caseModel: CaseModel, EventType: string) => boolean; 
-	Delegate  : (caseModel: CaseModel, y: string, z: string) => boolean;
+	IsEnabled(caseModel: CaseModel, EventType: string) : boolean {
+		return true;
+	}
+
+	Delegate(caseModel: CaseModel, y: string, z: string) : boolean {
+		return true;
+	}
 }
 
 class RenderPlugIn extends PlugIn {
-	IsEnabled : (caseViewer: CaseViewer, caseModel: CaseModel) => boolean; 
-	Delegate  : (caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) => void;
+	IsEnabled(caseViewer: CaseViewer, caseModel: CaseModel) : boolean {
+		return true;
+	}
+
+	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) : void {
+	}
 }
 
 class PlugInManager {
@@ -32,7 +51,13 @@ class PlugInManager {
 		this.DefaultRenderPlugIns = [];
 		this.RenderPlugInMap = {};
 	}
-	
+
+
+	AddActionPlugIn(key: string, actionPlugIn: ActionPlugIn) {
+		actionPlugIn.Event();
+		this.ActionPlugIns.push(actionPlugIn);
+	}
+
 	/** 
 	AddCheckerPlugIn(key: string, f : (x : CaseModel, y: string, z : any) => boolean) {
 		if(key == null) {

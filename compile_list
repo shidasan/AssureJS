@@ -3,3 +3,4 @@ src/CaseModel.ts
 src/CaseViewer.ts
 src/PlugInManager.ts
 src/ServerApi.ts
+plugins/SamplePlugin.ts

@@ -15,7 +15,7 @@ var HTMLDoc = (function () {
             if (parent != null)
                 parent.remove(this.DocBase);
         }
-        this.DocBase = $('<div>').width(CaseViewer.ElementWidth).css("position", "absolute");
+        this.DocBase = $('<div class="node">').width(CaseViewer.ElementWidth).css("position", "absolute");
         this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
         this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
         this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
@@ -322,16 +322,19 @@ var CaseViewer = (function () {
 })();
 
 $(function () {
+    var pluginManager = new PlugInManager();
+
     var Case0 = new Case();
     var goal = new CaseModel(Case0, null, CaseType.Goal, null, "Top Goal");
     var str0 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy0");
-    var str1 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy1");
+
     var sgoal0 = new CaseModel(Case0, str0, CaseType.Goal, null, "Sub Goal0");
-    var sgoal1 = new CaseModel(Case0, str1, CaseType.Goal, null, "Sub Goal1");
+    var sgoal1 = new CaseModel(Case0, str0, CaseType.Goal, null, "Sub Goal1");
     var evi0 = new CaseModel(Case0, sgoal0, CaseType.Evidence, null, "Evidence0");
     var evi1 = new CaseModel(Case0, sgoal1, CaseType.Evidence, null, "Evidence1");
     var Viewer = new CaseViewer(Case0);
     var svgroot = $("#svg1");
     var divroot = $("#div1");
     Viewer.Draw(svgroot, divroot);
+    pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
 });
