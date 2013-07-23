@@ -4,6 +4,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="CaseModel.ts" />
 function OutputError(o) {
     console.log("error: " + o);
 }
@@ -24,7 +25,7 @@ var JsonParser = (function (_super) {
         _super.apply(this, arguments);
         this.caseModelMap = {};
     }
-    JsonParser.prototype.initCaseModelMap = function (NodeList) {
+    JsonParser.prototype.initCaseModelMap = function (NodeList/* TODO: remove any type */ ) {
         for (var i = 0; i < NodeList.length; i++) {
             this.caseModelMap[NodeList[i]["Label"]] = NodeList[i];
         }
@@ -89,11 +90,14 @@ var CaseDecoder = (function () {
     };
 
     CaseDecoder.prototype.ParseDCaseXML = function (Case, XML) {
+        // TODO
         return null;
     };
 
     CaseDecoder.prototype.ParseMarkCase = function (Case, MarkCase) {
+        // TODO
         return null;
     };
     return CaseDecoder;
 })();
+//@ sourceMappingURL=CaseDecoder.js.map

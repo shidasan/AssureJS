@@ -4,6 +4,11 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="CaseModel.ts" />
+/// <reference path="CaseDecoder.ts" />
+/// <reference path="../d.ts/jquery.d.ts" />
+// <reference path="../d.ts/jQuery.svg.d.ts" />
+/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
         this.Width = 0;
@@ -15,15 +20,16 @@ var HTMLDoc = (function () {
             if (parent != null)
                 parent.remove(this.DocBase);
         }
-        this.DocBase = $('<div>').width(CaseViewer.ElementWidth).css("position", "absolute");
+        this.DocBase = $('<div>').css("position", "absolute");
         this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
         this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
         this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
-        this.UpdatePadding(Viewer, CaseModel);
+        this.UpdateWidth(Viewer, CaseModel);
         this.Resize(Viewer, CaseModel);
     };
 
-    HTMLDoc.prototype.UpdatePadding = function (Viewer, Source) {
+    HTMLDoc.prototype.UpdateWidth = function (Viewer, Source) {
+        this.DocBase.width(CaseViewer.ElementWidth);
         switch (Source.Type) {
             case CaseType.Goal:
                 this.DocBase.css("padding", "5px 10px");
@@ -39,6 +45,7 @@ var HTMLDoc = (function () {
                 this.DocBase.css("padding", "20px 20px");
                 break;
         }
+        this.DocBase.width(CaseViewer.ElementWidth * 2 - this.DocBase.outerWidth());
     };
 
     HTMLDoc.prototype.InvokePlugInRender = function (CaseViewer, CaseModel, DocBase) {
@@ -254,15 +261,17 @@ var ElementShape = (function () {
         this.HTMLDoc.SetPosition(this.AbsX, this.AbsY);
         this.Resize();
 
+        // TODO
+        // if it has an parent, add an arrow element.
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
         this.SVGShape.SetColor("white", "black");
 
         if (this.ParentShape != null) {
-            var x1 = this.AbsX + this.HTMLDoc.Width / 2;
-            var y1 = this.AbsY;
-            var x2 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-            var y2 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+            var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+            var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+            var x2 = this.AbsX + this.HTMLDoc.Width / 2;
+            var y2 = this.AbsY;
             this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
             svgroot.append(this.SVGShape.ArrowPath);
         }
@@ -312,9 +321,11 @@ var LayOut = (function () {
             this.ViewMap[Element.Label].AbsX += x;
             this.ViewMap[Element.Label].AbsY += y;
             if (Element.Children.length % 2 == 1) {
+                //				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
                 this.emitOddNumberChildren(Element, x, y);
             }
             if (Element.Children.length % 2 == 0) {
+                //				this.emitEvenNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
                 this.emitEvenNumberChildren(Element, x, y);
             }
         }
@@ -361,6 +372,7 @@ var LayOut = (function () {
             this.ViewMap[Node.Children[i].Label].AbsY += 120;
             console.log(Node.Children[i].Label);
 
+            //			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
             this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
         }
@@ -399,6 +411,7 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
+        // TODO: ishii
         var i = 0;
         for (var shapekey in this.ViewMap) {
             this.ViewMap[shapekey].AbsY = (i++ * 200);
@@ -475,3 +488,4 @@ $(function () {
     var divroot = $("#div1");
     Viewer.Draw(svgroot, divroot);
 });
+//@ sourceMappingURL=CaseViewer.js.map
