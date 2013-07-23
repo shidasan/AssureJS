@@ -121,7 +121,6 @@ class CaseViewer {
 
 	constructor(Source: Case) {
 		this.ViewMap = <any>[]; // a hack to avoid tsc's problem.
-		Source.ElementMap
 		for (var elementkey in Source.ElementMap) {
 			var element = Source.ElementMap[elementkey];
 			this.ViewMap[element.Label] = new ElementShape(this, element);
@@ -140,7 +139,7 @@ class CaseViewer {
 		this.LayoutElement();
 	}
 
-	LayoutElement(): void {
+	LayoutElement() : void {
 		// TODO: ishii
 	}
 
@@ -152,30 +151,34 @@ class CaseViewer {
 
 }
 
-class ServerApi {
-	constructor(url: string) {
-	}
-	GetCase(project: string, id: string): string {
-		return "[]";
-	}
-}
-
-function StartCaseViewer(url: string, id: string) {
-	var loader = new ServerApi(url);
-	var project; // temp
-	var JsonData = loader.GetCase(project, id);
-	var Argument = new Argument();
-	var model = new CaseDecoder().ParseJson(Argument, JsonData);
-	var CaseViewer = new CaseViewer(model);
-	var svg = document.getElementById(id);
-	CaseViewer.Draw(svg);
-}
+//class ServerApi {
+//	constructor(url: string) {
+//	}
+//	GetCase(project: string, id: string): string {
+//		return "[]";
+//	}
+//}
+//
+//function StartCaseViewer(url : string, id : string) {
+//	var loader = new ServerApi(url);
+//	var project; // temp
+//	var JsonData = loader.GetCase(project, id);
+//	var Argument = new Argument();
+//	var model = new CaseDecoder().ParseJson(Argument, JsonData);
+//	var CaseViewer = new CaseViewer(model);
+//	var svg = document.getElementById(id);
+//	CaseViewer.Draw(svg);
+//}
 
 $(function () {
 	var Case0 = new Case();
 	var goal = new CaseModel(Case0, null, CaseType.Goal, null, "Top Goal");
-	var str = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy");
-	var evi = new CaseModel(Case0, str, CaseType.Evidence, null, "Evidence");
+	var str0 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy0");
+	var str1 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy1");
+	var sgoal0 = new CaseModel(Case0, str0, CaseType.Goal, null, "Sub Goal0");
+	var sgoal1 = new CaseModel(Case0, str1, CaseType.Goal, null, "Sub Goal1");
+	var evi0 = new CaseModel(Case0, sgoal0, CaseType.Evidence, null, "Evidence0");
+	var evi1 = new CaseModel(Case0, sgoal1, CaseType.Evidence, null, "Evidence1");
 	var Viewer = new CaseViewer(Case0);
 	var svgroot: JQuery = $("#svg1");
 	var divroot: JQuery = $("#div1");

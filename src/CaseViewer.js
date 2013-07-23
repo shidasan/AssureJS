@@ -1,8 +1,3 @@
-/// <reference path="CaseModel.ts" />
-/// <reference path="CaseDecoder.ts" />
-/// <reference path="../d.ts/jquery.d.ts" />
-// <reference path="../d.ts/jQuery.svg.d.ts" />
-/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
     }
@@ -17,7 +12,6 @@ var HTMLDoc = (function () {
         this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
         this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
 
-        // set height
         this.Width = this.DocBase.width();
         this.Height = this.DocBase.height();
     };
@@ -77,9 +71,6 @@ var ElementShape = (function () {
         content.css({ top: this.AbsY + "px", left: this.AbsX + "px" });
         this.Resize();
 
-        // TODO
-        // if it has an parent, add an arrow element.
-        //svg.rect(parent, this.AbsX, this.AbsY, this.HTMLDoc.Width, this.HTMLDoc.Height);
         var rect = $(document.createSVGElement("rect")).attr({
             fill: "none",
             stroke: "gray",
@@ -105,7 +96,6 @@ var ViewerConfig = new CaseViewerConfig();
 var CaseViewer = (function () {
     function CaseViewer(Source) {
         this.ViewMap = [];
-        Source.ElementMap;
         for (var elementkey in Source.ElementMap) {
             var element = Source.ElementMap[elementkey];
             this.ViewMap[element.Label] = new ElementShape(this, element);
@@ -135,34 +125,17 @@ var CaseViewer = (function () {
     return CaseViewer;
 })();
 
-var ServerApi = (function () {
-    function ServerApi(url) {
-    }
-    ServerApi.prototype.GetCase = function (project, id) {
-        return "[]";
-    };
-    return ServerApi;
-})();
-
-function StartCaseViewer(url, id) {
-    var loader = new ServerApi(url);
-    var project;
-    var JsonData = loader.GetCase(project, id);
-    var Argument = new Argument();
-    var model = new CaseDecoder().ParseJson(Argument, JsonData);
-    var CaseViewer = new CaseViewer(model);
-    var svg = document.getElementById(id);
-    CaseViewer.Draw(svg);
-}
-
 $(function () {
     var Case0 = new Case();
     var goal = new CaseModel(Case0, null, CaseType.Goal, null, "Top Goal");
-    var str = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy");
-    var evi = new CaseModel(Case0, str, CaseType.Evidence, null, "Evidence");
+    var str0 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy0");
+    var str1 = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy1");
+    var sgoal0 = new CaseModel(Case0, str0, CaseType.Goal, null, "Sub Goal0");
+    var sgoal1 = new CaseModel(Case0, str1, CaseType.Goal, null, "Sub Goal1");
+    var evi0 = new CaseModel(Case0, sgoal0, CaseType.Evidence, null, "Evidence0");
+    var evi1 = new CaseModel(Case0, sgoal1, CaseType.Evidence, null, "Evidence1");
     var Viewer = new CaseViewer(Case0);
     var svgroot = $("#svg1");
     var divroot = $("#div1");
     Viewer.Draw(svgroot, divroot);
 });
-//@ sourceMappingURL=CaseViewer.js.map
