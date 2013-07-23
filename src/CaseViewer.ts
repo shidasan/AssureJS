@@ -6,8 +6,8 @@
 
 class HTMLDoc {
 	DocBase: JQuery;
-	Width: number;
-	Height: number;
+	Width: number = 0;
+	Height: number = 0;
 
 	Render(Viewer: CaseViewer, CaseModel: CaseModel): void {
 		if (this.DocBase != null) {
@@ -18,9 +18,26 @@ class HTMLDoc {
 		this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
 		this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
 		this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
-		// set height
-		this.Width = this.DocBase.width();
-		this.Height = this.DocBase.height();
+		this.UpdatePadding(Viewer, CaseModel);
+		this.Resize(Viewer, CaseModel);
+	}
+
+	UpdatePadding(Viewer: CaseViewer, Source: CaseModel) {
+		switch (Source.Type) {
+			case CaseType.Goal:
+				this.DocBase.css("padding", "5px 10px");
+				break;
+			case CaseType.Context:
+				this.DocBase.css("padding", "10px 10px");
+				break;
+			case CaseType.Strategy:
+				this.DocBase.css("padding", "5px 20px");
+				break;
+			case CaseType.Evidence:
+			default:
+				this.DocBase.css("padding", "20px 20px");
+				break;
+		}
 	}
 
 	InvokePlugInRender(CaseViewer: CaseViewer, CaseModel: CaseModel, DocBase: JQuery): void {
@@ -35,8 +52,8 @@ class HTMLDoc {
 	}
 
 	Resize(Viewer: CaseViewer, Source: CaseModel): void {
-		this.Width = this.DocBase ? this.DocBase.width() : 0;
-		this.Height = this.DocBase ? this.DocBase.height() : 0;
+		this.Width = this.DocBase ? this.DocBase.outerWidth() : 0;
+		this.Height = this.DocBase ? this.DocBase.outerHeight() : 0;
 	}
 
 	SetPosition(x: number, y: number) {
@@ -215,7 +232,7 @@ class ElementShape {
 	SVGShape: SVGShape;
 	ParentShape: ElementShape;
 
-	AbsX: number = 0;  //
+	AbsX: number = 0;
 	AbsY: number = 0;
 	x: number = 0;
 	y: number = 0;
@@ -296,6 +313,10 @@ class CaseViewer {
 
 	LayoutElement(): void {
 		// TODO: ishii
+		var i = 0;
+		for (var shapekey in this.ViewMap) {
+			this.ViewMap[shapekey].AbsY = (i++ * 200);
+		}
 	}
 
 	Draw(svg: JQuery, div: JQuery): void {

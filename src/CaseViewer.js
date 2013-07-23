@@ -11,6 +11,8 @@ var __extends = this.__extends || function (d, b) {
 /* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
+        this.Width = 0;
+        this.Height = 0;
     }
     HTMLDoc.prototype.Render = function (Viewer, CaseModel) {
         if (this.DocBase != null) {
@@ -22,10 +24,26 @@ var HTMLDoc = (function () {
         this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
         this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
         this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
+        this.UpdatePadding(Viewer, CaseModel);
+        this.Resize(Viewer, CaseModel);
+    };
 
-        // set height
-        this.Width = this.DocBase.width();
-        this.Height = this.DocBase.height();
+    HTMLDoc.prototype.UpdatePadding = function (Viewer, Source) {
+        switch (Source.Type) {
+            case CaseType.Goal:
+                this.DocBase.css("padding", "5px 10px");
+                break;
+            case CaseType.Context:
+                this.DocBase.css("padding", "10px 10px");
+                break;
+            case CaseType.Strategy:
+                this.DocBase.css("padding", "5px 20px");
+                break;
+            case CaseType.Evidence:
+            default:
+                this.DocBase.css("padding", "20px 20px");
+                break;
+        }
     };
 
     HTMLDoc.prototype.InvokePlugInRender = function (CaseViewer, CaseModel, DocBase) {
@@ -40,12 +58,12 @@ var HTMLDoc = (function () {
     };
 
     HTMLDoc.prototype.Resize = function (Viewer, Source) {
-        this.Width = this.DocBase ? this.DocBase.width() : 0;
-        this.Height = this.DocBase ? this.DocBase.height() : 0;
+        this.Width = this.DocBase ? this.DocBase.outerWidth() : 0;
+        this.Height = this.DocBase ? this.DocBase.outerHeight() : 0;
     };
 
     HTMLDoc.prototype.SetPosition = function (x, y) {
-        this.DocBase.css({ top: x + "px", left: y + "px" });
+        this.DocBase.css({ left: x + "px", top: y + "px" });
     };
     return HTMLDoc;
 })();
@@ -248,10 +266,10 @@ var ElementShape = (function () {
         this.SVGShape.SetColor("white", "black");
 
         if (this.ParentShape != null) {
-            var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-            var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
-            var x2 = this.AbsX + this.HTMLDoc.Width / 2;
-            var y2 = this.AbsY;
+            var x1 = this.AbsX + this.HTMLDoc.Width / 2;
+            var y1 = this.AbsY;
+            var x2 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+            var y2 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
             this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
             svgroot.append(this.SVGShape.ArrowPath);
         }
@@ -296,6 +314,11 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
+        // TODO: ishii
+        var i = 0;
+        for (var shapekey in this.ViewMap) {
+            this.ViewMap[shapekey].AbsY = (i++ * 200);
+        }
     };
 
     CaseViewer.prototype.Draw = function (svg, div) {
