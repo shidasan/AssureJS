@@ -37,6 +37,7 @@ var LayoutPortrait = (function (_super) {
         this.ViewMap = ViewMap;
         this.X_MARGIN = 160;
         this.Y_MARGIN = 160;
+        this.X_CONTEXT_MARGIN = 160;
     }
     LayoutPortrait.prototype.GetContextIndex = function (Node, x, y) {
         var i = 0;
@@ -61,9 +62,9 @@ var LayoutPortrait = (function (_super) {
         var i = 0;
         i = this.GetContextIndex(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
         if (i != -1) {
-            this.ViewMap[Element.Label].AbsX += x;
-            this.ViewMap[Element.Label].AbsY += y;
-            this.ViewMap[Element.Label].AbsX += this.X_MARGIN;
+            this.ViewMap[Element.Children[i].Label].AbsX += x;
+            this.ViewMap[Element.Children[i].Label].AbsY += y;
+            this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
             console.log(Element.Label);
             console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
             Element.Children = Element.Children.splice(i - 1, 1);

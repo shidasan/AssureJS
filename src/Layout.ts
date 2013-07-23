@@ -30,7 +30,8 @@ class LayoutLandscape extends Layout {
 class LayoutPortrait extends Layout {
 	X_MARGIN = 160;
 	Y_MARGIN = 160;
-
+	X_CONTEXT_MARGIN : number = 160;
+	
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
 	}
@@ -58,9 +59,9 @@ class LayoutPortrait extends Layout {
 		var i = 0;
 		i = this.GetContextIndex(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 		if(i != -1) { //emit context element data
-			this.ViewMap[Element.Label].AbsX += x;
-			this.ViewMap[Element.Label].AbsY += y;
-			this.ViewMap[Element.Label].AbsX += this.X_MARGIN;
+			this.ViewMap[Element.Children[i].Label].AbsX += x;
+			this.ViewMap[Element.Children[i].Label].AbsY += y;
+			this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
 			console.log(Element.Label);
 			console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
 			Element.Children = Element.Children.splice(i-1,1);

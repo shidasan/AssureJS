@@ -3,16 +3,25 @@ $(function () {
 
     var JsonData = {
         "DCaseName": "test",
-        "NodeCount": 6,
+        "NodeCount": 8,
         "TopGoalLabel": "G1",
         "NodeList": [
             {
                 "Children": [
-                    "S1"
+                    "S1",
+                    "C1"
                 ],
                 "Statement": "",
                 "NodeType": 0,
                 "Label": "G1",
+                "Annotations": [],
+                "Notes": []
+            },
+            {
+                "Children": [],
+                "Statement": "",
+                "NodeType": 1,
+                "Label": "C1",
                 "Annotations": [],
                 "Notes": []
             },
@@ -29,11 +38,20 @@ $(function () {
             },
             {
                 "Children": [
+                    "C2",
                     "E1"
                 ],
                 "Statement": "",
                 "NodeType": 0,
                 "Label": "G2",
+                "Annotations": [],
+                "Notes": []
+            },
+            {
+                "Children": [],
+                "Statement": "",
+                "NodeType": 1,
+                "Label": "C2",
                 "Annotations": [],
                 "Notes": []
             },
