@@ -15,15 +15,16 @@ class HTMLDoc {
 			var parent = this.DocBase.parent();
 			if (parent != null) parent.remove(this.DocBase);
 		}
-		this.DocBase = $('<div class="node">').width(CaseViewer.ElementWidth).css("position", "absolute");
+		this.DocBase = $('<div class="node">').css("position", "absolute");
 		this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
 		this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
 		this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
-		this.UpdatePadding(Viewer, CaseModel);
+		this.UpdateWidth(Viewer, CaseModel);
 		this.Resize(Viewer, CaseModel);
 	}
 
-	UpdatePadding(Viewer: CaseViewer, Source: CaseModel) {
+	UpdateWidth(Viewer: CaseViewer, Source: CaseModel) {
+		this.DocBase.width(CaseViewer.ElementWidth);
 		switch (Source.Type) {
 			case CaseType.Goal:
 				this.DocBase.css("padding", "5px 10px");
@@ -39,6 +40,7 @@ class HTMLDoc {
 				this.DocBase.css("padding", "20px 20px");
 				break;
 		}
+		this.DocBase.width(CaseViewer.ElementWidth * 2 - this.DocBase.outerWidth());
 	}
 
 	InvokePlugInRender(CaseViewer: CaseViewer, CaseModel: CaseModel, DocBase: JQuery): void {
@@ -263,10 +265,10 @@ class ElementShape {
 		this.SVGShape.SetColor("white", "black");
 
 		if (this.ParentShape != null) {
-			var x1 = this.AbsX + this.HTMLDoc.Width / 2;
-			var y1 = this.AbsY;
-			var x2 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-			var y2 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+			var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+			var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+			var x2 = this.AbsX + this.HTMLDoc.Width / 2;
+			var y2 = this.AbsY;
 			this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
 			svgroot.append(this.SVGShape.ArrowPath);
 		}

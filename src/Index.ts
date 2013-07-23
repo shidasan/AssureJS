@@ -1,3 +1,7 @@
+/// <reference path="CaseModel.ts" />
+/// <reference path="CaseDecoder.ts" />
+/// <reference path="../plugins/SamplePlugin.ts" />
+/// <reference path="../d.ts/jquery.d.ts" />
 
 $(function () {
 
