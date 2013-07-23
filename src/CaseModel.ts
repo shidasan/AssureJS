@@ -1,18 +1,10 @@
 class CaseAnnotation {
-	Name : string;
-	Body : any;	
-	constructor(Name: string, Body: any) {
-		this.Name = Name;
-		this.Body = Body;
+	constructor(public Name: string, public Body: any) {
 	}
 }
 
 class CaseNote {
-	Name : string;
-	Body : string;
-	constructor(Name: string, Body: any) {
-		this.Name = Name;
-		this.Body = Body;
+	constructor(public Name: string, public Body: any) {
 	}
 }
 
