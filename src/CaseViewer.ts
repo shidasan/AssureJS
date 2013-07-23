@@ -79,8 +79,8 @@ class GoalShape extends SVGShape {
 
 	Resize(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
 		super.Resize(CaseViewer, CaseModel, HTMLDoc);
-		this.BodyRect.attributes["width"] = this.Width;
-		this.BodyRect.attributes["height"] = this.Height;
+		this.BodyRect.setAttribute("width", this.Width.toString());
+		this.BodyRect.setAttribute("height", this.Height.toString());
 	}
 
 	SetColor(fill: string, stroke: string) {
