@@ -1,3 +1,9 @@
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 var HTMLDoc = (function () {
     function HTMLDoc() {
     }
@@ -37,11 +43,147 @@ var HTMLDoc = (function () {
 var SVGShape = (function () {
     function SVGShape() {
     }
+    SVGShape.prototype.Render = function (CaseViewer, CaseModel, HTMLDoc) {
+        this.ShapeGroup = document.createSVGElement("g");
+        this.ShapeGroup.setAttribute("transform", "translate(0,0)");
+    };
+
     SVGShape.prototype.Resize = function (CaseViewer, CaseModel, HTMLDoc) {
         this.Width = HTMLDoc.Width;
         this.Height = HTMLDoc.Height;
     };
+
+    SVGShape.prototype.SetPosition = function (x, y) {
+        var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix;
+        mat.e = x;
+        mat.f = y;
+    };
+
+    SVGShape.prototype.SetColor = function (fill, stroke) {
+    };
     return SVGShape;
+})();
+
+var GoalShape = (function (_super) {
+    __extends(GoalShape, _super);
+    function GoalShape() {
+        _super.apply(this, arguments);
+    }
+    GoalShape.prototype.Render = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Render.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyRect = document.createSVGElement("rect");
+
+        this.ShapeGroup.appendChild(this.BodyRect);
+        this.Resize(CaseViewer, CaseModel, HTMLDoc);
+    };
+
+    GoalShape.prototype.Resize = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Resize.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyRect.attributes["width"] = this.Width;
+        this.BodyRect.attributes["height"] = this.Height;
+    };
+
+    GoalShape.prototype.SetColor = function (fill, stroke) {
+        this.BodyRect.setAttribute("fill", fill);
+        this.BodyRect.setAttribute("stroke", stroke);
+    };
+    return GoalShape;
+})(SVGShape);
+
+var ContextShape = (function (_super) {
+    __extends(ContextShape, _super);
+    function ContextShape() {
+        _super.apply(this, arguments);
+    }
+    ContextShape.prototype.Render = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Render.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyRect = document.createSVGElement("rect");
+        this.BodyRect.setAttribute("rx", "10");
+        this.BodyRect.setAttribute("ry", "10");
+        this.ShapeGroup.appendChild(this.BodyRect);
+        this.Resize(CaseViewer, CaseModel, HTMLDoc);
+    };
+
+    ContextShape.prototype.Resize = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Resize.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyRect.setAttribute("width", this.Width.toString());
+        this.BodyRect.setAttribute("height", this.Height.toString());
+    };
+
+    ContextShape.prototype.SetColor = function (fill, stroke) {
+        this.BodyRect.setAttribute("fill", fill);
+        this.BodyRect.setAttribute("stroke", stroke);
+    };
+    return ContextShape;
+})(SVGShape);
+
+var StrategyShape = (function (_super) {
+    __extends(StrategyShape, _super);
+    function StrategyShape() {
+        _super.apply(this, arguments);
+    }
+    StrategyShape.prototype.Render = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Render.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyPolygon = document.createSVGElement("polygon");
+        this.ShapeGroup.appendChild(this.BodyPolygon);
+        this.Resize(CaseViewer, CaseModel, HTMLDoc);
+    };
+
+    StrategyShape.prototype.Resize = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Resize.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyPolygon.setAttribute("points", "10,0 " + this.Width + ",0 " + (this.Width - 10) + "," + this.Height + " 0," + this.Height);
+    };
+
+    StrategyShape.prototype.SetColor = function (fill, stroke) {
+        this.BodyPolygon.setAttribute("fill", fill);
+        this.BodyPolygon.setAttribute("stroke", stroke);
+    };
+    return StrategyShape;
+})(SVGShape);
+
+var EvidenceShape = (function (_super) {
+    __extends(EvidenceShape, _super);
+    function EvidenceShape() {
+        _super.apply(this, arguments);
+    }
+    EvidenceShape.prototype.Render = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Render.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyEllipse = document.createSVGElement("ellipse");
+        this.ShapeGroup.appendChild(this.BodyEllipse);
+        this.Resize(CaseViewer, CaseModel, HTMLDoc);
+    };
+
+    EvidenceShape.prototype.Resize = function (CaseViewer, CaseModel, HTMLDoc) {
+        _super.prototype.Resize.call(this, CaseViewer, CaseModel, HTMLDoc);
+        this.BodyEllipse.setAttribute("cx", (this.Width / 2).toString());
+        this.BodyEllipse.setAttribute("cy", (this.Height / 2).toString());
+        this.BodyEllipse.setAttribute("rx", (this.Width / 2).toString());
+        this.BodyEllipse.setAttribute("ry", (this.Height / 2).toString());
+    };
+
+    EvidenceShape.prototype.SetColor = function (fill, stroke) {
+        this.BodyEllipse.setAttribute("fill", fill);
+        this.BodyEllipse.setAttribute("stroke", stroke);
+    };
+    return EvidenceShape;
+})(SVGShape);
+
+var SVGShapeFactory = (function () {
+    function SVGShapeFactory() {
+    }
+    SVGShapeFactory.Create = function (Type) {
+        switch (Type) {
+            case CaseType.Goal:
+                return new GoalShape();
+            case CaseType.Context:
+                return new ContextShape();
+            case CaseType.Strategy:
+                return new StrategyShape();
+            case CaseType.Evidence:
+                return new EvidenceShape();
+        }
+    };
+    return SVGShapeFactory;
 })();
 
 document.createSVGElement = function (name) {
@@ -58,7 +200,8 @@ var ElementShape = (function () {
         this.Source = CaseModel;
         this.HTMLDoc = new HTMLDoc();
         this.HTMLDoc.Render(CaseViewer, CaseModel);
-        this.SVGShape = new SVGShape();
+        this.SVGShape = SVGShapeFactory.Create(CaseModel.Type);
+        this.SVGShape.Render(CaseViewer, CaseModel, this.HTMLDoc);
     }
     ElementShape.prototype.Resize = function () {
         this.HTMLDoc.Resize(this.CaseViewer, this.Source);
@@ -71,15 +214,9 @@ var ElementShape = (function () {
         content.css({ top: this.AbsY + "px", left: this.AbsX + "px" });
         this.Resize();
 
-        var rect = $(document.createSVGElement("rect")).attr({
-            fill: "none",
-            stroke: "gray",
-            x: this.AbsX,
-            y: this.AbsY,
-            width: this.HTMLDoc.Width,
-            height: this.HTMLDoc.Height
-        });
-        rect.appendTo(svgroot);
+        svgroot.append(this.SVGShape.ShapeGroup);
+        this.SVGShape.SetPosition(this.AbsX, this.AbsY);
+        this.SVGShape.SetColor("white", "black");
         return;
     };
     return ElementShape;

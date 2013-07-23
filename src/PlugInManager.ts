@@ -3,18 +3,18 @@ class PlugIn {
 }
 
 class ActionPlugIn extends PlugIn {
-	IsEnabled : (x: CaseViewer, y: CaseModel) => boolean;
-	Delegate : (x: CaseViewer, y: CaseModel) => boolean;
+	IsEnabled : (caseViewer: CaseViewer, caseModel: CaseModel) => boolean;
+	Delegate  : (caseViewer: CaseViewer, caseModel: CaseModel) => boolean;
 }
 
 class CheckerPlugIn extends PlugIn {
-	IsEnabled : (x: CaseModel, EventType: string) => boolean; 
-	Delegate : (x: CaseModel, y: string, z: string) => boolean;
+	IsEnabled : (caseModel: CaseModel, EventType: string) => boolean; 
+	Delegate  : (caseModel: CaseModel, y: string, z: string) => boolean;
 }
 
 class RenderPlugIn extends PlugIn {
-	IsEnabled : (x: CaseViewer, y: CaseModel) => boolean; 
-	Delegate : (x: CaseViewer, y: CaseModel, HTMLDoc: JQuery) => void;
+	IsEnabled : (caseViewer: CaseViewer, caseModel: CaseModel) => boolean; 
+	Delegate  : (caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) => void;
 }
 
 class PlugInManager {
