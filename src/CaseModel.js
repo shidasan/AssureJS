@@ -60,6 +60,7 @@ var CaseModel = (function () {
         this.Annotations.push(new CaseAnnotation(Name, Body));
     };
 
+    /* plug-In */
     CaseModel.prototype.InvokePlugInModifier = function (EventType, EventBody) {
         var recall = false;
         for (var a in this.Annotations) {
@@ -107,3 +108,4 @@ var Case = (function () {
     };
     return Case;
 })();
+//@ sourceMappingURL=CaseModel.js.map

@@ -1,3 +1,8 @@
+/// <reference path="CaseModel.ts" />
+/// <reference path="CaseDecoder.ts" />
+/// <reference path="../d.ts/jquery.d.ts" />
+// <reference path="../d.ts/jQuery.svg.d.ts" />
+/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
     }
@@ -7,11 +12,12 @@ var HTMLDoc = (function () {
             if (parent != null)
                 parent.remove(this.DocBase);
         }
-        this.DocBase = $('<div>').width(CaseViewer.ElementWidth);
+        this.DocBase = $('<div>').width(CaseViewer.ElementWidth).css("position", "absolute");
         this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
         this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
         this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
 
+        // set height
         this.Width = this.DocBase.width();
         this.Height = this.DocBase.height();
     };
@@ -44,8 +50,16 @@ var SVGShape = (function () {
     return SVGShape;
 })();
 
+document.createSVGElement = function (name) {
+    return document.createElementNS('http://www.w3.org/2000/svg', name);
+};
+
 var ElementShape = (function () {
     function ElementShape(CaseViewer, CaseModel) {
+        this.AbsX = 0;
+        this.AbsY = 0;
+        this.x = 0;
+        this.y = 0;
         this.CaseViewer = CaseViewer;
         this.Source = CaseModel;
         this.HTMLDoc = new HTMLDoc();
@@ -57,8 +71,16 @@ var ElementShape = (function () {
         this.SVGShape.Resize(this.CaseViewer, this.Source, this.HTMLDoc);
     };
 
-    ElementShape.prototype.AppendHTMLElement = function (root) {
-        var rect = $(document.createElementNS('http://www.w3.org/2000/svg', "rect")).attr({
+    ElementShape.prototype.AppendHTMLElement = function (svgroot, divroot) {
+        var content = this.HTMLDoc.DocBase;
+        divroot.append(content);
+        content.css({ top: this.AbsY + "px", left: this.AbsX + "px" });
+        this.Resize();
+
+        // TODO
+        // if it has an parent, add an arrow element.
+        //svg.rect(parent, this.AbsX, this.AbsY, this.HTMLDoc.Width, this.HTMLDoc.Height);
+        var rect = $(document.createSVGElement("rect")).attr({
             fill: "none",
             stroke: "gray",
             x: this.AbsX,
@@ -66,7 +88,7 @@ var ElementShape = (function () {
             width: this.HTMLDoc.Width,
             height: this.HTMLDoc.Height
         });
-        rect.appendTo(root);
+        rect.appendTo(svgroot);
         return;
     };
     return ElementShape;
@@ -83,8 +105,10 @@ var ViewerConfig = new CaseViewerConfig();
 var CaseViewer = (function () {
     function CaseViewer(Source) {
         this.ViewMap = [];
-        for (var model in Source) {
-            this.ViewMap[model.Label] = new ElementShape(this, model);
+        Source.ElementMap;
+        for (var elementkey in Source.ElementMap) {
+            var element = Source.ElementMap[elementkey];
+            this.ViewMap[element.Label] = new ElementShape(this, element);
         }
         this.Resize();
     }
@@ -93,8 +117,8 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.Resize = function () {
-        for (var shape in this.ViewMap) {
-            this.ViewMap[shape].Resize();
+        for (var shapekey in this.ViewMap) {
+            this.ViewMap[shapekey].Resize();
         }
         this.LayoutElement();
     };
@@ -102,9 +126,9 @@ var CaseViewer = (function () {
     CaseViewer.prototype.LayoutElement = function () {
     };
 
-    CaseViewer.prototype.Draw = function (svg) {
+    CaseViewer.prototype.Draw = function (svg, div) {
         for (var shape in this.ViewMap) {
-            this.ViewMap[shape].AppendHTMLElement(svg);
+            this.ViewMap[shape].AppendHTMLElement(svg, div);
         }
     };
     CaseViewer.ElementWidth = 150;
@@ -132,8 +156,13 @@ function StartCaseViewer(url, id) {
 }
 
 $(function () {
-    var model = new CaseModel(new Case(), null, CaseType.Goal, "G0", "Top Goal");
-    var Viewer = new CaseViewer(model);
-    var root = $("#svgroot");
-    Viewer.Draw(root);
+    var Case0 = new Case();
+    var goal = new CaseModel(Case0, null, CaseType.Goal, null, "Top Goal");
+    var str = new CaseModel(Case0, goal, CaseType.Strategy, null, "Strategy");
+    var evi = new CaseModel(Case0, str, CaseType.Evidence, null, "Evidence");
+    var Viewer = new CaseViewer(Case0);
+    var svgroot = $("#svg1");
+    var divroot = $("#div1");
+    Viewer.Draw(svgroot, divroot);
 });
+//@ sourceMappingURL=CaseViewer.js.map

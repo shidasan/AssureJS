@@ -44,3 +44,4 @@ var PlugInManager = (function () {
     }
     return PlugInManager;
 })();
+//@ sourceMappingURL=PlugInManager.js.map
