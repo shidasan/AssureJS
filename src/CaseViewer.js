@@ -4,6 +4,12 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="CaseModel.ts" />
+/// <reference path="CaseDecoder.ts" />
+/// <reference path="../plugins/SamplePlugin.ts" />
+/// <reference path="../d.ts/jquery.d.ts" />
+// <reference path="../d.ts/jQuery.svg.d.ts" />
+/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
         this.Width = 0;
@@ -15,15 +21,16 @@ var HTMLDoc = (function () {
             if (parent != null)
                 parent.remove(this.DocBase);
         }
-        this.DocBase = $('<div>').width(CaseViewer.ElementWidth).css("position", "absolute");
+        this.DocBase = $('<div class="node">').css("position", "absolute");
         this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
         this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
         this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
-        this.UpdatePadding(Viewer, CaseModel);
+        this.UpdateWidth(Viewer, CaseModel);
         this.Resize(Viewer, CaseModel);
     };
 
-    HTMLDoc.prototype.UpdatePadding = function (Viewer, Source) {
+    HTMLDoc.prototype.UpdateWidth = function (Viewer, Source) {
+        this.DocBase.width(CaseViewer.ElementWidth);
         switch (Source.Type) {
             case CaseType.Goal:
                 this.DocBase.css("padding", "5px 10px");
@@ -39,6 +46,7 @@ var HTMLDoc = (function () {
                 this.DocBase.css("padding", "20px 20px");
                 break;
         }
+        this.DocBase.width(CaseViewer.ElementWidth * 2 - this.DocBase.outerWidth());
     };
 
     HTMLDoc.prototype.InvokePlugInRender = function (CaseViewer, CaseModel, DocBase) {
@@ -254,15 +262,17 @@ var ElementShape = (function () {
         this.HTMLDoc.SetPosition(this.AbsX, this.AbsY);
         this.Resize();
 
+        // TODO
+        // if it has an parent, add an arrow element.
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
         this.SVGShape.SetColor("white", "black");
 
         if (this.ParentShape != null) {
-            var x1 = this.AbsX + this.HTMLDoc.Width / 2;
-            var y1 = this.AbsY;
-            var x2 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-            var y2 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+            var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+            var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+            var x2 = this.AbsX + this.HTMLDoc.Width / 2;
+            var y2 = this.AbsY;
             this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
             svgroot.append(this.SVGShape.ArrowPath);
         }
@@ -309,12 +319,16 @@ var LayOut = (function () {
             Element.Children = Element.Children.splice(i - 1, 1);
             this.traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
         } else {
-            this.ViewMap[Element.Label].AbsX += x;
-            this.ViewMap[Element.Label].AbsY += y;
+            if (Element.Label == "G1") {
+                this.ViewMap[Element.Label].AbsX += x;
+                this.ViewMap[Element.Label].AbsY += y;
+            }
             if (Element.Children.length % 2 == 1) {
+                //				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
                 this.emitOddNumberChildren(Element, x, y);
             }
             if (Element.Children.length % 2 == 0) {
+                //				this.emitEvenNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
                 this.emitEvenNumberChildren(Element, x, y);
             }
         }
@@ -358,9 +372,10 @@ var LayOut = (function () {
             this.ViewMap[Node.Children[i].Label].AbsX += x;
             this.ViewMap[Node.Children[i].Label].AbsY += y;
             this.ViewMap[Node.Children[i].Label].AbsX += 160 * index[i];
-            this.ViewMap[Node.Children[i].Label].AbsY += 120;
+            this.ViewMap[Node.Children[i].Label].AbsY += 160;
             console.log(Node.Children[i].Label);
 
+            //			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
             this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
         }
@@ -399,19 +414,18 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
-        var i = 0;
-        for (var shapekey in this.ViewMap) {
-            this.ViewMap[shapekey].AbsY = (i++ * 200);
-        }
+        // TODO: ishii
         var topElementShape = this.ViewMap[this.TopGoalLabel];
         var topElement = topElementShape.Source;
         var layout = new LayOut(this.ViewMap);
         layout.traverse(topElement, 300, 0);
     };
 
-    CaseViewer.prototype.Draw = function (svg, div) {
-        for (var shape in this.ViewMap) {
-            this.ViewMap[shape].AppendHTMLElement(svg, div);
+    CaseViewer.prototype.Draw = function (Screen) {
+        var shapelayer = $(Screen.ShapeLayer);
+        var screenlayer = $(Screen.ContentLayer);
+        for (var viewkey in this.ViewMap) {
+            this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
         }
     };
     CaseViewer.ElementWidth = 150;
@@ -427,6 +441,28 @@ var ServerApi = (function () {
     return ServerApi;
 })();
 
+var ScreenManager = (function () {
+    function ScreenManager(ShapeLayer, ContentLayer, ControlLayer) {
+        this.ShapeLayer = ShapeLayer;
+        this.ContentLayer = ContentLayer;
+        this.ControlLayer = ControlLayer;
+    }
+    ScreenManager.prototype.SetOffset = function (x, y) {
+        var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
+        mat.e = -x;
+        mat.f = -y;
+
+        var xpx = -x + "px";
+        var ypx = -y + "px";
+        this.ContentLayer.style.left = xpx;
+        this.ContentLayer.style.top = ypx;
+        this.ControlLayer.style.left = xpx;
+        this.ControlLayer.style.top = ypx;
+        ;
+    };
+    return ScreenManager;
+})();
+
 function StartCaseViewer(url, id) {
     var loader = new ServerApi(url);
     var project;
@@ -437,41 +473,4 @@ function StartCaseViewer(url, id) {
     var svg = document.getElementById(id);
     CaseViewer.Draw(svg);
 }
-
-$(function () {
-    var JsonData = {
-        "DCaseName": "test",
-        "NodeCount": 2,
-        "TopGoalLabel": "G1",
-        "NodeList": [
-            {
-                "Children": [
-                    "S1"
-                ],
-                "Statement": "",
-                "NodeType": 0,
-                "Label": "G1",
-                "Annotations": [],
-                "Notes": []
-            },
-            {
-                "Children": [],
-                "Statement": "",
-                "NodeType": 2,
-                "Label": "S1",
-                "Annotations": [],
-                "Notes": []
-            }
-        ]
-    };
-
-    var Case0 = new Case();
-    var caseDecoder = new CaseDecoder();
-    var root = caseDecoder.ParseJson(Case0, JsonData);
-
-    Case0.SetTopGoalLabel(root.Label);
-    var Viewer = new CaseViewer(Case0);
-    var svgroot = $("#svg1");
-    var divroot = $("#div1");
-    Viewer.Draw(svgroot, divroot);
-});
+//@ sourceMappingURL=CaseViewer.js.map

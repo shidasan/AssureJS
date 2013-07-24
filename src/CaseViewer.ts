@@ -1,5 +1,6 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
+/// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 // <reference path="../d.ts/jQuery.svg.d.ts" />
 /* VIEW (MVC) */
@@ -14,15 +15,16 @@ class HTMLDoc {
 			var parent = this.DocBase.parent();
 			if (parent != null) parent.remove(this.DocBase);
 		}
-		this.DocBase = $('<div>').width(CaseViewer.ElementWidth).css("position", "absolute");
+		this.DocBase = $('<div class="node">').css("position", "absolute");
 		this.DocBase.append($('<h4>' + CaseModel.Label + '</h4>'));
 		this.DocBase.append($('<p>' + CaseModel.Statement + '</p>'));
 		this.InvokePlugInRender(Viewer, CaseModel, this.DocBase);
-		this.UpdatePadding(Viewer, CaseModel);
+		this.UpdateWidth(Viewer, CaseModel);
 		this.Resize(Viewer, CaseModel);
 	}
 
-	UpdatePadding(Viewer: CaseViewer, Source: CaseModel) {
+	UpdateWidth(Viewer: CaseViewer, Source: CaseModel) {
+		this.DocBase.width(CaseViewer.ElementWidth);
 		switch (Source.Type) {
 			case CaseType.Goal:
 				this.DocBase.css("padding", "5px 10px");
@@ -38,6 +40,7 @@ class HTMLDoc {
 				this.DocBase.css("padding", "20px 20px");
 				break;
 		}
+		this.DocBase.width(CaseViewer.ElementWidth * 2 - this.DocBase.outerWidth());
 	}
 
 	InvokePlugInRender(CaseViewer: CaseViewer, CaseModel: CaseModel, DocBase: JQuery): void {
@@ -83,7 +86,7 @@ class SVGShape {
 	}
 
 	SetPosition(x: number, y: number) {
-		var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix
+		var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix;
 		mat.e = x;
 		mat.f = y;
 	}
@@ -111,7 +114,7 @@ class GoalShape extends SVGShape {
 	Render(CaseViewer: CaseViewer, CaseModel: CaseModel, HTMLDoc: HTMLDoc): void {
 		super.Render(CaseViewer, CaseModel, HTMLDoc);
 		this.BodyRect = <SVGRectElement>document.createSVGElement("rect");
-		
+
 		this.ShapeGroup.appendChild(this.BodyRect);
 		this.Resize(CaseViewer, CaseModel, HTMLDoc);
 	}
@@ -262,10 +265,10 @@ class ElementShape {
 		this.SVGShape.SetColor("white", "black");
 
 		if (this.ParentShape != null) {
-			var x1 = this.AbsX + this.HTMLDoc.Width / 2;
-			var y1 = this.AbsY;
-			var x2 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-			var y2 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+			var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
+			var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
+			var x2 = this.AbsX + this.HTMLDoc.Width / 2;
+			var y2 = this.AbsY;
 			this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
 			svgroot.append(this.SVGShape.ArrowPath);
 		}
@@ -313,8 +316,10 @@ class LayOut {
 			Element.Children = Element.Children.splice(i-1,1);
 			this.traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 		} else {  //emit element data except context
-			this.ViewMap[Element.Label].AbsX += x;
-			this.ViewMap[Element.Label].AbsY += y;
+			if(Element.Label == "G1") {
+				this.ViewMap[Element.Label].AbsX += x;
+				this.ViewMap[Element.Label].AbsY += y;
+			}
 			if(Element.Children.length % 2 == 1) {
 //				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
 				this.emitOddNumberChildren(Element, x, y);
@@ -364,7 +369,7 @@ class LayOut {
 			this.ViewMap[Node.Children[i].Label].AbsX += x;
 			this.ViewMap[Node.Children[i].Label].AbsY += y;
 			this.ViewMap[Node.Children[i].Label].AbsX += 160 * index[i];
-			this.ViewMap[Node.Children[i].Label].AbsY += 120;
+			this.ViewMap[Node.Children[i].Label].AbsY += 160;
 			console.log(Node.Children[i].Label);
 //			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
 			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
@@ -406,25 +411,24 @@ class CaseViewer {
 		this.LayoutElement();
 	}
 
-	LayoutElement(): void {
+	LayoutElement() : void {
 		// TODO: ishii
-		var i = 0;
-		for (var shapekey in this.ViewMap) {
-			this.ViewMap[shapekey].AbsY = (i++ * 200);
-		}
 		var topElementShape = this.ViewMap[this.TopGoalLabel];
 		var topElement = topElementShape.Source;
 		var layout = new LayOut(this.ViewMap);
 		layout.traverse(topElement, 300, 0);
 	}
 
-	Draw(svg: JQuery, div: JQuery): void {
-		for (var shape in this.ViewMap) {
-			this.ViewMap[shape].AppendHTMLElement(svg, div);
+	Draw(Screen: ScreenManager): void {
+		var shapelayer = $(Screen.ShapeLayer);
+		var screenlayer = $(Screen.ContentLayer);
+		for (var viewkey in this.ViewMap) {
+			this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
 		}
 	}
 
 }
+
 
 class ServerApi {
 	constructor(url: string) {
@@ -433,6 +437,25 @@ class ServerApi {
 		return "[]";
 	}
 }
+
+class ScreenManager {
+	constructor(public ShapeLayer: SVGGElement, public ContentLayer: HTMLDivElement, public ControlLayer: HTMLDivElement) {
+	}
+
+	SetOffset(x: number, y: number) {
+		var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
+		mat.e = -x;
+		mat.f = -y;
+
+		var xpx = -x + "px";
+		var ypx = -y + "px";
+		this.ContentLayer.style.left = xpx;
+		this.ContentLayer.style.top = ypx;
+		this.ControlLayer.style.left = xpx;
+		this.ControlLayer.style.top = ypx;;
+	}
+}
+
 
 function StartCaseViewer(url: string, id: string) {
 	var loader = new ServerApi(url);
@@ -444,44 +467,3 @@ function StartCaseViewer(url: string, id: string) {
 	var svg = document.getElementById(id);
 	CaseViewer.Draw(svg);
 }
-
-$(function () {
-
-	var JsonData = {
-			"DCaseName" : "test",
-			"NodeCount" : 2,
-			"TopGoalLabel" : "G1",
-			"NodeList": [
-				{
-					"Children": [
-						"S1"
-					],
-					"Statement": "",
-					"NodeType": 0,
-					"Label": "G1",
-					"Annotations" : [],
-					"Notes" : []
-				},
-				{
-					"Children": [
-					],
-					"Statement": "",
-					"NodeType": 2,
-					"Label": "S1",
-					"Annotations" : [],
-					"Notes" : []
-				},
-			]
-	}
-
-    var Case0: Case = new Case();
-    var caseDecoder: CaseDecoder = new CaseDecoder();
-    var root: CaseModel = caseDecoder.ParseJson(Case0, JsonData);
-
-
-    Case0.SetTopGoalLabel(root.Label);
-    var Viewer = new CaseViewer(Case0);
-    var svgroot: JQuery = $("#svg1");
-    var divroot: JQuery = $("#div1");
-    Viewer.Draw(svgroot, divroot);
-});

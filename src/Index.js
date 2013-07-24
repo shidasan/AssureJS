@@ -1,31 +1,11 @@
-/// <reference path="../d.ts/qunit.d.ts" />
-/// <reference path="../src/CaseDecoder.ts" />
-function checkCaseModel(root) {
-    if ("G1" != root.Label)
-        return false;
+/// <reference path="CaseModel.ts" />
+/// <reference path="CaseDecoder.ts" />
+/// <reference path="CaseViewer.ts" />
+/// <reference path="../plugins/SamplePlugin.ts" />
+/// <reference path="../d.ts/jquery.d.ts" />
+$(function () {
+    var pluginManager = new PlugInManager();
 
-    var child = root.Children[0];
-    if ("S1" != child.Label)
-        return false;
-
-    var grandchildren = child.Children;
-    if (grandchildren.length != 2)
-        return false;
-
-    for (var i = 0; i < grandchildren.length; i++) {
-        if (grandchildren[i].Label == "G2") {
-            if ("E1" != grandchildren[i].Children[0].Label)
-                return false;
-        } else if (grandchildren[i].Label == "G3") {
-            if ("E2" != grandchildren[i].Children[0].Label)
-                return false;
-        }
-    }
-
-    return true;
-}
-
-test("CaseDecoderTest", function (assert) {
     var JsonData = {
         "DCaseName": "test",
         "NodeCount": 6,
@@ -91,9 +71,19 @@ test("CaseDecoderTest", function (assert) {
         ]
     };
 
-    var testCase = new Case();
+    var Case0 = new Case();
     var caseDecoder = new CaseDecoder();
-    var root = caseDecoder.ParseJson(testCase, JsonData);
+    var root = caseDecoder.ParseJson(Case0, JsonData);
 
-    ok(checkCaseModel(root), "Created CaseModel is correct");
+    Case0.SetTopGoalLabel(root.Label);
+    var Viewer = new CaseViewer(Case0);
+    var shapelayer = document.getElementById("layer0");
+    var contentlayer = document.getElementById("layer1");
+    var controllayer = document.getElementById("layer2");
+
+    var Screen = new ScreenManager(shapelayer, contentlayer, controllayer);
+    Viewer.Draw(Screen);
+    pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
+    Screen.SetOffset(100, 100);
 });
+//@ sourceMappingURL=Index.js.map

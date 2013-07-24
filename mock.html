@@ -4,12 +4,17 @@
     <script type="text/javascript" src="lib/jquery.min.js"></script>
     <script type="text/javascript" src="src/CaseModel.js"></script>
     <script type="text/javascript" src="src/CaseViewer.js"></script>
+    <script type="text/javascript" src="src/PlugInManager.js"></script>
+    <script type="text/javascript" src="plugins/SamplePlugin.js"></script>
     <script type="text/javascript" src="src/CaseDecoder.js"></script>
-
+    <script type="text/javascript" src="src/Index.js"></script>
 </head>
 <body>
-    <svg id="svg1" xmlns="http://www.w3.org/2000/svg" version="1.1" style="width: 100%; height: 100%; position: absolute" />
-    <div id="div1" style="width: 100%; height: 100%; position: absolute;" />
+    <svg id="layer0box" xmlns="http://www.w3.org/2000/svg" version="1.1" style="width: 100%; height: 100%; position: absolute">
+        <g id="layer0" transform="translate(0,0)"></g>
+    </svg>
+    <div id="layer1" style="width: 100%; height: 100%; position: absolute;"></div>
+    <div id="layer2" style="width: 100%; height: 100%; position: absolute;"></div>
 
     <svg width="0" height="0">
         <defs>

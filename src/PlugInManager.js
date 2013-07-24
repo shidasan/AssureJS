@@ -15,6 +15,16 @@ var ActionPlugIn = (function (_super) {
     function ActionPlugIn() {
         _super.apply(this, arguments);
     }
+    ActionPlugIn.prototype.IsEnabled = function (caseViewer, caseModel) {
+        return true;
+    };
+
+    ActionPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
+        return true;
+    };
+
+    ActionPlugIn.prototype.Event = function () {
+    };
     return ActionPlugIn;
 })(PlugIn);
 
@@ -23,6 +33,13 @@ var CheckerPlugIn = (function (_super) {
     function CheckerPlugIn() {
         _super.apply(this, arguments);
     }
+    CheckerPlugIn.prototype.IsEnabled = function (caseModel, EventType) {
+        return true;
+    };
+
+    CheckerPlugIn.prototype.Delegate = function (caseModel, y, z) {
+        return true;
+    };
     return CheckerPlugIn;
 })(PlugIn);
 
@@ -31,6 +48,12 @@ var RenderPlugIn = (function (_super) {
     function RenderPlugIn() {
         _super.apply(this, arguments);
     }
+    RenderPlugIn.prototype.IsEnabled = function (caseViewer, caseModel) {
+        return true;
+    };
+
+    RenderPlugIn.prototype.Delegate = function (caseViewer, caseModel, element) {
+    };
     return RenderPlugIn;
 })(PlugIn);
 
@@ -42,5 +65,10 @@ var PlugInManager = (function () {
         this.DefaultRenderPlugIns = [];
         this.RenderPlugInMap = {};
     }
+    PlugInManager.prototype.AddActionPlugIn = function (key, actionPlugIn) {
+        actionPlugIn.Event();
+        this.ActionPlugIns.push(actionPlugIn);
+    };
     return PlugInManager;
 })();
+//@ sourceMappingURL=PlugInManager.js.map
