@@ -21,11 +21,93 @@ var LayoutLandscape = (function (_super) {
     function LayoutLandscape(ViewMap) {
         _super.call(this, ViewMap);
         this.ViewMap = ViewMap;
+        this.X_MARGIN = 200;
+        this.Y_MARGIN = 100;
     }
+    LayoutLandscape.prototype.GetContextIndex = function (Node) {
+        var i = 0;
+        for (; i < Node.Children.length; i++) {
+            if (Node.Children[i].Type == CaseType.Context) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
     LayoutLandscape.prototype.Init = function (Element, x, y) {
+        this.ViewMap[Element.Label].AbsX += x;
+        this.ViewMap[Element.Label].AbsY += y;
     };
 
     LayoutLandscape.prototype.Traverse = function (Element, x, y) {
+        if (Element.Children.length == 0) {
+            return;
+        }
+
+        var i = this.GetContextIndex(Element);
+        if (i != -1) {
+            this.ViewMap[Element.Label].AbsX += x;
+            this.ViewMap[Element.Label].AbsY += y;
+            this.ViewMap[Element.Label].AbsX += this.X_MARGIN;
+            console.log(Element.Label);
+            console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
+            Element.Children = Element.Children.splice(i - 1, 1);
+            this.Traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+        } else {
+            if (Element.Children.length % 2 == 1) {
+                this.EmitOddNumberChildren(Element, x, y);
+            }
+            if (Element.Children.length % 2 == 0) {
+                this.EmitEvenNumberChildren(Element, x, y);
+            }
+        }
+    };
+
+    LayoutLandscape.prototype.EmitOddNumberChildren = function (Node, x, y) {
+        var n = Node.Children.length;
+        for (var i in Node.Children) {
+            this.ViewMap[Node.Children[i].Label].AbsX = x;
+            this.ViewMap[Node.Children[i].Label].AbsY = y;
+            this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
+        }
+        var num = (n - 1) / 2;
+        var k = 0;
+        for (var j = -num; j <= num; j++) {
+            this.ViewMap[Node.Children[k].Label].AbsY += this.Y_MARGIN * j;
+            k++;
+        }
+
+        for (var i in Node.Children) {
+            console.log(Node.Children[i].Label);
+            console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
+            this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+        }
+        return;
+    };
+
+    LayoutLandscape.prototype.EmitEvenNumberChildren = function (Node, x, y) {
+        var n = Node.Children.length;
+        var num = n / 2;
+        var index = new Array();
+
+        for (var j = -num; j <= num; j++) {
+            if (j == 0) {
+                continue;
+            }
+            index.push(j);
+        }
+
+        for (var i in Node.Children) {
+            this.ViewMap[Node.Children[i].Label].AbsX += x;
+            this.ViewMap[Node.Children[i].Label].AbsY += y;
+            this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN * index[i];
+            this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
+            console.log(Node.Children[i].Label);
+
+            console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
+            this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+        }
+        return;
     };
     return LayoutLandscape;
 })(Layout);
