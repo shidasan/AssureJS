@@ -8,7 +8,7 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
-// <reference path="../d.ts/jQuery.svg.d.ts" />
+/// <reference path="../d.ts/pointer.d.ts" />
 /* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
@@ -441,24 +441,120 @@ var ServerApi = (function () {
     return ServerApi;
 })();
 
+var DragState = (function () {
+    function DragState() {
+        this.InitialOffsetX = 0;
+        this.InitialOffsetY = 0;
+        this.InitialX = 0;
+        this.InitialY = 0;
+        this.CurrentX = 0;
+        this.CurrentY = 0;
+        this.MainPointerID = 0;
+        this.Pointers = [];
+    }
+    DragState.prototype.SetInitialOffset = function (InitialOffsetX, InitialOffsetY) {
+        this.InitialOffsetX = InitialOffsetX;
+        this.InitialOffsetY = InitialOffsetY;
+    };
+
+    DragState.prototype.StartDrag = function (InitialX, InitialY) {
+        this.InitialX = InitialX;
+        this.InitialY = InitialY;
+    };
+
+    DragState.prototype.UpdateDrag = function (CurrentX, CurrentY) {
+        this.CurrentX = CurrentX;
+        this.CurrentY = CurrentY;
+    };
+
+    DragState.prototype.CalcOffsetX = function () {
+        return this.CurrentX - this.InitialX + this.InitialOffsetX;
+    };
+
+    DragState.prototype.CalcOffsetY = function () {
+        return this.CurrentY - this.InitialY + this.InitialOffsetY;
+    };
+
+    DragState.prototype.GetMainPointer = function () {
+        for (var i = 0; i < this.Pointers.length; ++i) {
+            if (this.Pointers[i].identifier === this.MainPointerID) {
+                return this.Pointers[i];
+            }
+        }
+        ;
+        return null;
+    };
+
+    DragState.prototype.IsDragging = function () {
+        return this.MainPointerID != null;
+    };
+
+    DragState.prototype.OnPointerEvent = function (e, Screen) {
+        this.Pointers = e.getPointerList();
+        if (this.Pointers.length > 0) {
+            if (this.IsDragging()) {
+                var mainPointer = this.GetMainPointer();
+                if (mainPointer) {
+                    this.UpdateDrag(mainPointer.pageX, mainPointer.pageY);
+                    Screen.SetOffset(this.CalcOffsetX(), this.CalcOffsetY());
+                } else {
+                    this.MainPointerID = null;
+                }
+            } else {
+                var mainPointer = this.Pointers[0];
+                this.MainPointerID = mainPointer.identifier;
+                this.SetInitialOffset(Screen.GetOffsetX(), Screen.GetOffsetY());
+                this.StartDrag(mainPointer.pageX, mainPointer.pageY);
+            }
+        } else {
+            this.MainPointerID = null;
+        }
+    };
+    return DragState;
+})();
+
 var ScreenManager = (function () {
     function ScreenManager(ShapeLayer, ContentLayer, ControlLayer) {
+        var _this = this;
         this.ShapeLayer = ShapeLayer;
         this.ContentLayer = ContentLayer;
         this.ControlLayer = ControlLayer;
+        this.DragState = new DragState();
+        this.SetOffset(0, 0);
+        var OnPointer = function (e) {
+            _this.DragState.OnPointerEvent(e, _this);
+        };
+        ContentLayer.addEventListener("pointerdown", OnPointer, false);
+        ContentLayer.addEventListener("pointermove", OnPointer, false);
+        ContentLayer.addEventListener("pointerup", OnPointer, false);
     }
+    //onScale(e: GestureScaleEvent): void {
+    //	e.preventDefault();
+    //	e.stopPropagation();
+    //	//if (this.viewer.moving) return;
+    //	//var b = e.scale * this.scale0 / this.viewer.scale;
+    //	//this.setScale(e.centerX, e.centerY, b);
+    //}
     ScreenManager.prototype.SetOffset = function (x, y) {
-        var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
-        mat.e = -x;
-        mat.f = -y;
+        this.OffsetX = x;
+        this.OffsetY = y;
 
-        var xpx = -x + "px";
-        var ypx = -y + "px";
-        this.ContentLayer.style.left = xpx;
-        this.ContentLayer.style.top = ypx;
-        this.ControlLayer.style.left = xpx;
-        this.ControlLayer.style.top = ypx;
-        ;
+        var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
+        mat.e = x;
+        mat.f = y;
+
+        var xpx = x + "px";
+        var ypx = y + "px";
+        this.ContentLayer.style.marginLeft = xpx;
+        this.ContentLayer.style.marginTop = ypx;
+    };
+
+    ScreenManager.prototype.GetOffsetX = function () {
+        return this.OffsetX;
+    };
+
+    ScreenManager.prototype.GetOffsetY = function () {
+        return this.OffsetY;
     };
     return ScreenManager;
 })();

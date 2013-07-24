@@ -84,6 +84,5 @@ $(function () {
     var Screen = new ScreenManager(shapelayer, contentlayer, controllayer);
     Viewer.Draw(Screen);
     pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
-    Screen.SetOffset(100, 100);
 });
 //@ sourceMappingURL=Index.js.map

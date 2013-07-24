@@ -2,7 +2,8 @@
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
-// <reference path="../d.ts/jQuery.svg.d.ts" />
+/// <reference path="../d.ts/pointer.d.ts" />
+
 /* VIEW (MVC) */
 
 class HTMLDoc {
@@ -438,22 +439,122 @@ class ServerApi {
 	}
 }
 
-class ScreenManager {
-	constructor(public ShapeLayer: SVGGElement, public ContentLayer: HTMLDivElement, public ControlLayer: HTMLDivElement) {
+class DragState {
+	InitialOffsetX: number = 0;
+	InitialOffsetY: number = 0;
+	InitialX: number = 0;
+	InitialY: number = 0;
+	CurrentX: number = 0;
+	CurrentY: number = 0;
+	MainPointerID: number = 0;
+	Pointers: Pointer[] = [];
+
+	SetInitialOffset(InitialOffsetX: number, InitialOffsetY: number) {
+		this.InitialOffsetX = InitialOffsetX;
+		this.InitialOffsetY = InitialOffsetY;
 	}
+
+	StartDrag(InitialX: number, InitialY: number) {
+		this.InitialX = InitialX;
+		this.InitialY = InitialY;
+	}
+
+	UpdateDrag(CurrentX: number, CurrentY: number) {
+		this.CurrentX = CurrentX;
+		this.CurrentY = CurrentY;
+	}
+
+	CalcOffsetX(): number {
+		return this.CurrentX - this.InitialX + this.InitialOffsetX;
+	}
+
+	CalcOffsetY(): number {
+		return this.CurrentY - this.InitialY + this.InitialOffsetY;
+	}
+
+	GetMainPointer(): Pointer {
+		for (var i = 0; i < this.Pointers.length; ++i) {
+			if (this.Pointers[i].identifier === this.MainPointerID) {
+				return this.Pointers[i]
+			}
+		};
+		return null;
+	}
+
+	IsDragging(): boolean {
+		return this.MainPointerID != null;
+	}
+
+	OnPointerEvent(e: PointerEvent, Screen: ScreenManager) {
+		this.Pointers = e.getPointerList();
+		if (this.Pointers.length > 0) {
+			if (this.IsDragging()) {
+				var mainPointer = this.GetMainPointer();
+				if (mainPointer) {
+					this.UpdateDrag(mainPointer.pageX, mainPointer.pageY);
+					Screen.SetOffset(this.CalcOffsetX(), this.CalcOffsetY());
+				} else {
+					this.MainPointerID = null;
+				}
+			} else {
+				var mainPointer = this.Pointers[0];
+				this.MainPointerID = mainPointer.identifier;
+				this.SetInitialOffset(Screen.GetOffsetX(), Screen.GetOffsetY());
+				this.StartDrag(mainPointer.pageX, mainPointer.pageY);
+			}
+		} else {
+			this.MainPointerID = null;
+		}
+	}
+}
+
+class ScreenManager {
+	
+	DragState: DragState = new DragState();
+	private OffsetX: number;
+	private OffsetY: number;
+
+	constructor(public ShapeLayer: SVGGElement, public ContentLayer: HTMLDivElement, public ControlLayer: HTMLDivElement) {
+		this.SetOffset(0, 0);
+		var OnPointer = (e: PointerEvent) => { this.DragState.OnPointerEvent(e, this); };
+		ContentLayer.addEventListener("pointerdown", OnPointer, false);
+		ContentLayer.addEventListener("pointermove", OnPointer, false);
+		ContentLayer.addEventListener("pointerup", OnPointer, false);
+		//ContentLayer.addEventListener("gesturescale", OnPointer, false);
+	}
+
+	//onScale(e: GestureScaleEvent): void {
+	//	e.preventDefault();
+	//	e.stopPropagation();
+	//	//if (this.viewer.moving) return;
+	//	//var b = e.scale * this.scale0 / this.viewer.scale;
+	//	//this.setScale(e.centerX, e.centerY, b);
+	//}
 
 	SetOffset(x: number, y: number) {
+		this.OffsetX = x;
+		this.OffsetY = y;
+		
 		var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
-		mat.e = -x;
-		mat.f = -y;
+		mat.e = x;
+		mat.f = y;
 
-		var xpx = -x + "px";
-		var ypx = -y + "px";
-		this.ContentLayer.style.left = xpx;
-		this.ContentLayer.style.top = ypx;
-		this.ControlLayer.style.left = xpx;
-		this.ControlLayer.style.top = ypx;;
+		var xpx = x + "px";
+		var ypx = y + "px";
+		this.ContentLayer.style.marginLeft = xpx;
+		this.ContentLayer.style.marginTop  = ypx;
+		//this.ControlLayer.style.marginLeft = xpx;
+		//this.ControlLayer.style.marginTop  = ypx;;
 	}
+
+	GetOffsetX(): number {
+		return this.OffsetX;
+	}
+
+	GetOffsetY(): number {
+		return this.OffsetY;
+	}
+
 }
 
 
