@@ -4,8 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../src/CaseModel.ts" />
-/// <reference path="../src/PlugInManager.ts" />
 var SamplePlugIn = (function (_super) {
     __extends(SamplePlugIn, _super);
     function SamplePlugIn() {
@@ -21,13 +19,26 @@ var SamplePlugIn = (function (_super) {
     };
 
     SamplePlugIn.prototype.Event = function () {
-        var _this = this;
         $('.node').hover(function () {
-            _this.Delegate(null, null);
+            $('#menu').remove();
+            var p = $(this).position();
+            var j = $('<div id="menu">' + '<a href="#" ><img src="images/icon.png" alt="" /></a>' + '<a href="#" ><img src="images/icon.png" alt="" /></a>' + '<a href="#" ><img src="images/icon.png" alt="" /></a>' + '<a href="#" ><img src="images/icon.png" alt="" /></a>' + '<a href="#" ><img src="images/icon.png" alt="" /></a>' + '<a href="#" ><img src="images/icon.png" alt="" /></a></div>').css({ position: 'absolute', top: p.top + 75, left: p.left - 30, display: 'none' }).appendTo($('#layer2'));
+            ($('#menu')).jqDock({
+                align: 'bottom',
+                size: 48,
+                distance: 60,
+                labels: 'hoge,fuga,foo,bar',
+                duration: 500,
+                source: function () {
+                    return this.src.replace(/(jpg|gif)$/, 'png');
+                }
+            });
+            $('#menu').css({ display: 'block' }).hover(function () {
+            }, function () {
+                $(this).remove();
+            });
         }, function () {
-            console.log("out");
         });
     };
     return SamplePlugIn;
 })(ActionPlugIn);
-//@ sourceMappingURL=SamplePlugin.js.map

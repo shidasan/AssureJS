@@ -4,12 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="CaseModel.ts" />
-/// <reference path="CaseDecoder.ts" />
-/// <reference path="../plugins/SamplePlugin.ts" />
-/// <reference path="../d.ts/jquery.d.ts" />
-// <reference path="../d.ts/jQuery.svg.d.ts" />
-/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
         this.Width = 0;
@@ -262,8 +256,6 @@ var ElementShape = (function () {
         this.HTMLDoc.SetPosition(this.AbsX, this.AbsY);
         this.Resize();
 
-        // TODO
-        // if it has an parent, add an arrow element.
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
         this.SVGShape.SetColor("white", "black");
@@ -324,11 +316,9 @@ var LayOut = (function () {
                 this.ViewMap[Element.Label].AbsY += y;
             }
             if (Element.Children.length % 2 == 1) {
-                //				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
                 this.emitOddNumberChildren(Element, x, y);
             }
             if (Element.Children.length % 2 == 0) {
-                //				this.emitEvenNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
                 this.emitEvenNumberChildren(Element, x, y);
             }
         }
@@ -375,7 +365,6 @@ var LayOut = (function () {
             this.ViewMap[Node.Children[i].Label].AbsY += 160;
             console.log(Node.Children[i].Label);
 
-            //			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
             this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
         }
@@ -414,7 +403,6 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
-        // TODO: ishii
         var topElementShape = this.ViewMap[this.TopGoalLabel];
         var topElement = topElementShape.Source;
         var layout = new LayOut(this.ViewMap);
@@ -473,4 +461,3 @@ function StartCaseViewer(url, id) {
     var svg = document.getElementById(id);
     CaseViewer.Draw(svg);
 }
-//@ sourceMappingURL=CaseViewer.js.map

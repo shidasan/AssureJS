@@ -1,5 +1,3 @@
-/// <reference path="../d.ts/qunit.d.ts" />
-/// <reference path="../src/CaseDecoder.ts" />
 function checkCaseModel(root) {
     if ("G1" != root.Label)
         return false;
