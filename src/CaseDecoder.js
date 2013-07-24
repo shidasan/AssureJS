@@ -13,7 +13,7 @@ var Parser = (function () {
     function Parser(Case) {
         this.Case = Case;
     }
-    Parser.prototype.parse = function (source) {
+    Parser.prototype.Parse = function (source, root) {
         return null;
     };
     return Parser;
@@ -25,13 +25,13 @@ var JsonParser = (function (_super) {
         _super.apply(this, arguments);
         this.caseModelMap = {};
     }
-    JsonParser.prototype.initCaseModelMap = function (NodeList/* TODO: remove any type */ ) {
+    JsonParser.prototype.InitCaseModelMap = function (NodeList/* TODO: remove any type */ ) {
         for (var i = 0; i < NodeList.length; i++) {
             this.caseModelMap[NodeList[i]["Label"]] = NodeList[i];
         }
     };
 
-    JsonParser.prototype.parseChild = function (childLabel, Parent) {
+    JsonParser.prototype.ParseChild = function (childLabel, Parent) {
         var caseModelData = this.caseModelMap[childLabel];
         var Type = caseModelData["NodeType"];
         var Statement = caseModelData["Statement"];
@@ -42,7 +42,7 @@ var JsonParser = (function (_super) {
         var childCaseModel = new CaseModel(this.Case, Parent, Type, childLabel, Statement);
 
         for (var i = 0; i < Children.length; i++) {
-            this.parseChild(Children[i], childCaseModel);
+            this.ParseChild(Children[i], childCaseModel);
         }
 
         if (Parent == null) {
@@ -52,32 +52,30 @@ var JsonParser = (function (_super) {
         }
     };
 
-    JsonParser.prototype.parse = function (source) {
-        var JsonData = source;
+    JsonParser.prototype.Parse = function (JsonData/* TODO: remove any type */ ) {
         var DCaseName = JsonData["DCaseName"];
         var NodeCount = JsonData["NodeCount"];
         var TopGoalLabel = JsonData["TopGoalLabel"];
         var NodeList = JsonData["NodeList"];
 
-        this.initCaseModelMap(NodeList);
+        this.InitCaseModelMap(NodeList);
 
-        var root = this.parseChild(TopGoalLabel, null);
+        var root = this.ParseChild(TopGoalLabel, null);
 
         return root;
     };
     return JsonParser;
 })(Parser);
 
-var MarkcaseParser = (function (_super) {
-    __extends(MarkcaseParser, _super);
-    function MarkcaseParser() {
+var ASNParser = (function (_super) {
+    __extends(ASNParser, _super);
+    function ASNParser() {
         _super.apply(this, arguments);
     }
-    MarkcaseParser.prototype.parse = function (source) {
-        var MarkCase = source;
+    ASNParser.prototype.Parse = function (ASNData, root) {
         return null;
     };
-    return MarkcaseParser;
+    return ASNParser;
 })(Parser);
 
 var CaseDecoder = (function () {
@@ -85,16 +83,16 @@ var CaseDecoder = (function () {
     }
     CaseDecoder.prototype.ParseJson = function (Case, JsonData) {
         var jsonParser = new JsonParser(Case);
-        var root = jsonParser.parse(JsonData);
+        var root = jsonParser.Parse(JsonData);
         return root;
     };
 
-    CaseDecoder.prototype.ParseDCaseXML = function (Case, XML) {
+    CaseDecoder.prototype.ParseDCaseXML = function (Case, XMLData) {
         // TODO
         return null;
     };
 
-    CaseDecoder.prototype.ParseMarkCase = function (Case, MarkCase) {
+    CaseDecoder.prototype.ParseASN = function (Case, ASNData, root) {
         // TODO
         return null;
     };
