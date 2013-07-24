@@ -130,14 +130,16 @@ var SVGShape = (function () {
 
     SVGShape.prototype.GetConnectorPosition = function (Dir) {
         switch (Dir) {
-            case Dir.Right:
+            case Direction.Right:
                 return new Point(this.Width, this.Height / 2);
-            case Dir.Left:
+            case Direction.Left:
                 return new Point(0, this.Height / 2);
-            case Dir.Top:
+            case Direction.Top:
                 return new Point(this.Width / 2, 0);
-            case Dir.Bottom:
+            case Direction.Bottom:
                 return new Point(this.Width / 2, this.Height);
+            default:
+                return new Point(0, 0);
         }
     };
     return SVGShape;
@@ -216,6 +218,21 @@ var StrategyShape = (function (_super) {
     StrategyShape.prototype.SetColor = function (fill, stroke) {
         this.BodyPolygon.setAttribute("fill", fill);
         this.BodyPolygon.setAttribute("stroke", stroke);
+    };
+
+    StrategyShape.prototype.GetConnectorPosition = function (Dir) {
+        switch (Dir) {
+            case Direction.Right:
+                return new Point(this.Width - 10 / 2, this.Height / 2);
+            case Direction.Left:
+                return new Point(10 / 2, this.Height / 2);
+            case Direction.Top:
+                return new Point(this.Width / 2, 0);
+            case Direction.Bottom:
+                return new Point(this.Width / 2, this.Height);
+            default:
+                return new Point(0, 0);
+        }
     };
     return StrategyShape;
 })(SVGShape);
