@@ -318,13 +318,9 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
-        //		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
-        var layout = new LayoutLandscape(this.ViewMap);
-
-        //		layout.Init(this.ElementTop, 300, 0);
-        //		layout.Traverse(this.ElementTop, 300, 0);
-        layout.Init(this.ElementTop, 0, 200);
-        layout.Traverse(this.ElementTop, 0, 200);
+        var layout = new LayoutPortrait(this.ViewMap);
+        layout.Init(this.ElementTop, 300, 0);
+        layout.Traverse(this.ElementTop, 300, 0);
     };
 
     CaseViewer.prototype.Draw = function (Screen) {
