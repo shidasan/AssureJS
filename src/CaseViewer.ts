@@ -197,6 +197,19 @@ class StrategyShape extends SVGShape {
 		this.BodyPolygon.setAttribute("fill", fill);
 		this.BodyPolygon.setAttribute("stroke", stroke);
 	}
+
+	GetConnectorPosition(Dir: Direction): Point {
+		switch (Dir) {
+			case Dir.Right:
+				return new Point(this.Width - 10 / 2, this.Height / 2);
+			case Dir.Left:
+				return new Point(10 / 2, this.Height / 2);
+			case Dir.Top:
+				return new Point(this.Width / 2, 0);
+			case Dir.Bottom:
+				return new Point(this.Width / 2, this.Height);
+		}
+	}
 }
 
 class EvidenceShape extends SVGShape {
