@@ -66,6 +66,14 @@ class HTMLDoc {
 	}
 }
 
+class Point {
+	constructor(public x: number, public y: number) { }
+}
+
+enum Direction {
+	Right, Left, Top, Bottom
+}
+
 class SVGShape {
 	Width: number;
 	Height: number;
@@ -107,6 +115,19 @@ class SVGShape {
 	}
 
 	SetColor(fill: string, stroke: string) {
+	}
+
+	GetConnectorPosition(Dir: Direction): Point {
+		switch (Dir) {
+			case Dir.Right:
+				return new Point(this.Width, this.Height / 2);
+			case Dir.Left:
+				return new Point(0, this.Height / 2);
+			case Dir.Top:
+				return new Point(this.Width / 2, 0);
+			case Dir.Bottom:
+				return new Point(this.Width / 2, this.Height);
+		}
 	}
 }
 
@@ -267,14 +288,19 @@ class ElementShape {
 		this.SVGShape.SetColor("white", "black");
 
 		if (this.ParentShape != null) {
-			var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-			var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
-			var x2 = this.AbsX + this.HTMLDoc.Width / 2;
-			var y2 = this.AbsY;
-			this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
+			var p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Bottom);
+			var p2 = this.GetAbsoluteConnectorPosition(Direction.Top);
+			this.SVGShape.SetArrowPosition(p1.x, p1.y, p2.x, p2.y);
 			svgroot.append(this.SVGShape.ArrowPath);
 		}
 		return; // TODO
+	}
+
+	GetAbsoluteConnectorPosition(Dir: Direction): Point {
+		var p = this.SVGShape.GetConnectorPosition(Dir);
+		p.x += this.AbsX;
+		p.y += this.AbsY;
+		return p;
 	}
 }
 

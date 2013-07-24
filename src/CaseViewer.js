@@ -72,6 +72,22 @@ var HTMLDoc = (function () {
     return HTMLDoc;
 })();
 
+var Point = (function () {
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    return Point;
+})();
+
+var Direction;
+(function (Direction) {
+    Direction[Direction["Right"] = 0] = "Right";
+    Direction[Direction["Left"] = 1] = "Left";
+    Direction[Direction["Top"] = 2] = "Top";
+    Direction[Direction["Bottom"] = 3] = "Bottom";
+})(Direction || (Direction = {}));
+
 var SVGShape = (function () {
     function SVGShape() {
     }
@@ -110,6 +126,19 @@ var SVGShape = (function () {
     };
 
     SVGShape.prototype.SetColor = function (fill, stroke) {
+    };
+
+    SVGShape.prototype.GetConnectorPosition = function (Dir) {
+        switch (Dir) {
+            case Dir.Right:
+                return new Point(this.Width, this.Height / 2);
+            case Dir.Left:
+                return new Point(0, this.Height / 2);
+            case Dir.Top:
+                return new Point(this.Width / 2, 0);
+            case Dir.Bottom:
+                return new Point(this.Width / 2, this.Height);
+        }
     };
     return SVGShape;
 })();
@@ -270,14 +299,19 @@ var ElementShape = (function () {
         this.SVGShape.SetColor("white", "black");
 
         if (this.ParentShape != null) {
-            var x1 = this.ParentShape.AbsX + this.ParentShape.HTMLDoc.Width / 2;
-            var y1 = this.ParentShape.AbsY + this.ParentShape.HTMLDoc.Height;
-            var x2 = this.AbsX + this.HTMLDoc.Width / 2;
-            var y2 = this.AbsY;
-            this.SVGShape.SetArrowPosition(x1, y1, x2, y2);
+            var p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Bottom);
+            var p2 = this.GetAbsoluteConnectorPosition(Direction.Top);
+            this.SVGShape.SetArrowPosition(p1.x, p1.y, p2.x, p2.y);
             svgroot.append(this.SVGShape.ArrowPath);
         }
         return;
+    };
+
+    ElementShape.prototype.GetAbsoluteConnectorPosition = function (Dir) {
+        var p = this.SVGShape.GetConnectorPosition(Dir);
+        p.x += this.AbsX;
+        p.y += this.AbsY;
+        return p;
     };
     return ElementShape;
 })();
