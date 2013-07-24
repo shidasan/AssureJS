@@ -86,7 +86,7 @@ class SVGShape {
 	}
 
 	SetPosition(x: number, y: number) {
-		var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix
+		var mat = this.ShapeGroup.transform.baseVal.getItem(0).matrix;
 		mat.e = x;
 		mat.f = y;
 	}
@@ -419,10 +419,11 @@ class CaseViewer {
 		layout.traverse(topElement, 300, 0);
 	}
 
-	Draw(svg: JQuery, div: JQuery): void {
-		var rootgroup = $(document.createSVGElement("g")).appendTo(svg);
-		for (var shape in this.ViewMap) {
-			this.ViewMap[shape].AppendHTMLElement(rootgroup, div);
+	Draw(Screen: ScreenManager): void {
+		var shapelayer = $(Screen.ShapeLayer);
+		var screenlayer = $(Screen.ContentLayer);
+		for (var viewkey in this.ViewMap) {
+			this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
 		}
 	}
 
@@ -436,6 +437,25 @@ class ServerApi {
 		return "[]";
 	}
 }
+
+class ScreenManager {
+	constructor(public ShapeLayer: SVGGElement, public ContentLayer: HTMLDivElement, public ControlLayer: HTMLDivElement) {
+	}
+
+	SetOffset(x: number, y: number) {
+		var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
+		mat.e = -x;
+		mat.f = -y;
+
+		var xpx = -x + "px";
+		var ypx = -y + "px";
+		this.ContentLayer.style.left = xpx;
+		this.ContentLayer.style.top = ypx;
+		this.ControlLayer.style.left = xpx;
+		this.ControlLayer.style.top = ypx;;
+	}
+}
+
 
 function StartCaseViewer(url: string, id: string) {
 	var loader = new ServerApi(url);

@@ -77,9 +77,13 @@ $(function () {
 
     Case0.SetTopGoalLabel(root.Label);
     var Viewer = new CaseViewer(Case0);
-    var svgroot = $("#layer0");
-    var divroot = $("#layer1");
-    var uiroot = $("#layer2");
-    Viewer.Draw(svgroot, divroot);
+    var shapelayer = document.getElementById("layer0");
+    var contentlayer = document.getElementById("layer1");
+    var controllayer = document.getElementById("layer2");
+
+    var Screen = new ScreenManager(shapelayer, contentlayer, controllayer);
+    Viewer.Draw(Screen);
     pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
+    Screen.SetOffset(100, 100);
 });
+//@ sourceMappingURL=Index.js.map

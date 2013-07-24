@@ -421,10 +421,11 @@ var CaseViewer = (function () {
         layout.traverse(topElement, 300, 0);
     };
 
-    CaseViewer.prototype.Draw = function (svg, div) {
-        var rootgroup = $(document.createSVGElement("g")).appendTo(svg);
-        for (var shape in this.ViewMap) {
-            this.ViewMap[shape].AppendHTMLElement(rootgroup, div);
+    CaseViewer.prototype.Draw = function (Screen) {
+        var shapelayer = $(Screen.ShapeLayer);
+        var screenlayer = $(Screen.ContentLayer);
+        for (var viewkey in this.ViewMap) {
+            this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
         }
     };
     CaseViewer.ElementWidth = 150;
@@ -440,6 +441,28 @@ var ServerApi = (function () {
     return ServerApi;
 })();
 
+var ScreenManager = (function () {
+    function ScreenManager(ShapeLayer, ContentLayer, ControlLayer) {
+        this.ShapeLayer = ShapeLayer;
+        this.ContentLayer = ContentLayer;
+        this.ControlLayer = ControlLayer;
+    }
+    ScreenManager.prototype.SetOffset = function (x, y) {
+        var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
+        mat.e = -x;
+        mat.f = -y;
+
+        var xpx = -x + "px";
+        var ypx = -y + "px";
+        this.ContentLayer.style.left = xpx;
+        this.ContentLayer.style.top = ypx;
+        this.ControlLayer.style.left = xpx;
+        this.ControlLayer.style.top = ypx;
+        ;
+    };
+    return ScreenManager;
+})();
+
 function StartCaseViewer(url, id) {
     var loader = new ServerApi(url);
     var project;
@@ -450,3 +473,4 @@ function StartCaseViewer(url, id) {
     var svg = document.getElementById(id);
     CaseViewer.Draw(svg);
 }
+//@ sourceMappingURL=CaseViewer.js.map
