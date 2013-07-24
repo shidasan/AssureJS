@@ -65,19 +65,18 @@ var LayoutLandscape = (function (_super) {
 
     LayoutLandscape.prototype.EmitOddNumberChildren = function (Node, x, y) {
         var n = Node.Children.length;
-        for (var i in Node.Children) {
+        for (var i = 0; i < n; i++) {
             this.ViewMap[Node.Children[i].Label].AbsX = x;
             this.ViewMap[Node.Children[i].Label].AbsY = y;
             this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
         }
         var num = (n - 1) / 2;
-        var k = 0;
-        for (var j = -num; j <= num; j++) {
+        var k;
+        for (var j = -num, k = 0; j <= num; j++, k++) {
             this.ViewMap[Node.Children[k].Label].AbsY += this.Y_MARGIN * j;
-            k++;
         }
 
-        for (var i in Node.Children) {
+        for (var i = 0; i < n; i++) {
             console.log(Node.Children[i].Label);
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
             this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
@@ -97,13 +96,12 @@ var LayoutLandscape = (function (_super) {
             index.push(j);
         }
 
-        for (var i in Node.Children) {
+        for (var i = 0; i < n; i++) {
             this.ViewMap[Node.Children[i].Label].AbsX += x;
             this.ViewMap[Node.Children[i].Label].AbsY += y;
             this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN * index[i];
             this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
             console.log(Node.Children[i].Label);
-
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
             this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
         }
@@ -121,7 +119,7 @@ var LayoutPortrait = (function (_super) {
         this.Y_MARGIN = 160;
         this.X_CONTEXT_MARGIN = 160;
     }
-    LayoutPortrait.prototype.GetContextIndex = function (Node, x, y) {
+    LayoutPortrait.prototype.GetContextIndex = function (Node) {
         var i = 0;
         for (; i < Node.Children.length; i++) {
             if (Node.Children[i].Type == CaseType.Context) {
@@ -142,7 +140,7 @@ var LayoutPortrait = (function (_super) {
         }
 
         var i = 0;
-        i = this.GetContextIndex(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+        i = this.GetContextIndex(Element);
         if (i != -1) {
             this.ViewMap[Element.Children[i].Label].AbsX += x;
             this.ViewMap[Element.Children[i].Label].AbsY += y;
@@ -163,19 +161,18 @@ var LayoutPortrait = (function (_super) {
 
     LayoutPortrait.prototype.EmitOddNumberChildren = function (Node, x, y) {
         var n = Node.Children.length;
-        for (var i in Node.Children) {
+        for (var i = 0; i < n; i++) {
             this.ViewMap[Node.Children[i].Label].AbsX = x;
             this.ViewMap[Node.Children[i].Label].AbsY = y;
             this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
         }
         var num = (n - 1) / 2;
-        var k = 0;
-        for (var j = -num; j <= num; j++) {
+        var k;
+        for (var j = -num, k = 0; j <= num; j++, k++) {
             this.ViewMap[Node.Children[k].Label].AbsX += this.X_MARGIN * j;
-            k++;
         }
 
-        for (var i in Node.Children) {
+        for (var i = 0; i < Node.Children.length; i++) {
             console.log(Node.Children[i].Label);
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
             this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
@@ -195,7 +192,7 @@ var LayoutPortrait = (function (_super) {
             index.push(j);
         }
 
-        for (var i in Node.Children) {
+        for (var i = 0; i < Node.Children.length; i++) {
             this.ViewMap[Node.Children[i].Label].AbsX += x;
             this.ViewMap[Node.Children[i].Label].AbsY += y;
             this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN * index[i];
