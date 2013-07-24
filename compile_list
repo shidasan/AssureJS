@@ -6,4 +6,5 @@ src/ServerApi.ts
 src/Index.ts
 src/Layout.ts
 plugins/SamplePlugin.ts
+plugins/Editor/EditorPlugIn.ts
 test/CaseDecoderTest.ts

@@ -2,6 +2,7 @@
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="CaseViewer.ts" />
 /// <reference path="../plugins/SamplePlugin.ts" />
+/// <reference path="../plugins/Editor/EditorPlugIn.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 
 $(function () {
@@ -98,5 +99,6 @@ $(function () {
 	var Screen = new ScreenManager(shapelayer, contentlayer, controllayer, backgroundlayer);
 	Viewer.Draw(Screen);
 	pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
+	pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
 });
 

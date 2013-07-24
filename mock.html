@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Mock up</title>
+    <link rel='stylesheet' href='plugins/Editor/lib/widearea.min.css' >
     <script type="text/javascript" src="lib/jquery.min.js"></script>
     <script type="text/javascript" src="lib/pointer.min.js"></script>
     <script type="text/javascript" src="lib/jquery.jqdock.min.js"></script>
@@ -9,6 +10,8 @@
     <script type="text/javascript" src="src/Layout.js"></script>
     <script type="text/javascript" src="src/PlugInManager.js"></script>
     <script type="text/javascript" src="plugins/SamplePlugin.js"></script>
+    <script type="text/javascript" src="plugins/Editor/widearea.js"></script>
+    <script type="text/javascript" src="plugins/Editor/EditorPlugIn.js"></script>
     <script type="text/javascript" src="src/CaseDecoder.js"></script>
     <script type="text/javascript" src="src/Index.js"></script>
 </head>
@@ -32,5 +35,6 @@
             </marker>
         </defs>
     </svg>
+  <textarea id="editor" placeholder="Type something..." data-widearea="enable" class="widearea" data-widearea-id="1"></textarea>
 </body>
 </html>

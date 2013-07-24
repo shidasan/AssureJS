@@ -89,4 +89,5 @@ $(function () {
     var Screen = new ScreenManager(shapelayer, contentlayer, controllayer, backgroundlayer);
     Viewer.Draw(Screen);
     pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
+    pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
 });
