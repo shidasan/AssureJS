@@ -4,8 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="CaseModel.ts" />
-/// <reference path="CaseViewer.ts" />
 var Layout = (function () {
     function Layout(ViewMap) {
         this.ViewMap = ViewMap;
@@ -48,9 +46,9 @@ var LayoutLandscape = (function (_super) {
 
         var i = this.GetContextIndex(Element);
         if (i != -1) {
-            this.ViewMap[Element.Label].AbsX += x;
-            this.ViewMap[Element.Label].AbsY += y;
-            this.ViewMap[Element.Label].AbsX += this.X_MARGIN;
+            this.ViewMap[Element.Children[i].Label].AbsX += x;
+            this.ViewMap[Element.Children[i].Label].AbsY += y;
+            this.ViewMap[Element.Children[i].Label].AbsY += this.Y_MARGIN;
             console.log(Element.Label);
             console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
             Element.Children = Element.Children.splice(i - 1, 1);
@@ -207,4 +205,3 @@ var LayoutPortrait = (function (_super) {
     };
     return LayoutPortrait;
 })(Layout);
-//@ sourceMappingURL=Layout.js.map

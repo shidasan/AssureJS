@@ -45,9 +45,9 @@ class LayoutLandscape extends Layout {
 
 		var i : number  = this.GetContextIndex(Element);
 		if(i != -1) { //emit context element data
-			this.ViewMap[Element.Label].AbsX += x;
-			this.ViewMap[Element.Label].AbsY += y;
-			this.ViewMap[Element.Label].AbsX += this.X_MARGIN;
+			this.ViewMap[Element.Children[i].Label].AbsX += x;
+			this.ViewMap[Element.Children[i].Label].AbsY += y;
+			this.ViewMap[Element.Children[i].Label].AbsY += this.Y_MARGIN;
 			console.log(Element.Label);
 			console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
 			Element.Children = Element.Children.splice(i-1,1);

@@ -61,7 +61,6 @@ var CaseModel = (function () {
         this.Annotations.push(new CaseAnnotation(Name, Body));
     };
 
-    /* plug-In */
     CaseModel.prototype.InvokePlugInModifier = function (EventType, EventBody) {
         var recall = false;
         for (var a in this.Annotations) {
@@ -98,13 +97,11 @@ var CaseModifiers = (function () {
 var CaseModifierConfig = new CaseModifiers();
 
 var Case = (function () {
-    //TopGoalLabel : string;
     function Case() {
         this.IdCounters = [0, 0, 0, 0, 0];
         this.IsModified = false;
         this.ElementMap = {};
     }
-    /* Deprecated */
     Case.prototype.SetElementTop = function (ElementTop) {
         this.ElementTop = ElementTop;
     };
@@ -119,4 +116,3 @@ var Case = (function () {
     };
     return Case;
 })();
-//@ sourceMappingURL=CaseModel.js.map

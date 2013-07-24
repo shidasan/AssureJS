@@ -1,8 +1,3 @@
-/// <reference path="CaseModel.ts" />
-/// <reference path="CaseDecoder.ts" />
-/// <reference path="CaseViewer.ts" />
-/// <reference path="../plugins/SamplePlugin.ts" />
-/// <reference path="../d.ts/jquery.d.ts" />
 $(function () {
     var pluginManager = new PlugInManager();
 
@@ -95,4 +90,3 @@ $(function () {
     Viewer.Draw(Screen);
     pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
 });
-//@ sourceMappingURL=Index.js.map

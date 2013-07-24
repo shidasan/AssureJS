@@ -4,8 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../src/CaseModel.ts" />
-/// <reference path="../src/PlugInManager.ts" />
 var SamplePlugIn = (function (_super) {
     __extends(SamplePlugIn, _super);
     function SamplePlugIn() {
@@ -44,4 +42,3 @@ var SamplePlugIn = (function (_super) {
     };
     return SamplePlugIn;
 })(ActionPlugIn);
-//@ sourceMappingURL=SamplePlugin.js.map

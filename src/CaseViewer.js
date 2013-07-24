@@ -4,13 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="CaseModel.ts" />
-/// <reference path="CaseDecoder.ts" />
-/// <reference path="Layout.ts" />
-/// <reference path="../plugins/SamplePlugin.ts" />
-/// <reference path="../d.ts/jquery.d.ts" />
-/// <reference path="../d.ts/pointer.d.ts" />
-/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
         this.Width = 0;
@@ -309,8 +302,6 @@ var ElementShape = (function () {
         this.HTMLDoc.SetPosition(this.AbsX, this.AbsY);
         this.Resize();
 
-        // TODO
-        // if it has an parent, add an arrow element.
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
         this.SVGShape.SetColor("white", "black");
@@ -369,9 +360,9 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
-        var layout = new LayoutPortrait(this.ViewMap);
-        layout.Init(this.ElementTop, 300, 0);
-        layout.Traverse(this.ElementTop, 300, 0);
+        var layout = new LayoutLandscape(this.ViewMap);
+        layout.Init(this.ElementTop, 0, 200);
+        layout.Traverse(this.ElementTop, 0, 200);
     };
 
     CaseViewer.prototype.Draw = function (Screen) {
@@ -497,13 +488,6 @@ var ScreenManager = (function () {
             _this.ScrollManager.OnDoubleTap(e, _this);
         }, false);
     }
-    //onScale(e: GestureScaleEvent): void {
-    //	e.preventDefault();
-    //	e.stopPropagation();
-    //	//if (this.viewer.moving) return;
-    //	//var b = e.scale * this.scale0 / this.viewer.scale;
-    //	//this.setScale(e.centerX, e.centerY, b);
-    //}
     ScreenManager.prototype.SetOffset = function (x, y) {
         this.OffsetX = x;
         this.OffsetY = y;
@@ -540,4 +524,3 @@ function StartCaseViewer(url, id) {
     var svg = document.getElementById(id);
     CaseViewer.Draw(svg);
 }
-//@ sourceMappingURL=CaseViewer.js.map
