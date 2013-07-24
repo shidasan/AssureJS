@@ -1,5 +1,6 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
+/// <reference path="Layout.ts" />
 /// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 // <reference path="../d.ts/jQuery.svg.d.ts" />
@@ -282,106 +283,9 @@ class CaseViewerConfig {
 
 var ViewerConfig = new CaseViewerConfig();
 
-
-class LayOut {
-	static X_MARGIN = 160;
-	static Y_MARGIN = 120;
-
-	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
-	}
-
-    hasContext(Node : CaseModel, x : number, y : number) : number {
-		var i = 0
-			for(; i < Node.Children.length; i++) {
-				if(Node.Children[i].Type == CaseType.Context) {
-					return i;
-				}
-			}
-		return -1;
-	}
-
-	traverse(Element: CaseModel, x : number, y : number) {
-		if(Element.Children.length == 0) {
-			return;
-		}
-
-		var i = 0;
-		i = this.hasContext(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
-		if(i != -1) { //emit context element data
-			this.ViewMap[Element.Label].AbsX += x;
-			this.ViewMap[Element.Label].AbsY += y;
-			this.ViewMap[Element.Label].AbsX += 50;
-			console.log(Element.Label);
-			console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
-			Element.Children = Element.Children.splice(i-1,1);
-			this.traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
-		} else {  //emit element data except context
-			if(Element.Label == "G1") {
-				this.ViewMap[Element.Label].AbsX += x;
-				this.ViewMap[Element.Label].AbsY += y;
-			}
-			if(Element.Children.length % 2 == 1) {
-//				this.emitOddNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
-				this.emitOddNumberChildren(Element, x, y);
-			}
-			if(Element.Children.length % 2 == 0) {
-//				this.emitEvenNumberChildren(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
-				this.emitEvenNumberChildren(Element, x, y);
-			}
-	    }
-	}
-
-    emitOddNumberChildren(Node : CaseModel, x : number, y : number) : void {
-		var n = Node.Children.length;
-		for(var i in Node.Children) {
-			this.ViewMap[Node.Children[i].Label].AbsX = x;
-			this.ViewMap[Node.Children[i].Label].AbsY = y;
-			this.ViewMap[Node.Children[i].Label].AbsY += 160;
-		}
-		var num = (n-1)/2;
-		var k = 0;
-		for(var j = -num; j <= num; j++) {
-			this.ViewMap[Node.Children[k].Label].AbsX += 160 * j;
-			k++;
-		}
-
-		for(var i in Node.Children) {
-			console.log(Node.Children[i].Label);
-			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
-			this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
-		}
-		return;
-	}
-
-    emitEvenNumberChildren(Node : CaseModel, x : number, y : number) : void {
-		var n = Node.Children.length;
-		var num = n/2;
-		var index = new Array();
-
-		for(var j = -num; j <= num; j++) {
-			if(j == 0) {
-				continue;
-			}
-			index.push(j);
-		}
-
-		for(var i in Node.Children) {
-			this.ViewMap[Node.Children[i].Label].AbsX += x;
-			this.ViewMap[Node.Children[i].Label].AbsY += y;
-			this.ViewMap[Node.Children[i].Label].AbsX += 160 * index[i];
-			this.ViewMap[Node.Children[i].Label].AbsY += 160;
-			console.log(Node.Children[i].Label);
-//			console.log("(" + Node.Children[i].x + ", " + Node.Children[i].y + ")");
-			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
-			this.traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
-		}
-		return;
-	}
-}
-
 class CaseViewer {
 	ViewMap: { [index: string]: ElementShape; };
-    TopGoalLabel : string;
+	ElementTop : CaseModel;
 	static ElementWidth = 150;
 
 	constructor(Source: Case) {
@@ -396,7 +300,7 @@ class CaseViewer {
 				this.ViewMap[element.Label].ParentShape = this.ViewMap[element.Parent.Label];
 			}
 		}
-		this.TopGoalLabel = Source.TopGoalLabel;
+		this.ElementTop = Source.ElementTop;
 		this.Resize();
 	}
 
@@ -412,11 +316,9 @@ class CaseViewer {
 	}
 
 	LayoutElement() : void {
-		// TODO: ishii
-		var topElementShape = this.ViewMap[this.TopGoalLabel];
-		var topElement = topElementShape.Source;
-		var layout = new LayOut(this.ViewMap);
-		layout.traverse(topElement, 300, 0);
+		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
+		layout.Init(this.ElementTop, 300, 0);
+		layout.Traverse(this.ElementTop, 300, 0);
 	}
 
 	Draw(Screen: ScreenManager): void {

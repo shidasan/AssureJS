@@ -4,5 +4,6 @@ src/CaseViewer.ts
 src/PlugInManager.ts
 src/ServerApi.ts
 src/Index.ts
+src/Layout.ts
 plugins/SamplePlugin.ts
 test/CaseDecoderTest.ts
