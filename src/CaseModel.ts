@@ -101,10 +101,11 @@ var CaseModifierConfig = new CaseModifiers();
 class Case {
 	CaseId : number;  // TODO
 	IdCounters : number[];
+	ElementTop : CaseModel;
 	ElementMap : { [index: string]: CaseModel};
 
 	IsModified : boolean;
-	TopGoalLabel : string;
+	//TopGoalLabel : string;
 
 	constructor() {
 		this.IdCounters = [0, 0, 0, 0, 0];
@@ -112,13 +113,14 @@ class Case {
 		this.ElementMap = {};
 	}
 
+	/* Deprecated */
 	SetTopGoalLabel(Label : string) {
 		this.TopGoalLabel = Label;
 	}
 
 	NewLabel(Type : CaseType) : string {
 		this.IdCounters[Type] = this.IdCounters[Type] + 1;
-		return CaseType[Type].charAt(0) + this.IdCounters[Type]; // TODO G1, S1, E1, C1
+		return CaseType[Type].charAt(0) + this.IdCounters[Type]; 
 	}
 		
 	GetPlugInModifier(key : string) : (Case, CaseModel, string, any) => boolean {
