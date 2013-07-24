@@ -91,7 +91,7 @@ class CaseDecoder {
 		return null;
 	}
 
-	ParseMarkCase(Case : Case,  MarkCase: string) : CaseModel {
+	ParseASN(Case : Case,  ASN: string) : CaseModel {
 		// TODO
 		return null;
 	}

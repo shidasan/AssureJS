@@ -94,10 +94,9 @@ var CaseDecoder = (function () {
         return null;
     };
 
-    CaseDecoder.prototype.ParseMarkCase = function (Case, MarkCase) {
+    CaseDecoder.prototype.ParseASN = function (Case, ASN) {
         // TODO
         return null;
     };
     return CaseDecoder;
 })();
-//@ sourceMappingURL=CaseDecoder.js.map
