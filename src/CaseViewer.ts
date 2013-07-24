@@ -439,7 +439,7 @@ class ServerApi {
 	}
 }
 
-class DragState {
+class ScrollManager {
 	InitialOffsetX: number = 0;
 	InitialOffsetY: number = 0;
 	InitialX: number = 0;
@@ -506,21 +506,33 @@ class DragState {
 			this.MainPointerID = null;
 		}
 	}
+
+	OnDoubleTap(e: PointerEvent, Screen: ScreenManager) {
+		var width: number = Screen.ContentLayer.clientWidth;
+		var height: number = Screen.ContentLayer.clientHeight;
+		var pointer = this.Pointers[0];
+		//Screen.SetOffset(width / 2 - pointer.pageX, height / 2 - pointer.pageY);
+	}
 }
 
 class ScreenManager {
 	
-	DragState: DragState = new DragState();
+	ScrollManager: ScrollManager = new ScrollManager();
 	private OffsetX: number;
 	private OffsetY: number;
 
-	constructor(public ShapeLayer: SVGGElement, public ContentLayer: HTMLDivElement, public ControlLayer: HTMLDivElement) {
+	constructor(public ShapeLayer: SVGGElement, public ContentLayer: HTMLDivElement, public ControlLayer: HTMLDivElement, public BackGroundLayer: HTMLDivElement) {
 		this.SetOffset(0, 0);
-		var OnPointer = (e: PointerEvent) => { this.DragState.OnPointerEvent(e, this); };
+		var OnPointer = (e: PointerEvent) => { this.ScrollManager.OnPointerEvent(e, this); };
+		BackGroundLayer.addEventListener("pointerdown", OnPointer, false);
+		BackGroundLayer.addEventListener("pointermove", OnPointer, false);
+		BackGroundLayer.addEventListener("pointerup", OnPointer, false);
+		BackGroundLayer.addEventListener("gesturedoubletap", (e: PointerEvent) => { this.ScrollManager.OnDoubleTap(e, this); }, false);
 		ContentLayer.addEventListener("pointerdown", OnPointer, false);
 		ContentLayer.addEventListener("pointermove", OnPointer, false);
 		ContentLayer.addEventListener("pointerup", OnPointer, false);
-		//ContentLayer.addEventListener("gesturescale", OnPointer, false);
+		ContentLayer.addEventListener("gesturedoubletap", (e: PointerEvent) => { this.ScrollManager.OnDoubleTap(e, this); }, false);
+		//BackGroundLayer.addEventListener("gesturescale", OnPointer, false);
 	}
 
 	//onScale(e: GestureScaleEvent): void {
@@ -535,16 +547,16 @@ class ScreenManager {
 		this.OffsetX = x;
 		this.OffsetY = y;
 		
-		var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
-		mat.e = x;
-		mat.f = y;
+		var TranslationMatrix = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
+		TranslationMatrix.e = x;
+		TranslationMatrix.f = y;
 
 		var xpx = x + "px";
 		var ypx = y + "px";
-		this.ContentLayer.style.marginLeft = xpx;
-		this.ContentLayer.style.marginTop  = ypx;
+		this.ContentLayer.style.left = xpx;
+		this.ContentLayer.style.top  = ypx;
 		//this.ControlLayer.style.marginLeft = xpx;
-		//this.ControlLayer.style.marginTop  = ypx;;
+		//this.ControlLayer.style.marginTop  = ypx;
 	}
 
 	GetOffsetX(): number {

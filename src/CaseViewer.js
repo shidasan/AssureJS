@@ -441,8 +441,8 @@ var ServerApi = (function () {
     return ServerApi;
 })();
 
-var DragState = (function () {
-    function DragState() {
+var ScrollManager = (function () {
+    function ScrollManager() {
         this.InitialOffsetX = 0;
         this.InitialOffsetY = 0;
         this.InitialX = 0;
@@ -452,30 +452,30 @@ var DragState = (function () {
         this.MainPointerID = 0;
         this.Pointers = [];
     }
-    DragState.prototype.SetInitialOffset = function (InitialOffsetX, InitialOffsetY) {
+    ScrollManager.prototype.SetInitialOffset = function (InitialOffsetX, InitialOffsetY) {
         this.InitialOffsetX = InitialOffsetX;
         this.InitialOffsetY = InitialOffsetY;
     };
 
-    DragState.prototype.StartDrag = function (InitialX, InitialY) {
+    ScrollManager.prototype.StartDrag = function (InitialX, InitialY) {
         this.InitialX = InitialX;
         this.InitialY = InitialY;
     };
 
-    DragState.prototype.UpdateDrag = function (CurrentX, CurrentY) {
+    ScrollManager.prototype.UpdateDrag = function (CurrentX, CurrentY) {
         this.CurrentX = CurrentX;
         this.CurrentY = CurrentY;
     };
 
-    DragState.prototype.CalcOffsetX = function () {
+    ScrollManager.prototype.CalcOffsetX = function () {
         return this.CurrentX - this.InitialX + this.InitialOffsetX;
     };
 
-    DragState.prototype.CalcOffsetY = function () {
+    ScrollManager.prototype.CalcOffsetY = function () {
         return this.CurrentY - this.InitialY + this.InitialOffsetY;
     };
 
-    DragState.prototype.GetMainPointer = function () {
+    ScrollManager.prototype.GetMainPointer = function () {
         for (var i = 0; i < this.Pointers.length; ++i) {
             if (this.Pointers[i].identifier === this.MainPointerID) {
                 return this.Pointers[i];
@@ -485,11 +485,11 @@ var DragState = (function () {
         return null;
     };
 
-    DragState.prototype.IsDragging = function () {
+    ScrollManager.prototype.IsDragging = function () {
         return this.MainPointerID != null;
     };
 
-    DragState.prototype.OnPointerEvent = function (e, Screen) {
+    ScrollManager.prototype.OnPointerEvent = function (e, Screen) {
         this.Pointers = e.getPointerList();
         if (this.Pointers.length > 0) {
             if (this.IsDragging()) {
@@ -510,23 +510,39 @@ var DragState = (function () {
             this.MainPointerID = null;
         }
     };
-    return DragState;
+
+    ScrollManager.prototype.OnDoubleTap = function (e, Screen) {
+        var width = Screen.ContentLayer.clientWidth;
+        var height = Screen.ContentLayer.clientHeight;
+        var pointer = this.Pointers[0];
+    };
+    return ScrollManager;
 })();
 
 var ScreenManager = (function () {
-    function ScreenManager(ShapeLayer, ContentLayer, ControlLayer) {
+    function ScreenManager(ShapeLayer, ContentLayer, ControlLayer, BackGroundLayer) {
         var _this = this;
         this.ShapeLayer = ShapeLayer;
         this.ContentLayer = ContentLayer;
         this.ControlLayer = ControlLayer;
-        this.DragState = new DragState();
+        this.BackGroundLayer = BackGroundLayer;
+        this.ScrollManager = new ScrollManager();
         this.SetOffset(0, 0);
         var OnPointer = function (e) {
-            _this.DragState.OnPointerEvent(e, _this);
+            _this.ScrollManager.OnPointerEvent(e, _this);
         };
+        BackGroundLayer.addEventListener("pointerdown", OnPointer, false);
+        BackGroundLayer.addEventListener("pointermove", OnPointer, false);
+        BackGroundLayer.addEventListener("pointerup", OnPointer, false);
+        BackGroundLayer.addEventListener("gesturedoubletap", function (e) {
+            _this.ScrollManager.OnDoubleTap(e, _this);
+        }, false);
         ContentLayer.addEventListener("pointerdown", OnPointer, false);
         ContentLayer.addEventListener("pointermove", OnPointer, false);
         ContentLayer.addEventListener("pointerup", OnPointer, false);
+        ContentLayer.addEventListener("gesturedoubletap", function (e) {
+            _this.ScrollManager.OnDoubleTap(e, _this);
+        }, false);
     }
     //onScale(e: GestureScaleEvent): void {
     //	e.preventDefault();
@@ -539,14 +555,14 @@ var ScreenManager = (function () {
         this.OffsetX = x;
         this.OffsetY = y;
 
-        var mat = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
-        mat.e = x;
-        mat.f = y;
+        var TranslationMatrix = this.ShapeLayer.transform.baseVal.getItem(0).matrix;
+        TranslationMatrix.e = x;
+        TranslationMatrix.f = y;
 
         var xpx = x + "px";
         var ypx = y + "px";
-        this.ContentLayer.style.marginLeft = xpx;
-        this.ContentLayer.style.marginTop = ypx;
+        this.ContentLayer.style.left = xpx;
+        this.ContentLayer.style.top = ypx;
     };
 
     ScreenManager.prototype.GetOffsetX = function () {

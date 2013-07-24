@@ -77,11 +77,12 @@ $(function () {
 
     Case0.SetTopGoalLabel(root.Label);
     var Viewer = new CaseViewer(Case0);
+    var backgroundlayer = document.getElementById("background");
     var shapelayer = document.getElementById("layer0");
     var contentlayer = document.getElementById("layer1");
     var controllayer = document.getElementById("layer2");
 
-    var Screen = new ScreenManager(shapelayer, contentlayer, controllayer);
+    var Screen = new ScreenManager(shapelayer, contentlayer, controllayer, backgroundlayer);
     Viewer.Draw(Screen);
     pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
 });

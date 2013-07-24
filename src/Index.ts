@@ -80,11 +80,12 @@ $(function () {
 
 	Case0.SetTopGoalLabel(root.Label);
 	var Viewer = new CaseViewer(Case0);
+	var backgroundlayer = <HTMLDivElement>document.getElementById("background");
 	var shapelayer = <SVGGElement><any>document.getElementById("layer0");
 	var contentlayer = <HTMLDivElement>document.getElementById("layer1");
 	var controllayer = <HTMLDivElement>document.getElementById("layer2");
 
-	var Screen = new ScreenManager(shapelayer, contentlayer, controllayer);
+	var Screen = new ScreenManager(shapelayer, contentlayer, controllayer, backgroundlayer);
 	Viewer.Draw(Screen);
 	pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
 });
