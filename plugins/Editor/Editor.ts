@@ -19,10 +19,20 @@ class EditorPlugIn extends ActionPlugIn {
 	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
 		$('.node').click(function() { //FIXME
 			var p = $(this).position();
-			$('#editor').focus().css({position: 'absolute', top: p.top, left: p.left, display: 'block'}).appendTo($('#layer2'));
-			$('#editor').blur(function(e){
-				$(this).css({display: 'none'});
-			});
+			$('#editor')
+				.css({position: 'absolute', top: p.top, left: p.left, display: 'block'})
+				.appendTo($('#layer2'))
+				.focus()
+				.blur(function(e: JQueryEventObject) {
+					e.stopPropagation();
+					$(this).css({display: 'none'});
+				})
+				.on("keydown", function(e: JQueryEventObject) {
+					if(e.keyCode == 27 /* ESC */){
+						e.stopPropagation();
+						$(this).css({display: 'none'});
+					}
+				});
 		});
 		return true;
 	}

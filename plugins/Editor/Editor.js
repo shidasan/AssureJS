@@ -18,9 +18,14 @@ var EditorPlugIn = (function (_super) {
     EditorPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
         $('.node').click(function () {
             var p = $(this).position();
-            $('#editor').focus().css({ position: 'absolute', top: p.top, left: p.left, display: 'block' }).appendTo($('#layer2'));
-            $('#editor').blur(function (e) {
+            $('#editor').css({ position: 'absolute', top: p.top, left: p.left, display: 'block' }).appendTo($('#layer2')).focus().blur(function (e) {
+                e.stopPropagation();
                 $(this).css({ display: 'none' });
+            }).on("keydown", function (e) {
+                if (e.keyCode == 27) {
+                    e.stopPropagation();
+                    $(this).css({ display: 'none' });
+                }
             });
         });
         return true;
