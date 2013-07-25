@@ -140,7 +140,7 @@ class LayoutPortrait extends Layout {
 	}
 
 	Init(Element: CaseModel, x : number, y : number) : void {
-		this.ViewMap[Element.Label].AbsX += x;
+//		this.ViewMap[Element.Label].AbsX += x;
 		this.ViewMap[Element.Label].AbsY += y;
 	}
 
@@ -154,9 +154,9 @@ class LayoutPortrait extends Layout {
 		var i : number = 0;
 		i = this.GetContextIndex(Element);
 		if(i != -1) { //emit context element data
-			this.ViewMap[Element.Children[i].Label].AbsX += x;
+//			this.ViewMap[Element.Children[i].Label].AbsX += x;
 			this.ViewMap[Element.Children[i].Label].AbsY += y;
-			this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
+//			this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
 			console.log(Element.Label);
 			console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
 			Element.Children = Element.Children.splice(i-1,1);
@@ -174,14 +174,14 @@ class LayoutPortrait extends Layout {
 	EmitOddNumberChildren(Node : CaseModel, x : number, y : number) : void {
 		var n : number = Node.Children.length;
 		for(var i : number = 0; i < n; i++) {
-			this.ViewMap[Node.Children[i].Label].AbsX = x;
+//			this.ViewMap[Node.Children[i].Label].AbsX = x;
 			this.ViewMap[Node.Children[i].Label].AbsY = y;
 			this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
 		}
 		var num : number = (n-1)/2;
 		var k : number;
 		for(var j : number = -num, k = 0; j <= num; j++, k++) {
-			this.ViewMap[Node.Children[k].Label].AbsX += this.X_MARGIN * j;
+//			this.ViewMap[Node.Children[k].Label].AbsX += this.X_MARGIN * j;
 		}
 
 		for(var i : number = 0; i < Node.Children.length; i++) {
@@ -205,9 +205,9 @@ class LayoutPortrait extends Layout {
 		}
 
 		for(var i : number = 0; i <  Node.Children.length; i++) {
-			this.ViewMap[Node.Children[i].Label].AbsX += x;
+//			this.ViewMap[Node.Children[i].Label].AbsX += x;
 			this.ViewMap[Node.Children[i].Label].AbsY += y;
-			this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN * index[i];
+//			this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN * index[i];
 			this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
 			console.log(Node.Children[i].Label);
 			console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
