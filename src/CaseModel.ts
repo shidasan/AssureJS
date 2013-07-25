@@ -120,7 +120,7 @@ class Case {
 
 	NewLabel(Type : CaseType) : string {
 		this.IdCounters[Type] = this.IdCounters[Type] + 1;
-		return CaseType[Type].charAt(0) + this.IdCounters[Type]; 
+		return CaseType[Type].charAt(0) + this.IdCounters[Type];
 	}
 		
 	GetPlugInModifier(key : string) : (Case, CaseModel, string, any) => boolean {

@@ -111,7 +111,7 @@ class LayoutPortrait extends LayoutEngine {
 	X_CONTEXT_MARGIN : number = 200;
 	footelement : string[] = new Array();
 	contextId : number = -1;
-	
+
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
 	}

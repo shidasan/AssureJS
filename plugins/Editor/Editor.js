@@ -16,7 +16,8 @@ var EditorPlugIn = (function (_super) {
     };
 
     EditorPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
-        $('.node').click(function () {
+        $('.node').click(function (ev) {
+            ev.stopPropagation();
             var p = $(this).position();
             $('#editor').css({ position: 'absolute', top: p.top, left: p.left, display: 'block' }).appendTo($('#layer2')).focus().blur(function (e) {
                 e.stopPropagation();
@@ -27,6 +28,9 @@ var EditorPlugIn = (function (_super) {
                     $(this).css({ display: 'none' });
                 }
             });
+        });
+        $('#layer1').click(function () {
+            $('#editor').blur();
         });
         return true;
     };
