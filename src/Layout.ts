@@ -16,6 +16,9 @@ class Layout {
 
 	SetFootElementPosition() : void {
 	}
+
+	SetAllElementPosition(Element: CaseModel) : void {
+	}
 }
 
 class LayoutLandscape extends Layout {
@@ -119,6 +122,23 @@ class LayoutPortrait extends Layout {
 
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
+	}
+
+	SetAllElementPosition(Element : CaseModel) : void {
+		if(Element.Children.length == 0) {
+			return;
+		}
+
+		for(var i in Element.Children) {
+			this.SetAllElementPosition(Element.Children[i]);
+		}
+
+		var xPositionSum = 0;
+		for(var i in Element.Children) {
+			xPositionSum += this.ViewMap[Element.Children[i].Label].AbsX
+		}
+		this.ViewMap[Element.Label].AbsX = xPositionSum/Element.Children.length;
+		console.log(this.ViewMap[Element.Label].AbsX);
 	}
 
 	SetFootElementPosition() : void {
