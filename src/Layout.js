@@ -147,7 +147,8 @@ var LayoutPortrait = (function (_super) {
         for (var i in this.footelement) {
             if (i != 0) {
                 console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i - 1]].ParentShape.Source.Label);
-                this.ViewMap[this.footelement[i]].AbsX += this.ViewMap[this.footelement[i]].AbsX + this.X_MARGIN;
+                this.ViewMap[this.footelement[i]].AbsX += (this.ViewMap[this.footelement[i - 1]].AbsX + this.X_MARGIN);
+                console.log("footelement.AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
             }
         }
         return;

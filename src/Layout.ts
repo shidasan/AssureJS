@@ -147,7 +147,8 @@ class LayoutPortrait extends Layout {
 //			console.log(this.footelement[i] + ".AbsY = " + this.ViewMap[this.footelement[i]].AbsY);
 			if(i != 0) {
 				console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i-1]].ParentShape.Source.Label);
-				this.ViewMap[this.footelement[i]].AbsX += this.ViewMap[this.footelement[i]].AbsX + this.X_MARGIN;
+				this.ViewMap[this.footelement[i]].AbsX += (this.ViewMap[this.footelement[i-1]].AbsX + this.X_MARGIN);
+				console.log("footelement.AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
 			}
 		}
 		return;
@@ -177,6 +178,7 @@ class LayoutPortrait extends Layout {
 		var i : number = 0;
 		i = this.GetContextIndex(Element);
 		if(i != -1) { //emit context element data
+			this.ViewMap[Element.Children[i].Label].ParentDirection = Direction.Left;
 			this.ViewMap[Element.Children[i].Label].AbsX += x;
 			this.ViewMap[Element.Children[i].Label].AbsY += y;
 			this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
