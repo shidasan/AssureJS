@@ -1,6 +1,7 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="Layout.ts" />
+/// <reference path="PlugInManager.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 /// <reference path="../d.ts/pointer.d.ts" />
 
@@ -45,13 +46,15 @@ class HTMLDoc {
 	}
 
 	InvokePlugInRender(CaseViewer: CaseViewer, CaseModel: CaseModel, DocBase: JQuery): void {
-		for (var anno in CaseModel.Annotations) {
-			var f = CaseViewer.GetPlugInRender(anno.Name);
-			DocBase.append(f(CaseViewer, CaseModel, anno));
+		for (var i : number = 0; i < CaseModel.Annotations.length; i++) {
+			var anno : CaseAnnotation = CaseModel.Annotations[i];
+			var f = CaseViewer.GetPlugInRender("annotation");
+			f(CaseViewer, CaseModel, DocBase, anno);
 		}
-		for (var note in CaseModel.Notes) {
-			var f = CaseViewer.GetPlugInRender(note.Name);
-			DocBase.append(f(CaseViewer, CaseModel, note));
+		for (var i : number = 0; i < CaseModel.Notes.length; i++) {
+			var note : CaseNote = CaseModel.Notes[i];
+			var f = CaseViewer.GetPlugInRender("note");
+			f(CaseViewer, CaseModel, DocBase, note);
 		}
 	}
 
@@ -356,10 +359,12 @@ var ViewerConfig = new CaseViewerConfig();
 class CaseViewer {
 	ViewMap: { [index: string]: ElementShape; };
 	ElementTop : CaseModel;
+	pluginManager : PlugInManager;
 	static ElementWidth = 150;
 
-	constructor(Source: Case) {
+	constructor(Source: Case, pluginManager : PlugInManager) {
 		this.ViewMap = <any>[]; // a hack to avoid tsc's problem.
+		this.pluginManager = pluginManager;
 		for (var elementkey in Source.ElementMap) {
 			var element = Source.ElementMap[elementkey];
 			this.ViewMap[element.Label] = new ElementShape(this, element);
@@ -374,8 +379,11 @@ class CaseViewer {
 		this.Resize();
 	}
 
-	GetPlugInRender(Name: string): (CaseViewer: CaseViewer, CaseModel: CaseModel, Node: string) => string {
-		return null; // TODO;
+	GetPlugInRender(PlugInName: string): (caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery, MetaData: Object) => string {
+		return (viewer: CaseViewer, model: CaseModel, e: JQuery, data: Object) : string => {
+			this.pluginManager.RenderPlugInMap[PlugInName].Delegate(viewer, model, e, data);
+			return null;
+		};
 	}
 
 	Resize(): void {
@@ -398,13 +406,13 @@ class CaseViewer {
 		layout.SetAllElementPosition(this.ElementTop);
 	}
 
-	Draw(Screen: ScreenManager, pluginManager: PlugInManager): void {
+	Draw(Screen: ScreenManager): void {
 		var shapelayer = $(Screen.ShapeLayer);
 		var screenlayer = $(Screen.ContentLayer);
 		for (var viewkey in this.ViewMap) {
 			this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
 		}
-		pluginManager.RegisterActionEventListeners(this, this.ElementTop);
+		this.pluginManager.RegisterActionEventListeners(this, this.ElementTop);
 	}
 
 }

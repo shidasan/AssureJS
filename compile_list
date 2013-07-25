@@ -7,4 +7,6 @@ src/Index.ts
 src/Layout.ts
 plugins/Editor/Editor.ts
 plugins/MenuBar/MenuBar.ts
+plugins/Annotation/Annotation.ts
+plugins/Note/Note.ts
 test/CaseDecoderTest.ts

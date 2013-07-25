@@ -49,7 +49,7 @@ var RenderPlugIn = (function (_super) {
         return true;
     };
 
-    RenderPlugIn.prototype.Delegate = function (caseViewer, caseModel, element) {
+    RenderPlugIn.prototype.Delegate = function (caseViewer, caseModel, element, MetaData) {
     };
     return RenderPlugIn;
 })(PlugIn);
@@ -72,6 +72,30 @@ var PlugInManager = (function () {
                 this.ActionPlugIns[i].Delegate(CaseViewer, CaseModel);
             }
         }
+    };
+
+    /**
+    AddCheckerPlugIn(key: string, f : (x : CaseModel, y: string, z : any) => boolean) {
+    if(key == null) {
+    this.DefaultCheckerPlugIns.push(f);
+    }
+    else {
+    this.CheckerPlugInMap[key] = f;
+    }
+    }
+    
+    
+    AddDefaultActionPlugIn(f : (x : CaseModel, y: string, z : any) => boolean) {
+    if(key == null) {
+    this.DefaultCheckerPlugIns.push(f);
+    }
+    else {
+    this.CheckerPlugInMap[key] = f;
+    }
+    }
+    **/
+    PlugInManager.prototype.AddRenderPlugIn = function (key, renderPlugIn) {
+        this.RenderPlugInMap[key] = renderPlugIn;
     };
     return PlugInManager;
 })();

@@ -3,6 +3,7 @@
 /// <reference path="CaseViewer.ts" />
 /// <reference path="../plugins/MenuBar/MenuBar.ts" />
 /// <reference path="../plugins/Editor/Editor.ts" />
+/// <reference path="../plugins/Annotation/Annotation.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 
 $(function () {
@@ -10,6 +11,7 @@ $(function () {
 	var pluginManager = new PlugInManager();
 	pluginManager.AddActionPlugIn("menu", new MenuBarPlugIn());
 	pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
+	pluginManager.AddRenderPlugIn("annotation", new AnnotationPlugIn());
 
 	var JsonData = {
 		"DCaseName": "test",
@@ -241,15 +243,16 @@ $(function () {
 	var Case0: Case = new Case();
 	var caseDecoder: CaseDecoder = new CaseDecoder();
 	var root: CaseModel = caseDecoder.ParseJson(Case0, JsonData);
+	root.Annotations = [new CaseAnnotation("Task", "test")];
 
 	Case0.SetElementTop(root);
-	var Viewer = new CaseViewer(Case0);
+	var Viewer = new CaseViewer(Case0, pluginManager);
 	var backgroundlayer = <HTMLDivElement>document.getElementById("background");
 	var shapelayer = <SVGGElement><any>document.getElementById("layer0");
 	var contentlayer = <HTMLDivElement>document.getElementById("layer1");
 	var controllayer = <HTMLDivElement>document.getElementById("layer2");
 
 	var Screen = new ScreenManager(shapelayer, contentlayer, controllayer, backgroundlayer);
-	Viewer.Draw(Screen, pluginManager);
+	Viewer.Draw(Screen);
 });
 
