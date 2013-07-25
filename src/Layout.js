@@ -13,6 +13,9 @@ var Layout = (function () {
 
     Layout.prototype.Traverse = function (Element, x, y) {
     };
+
+    Layout.prototype.SetFootElementPosition = function () {
+    };
     return Layout;
 })();
 
@@ -118,7 +121,16 @@ var LayoutPortrait = (function (_super) {
         this.X_MARGIN = 160;
         this.Y_MARGIN = 160;
         this.X_CONTEXT_MARGIN = 160;
+        this.footelement = new Array();
     }
+    LayoutPortrait.prototype.SetFootElementPosition = function () {
+        for (var i in this.footelement) {
+            console.log(this.footelement[i] + ".AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
+            console.log(this.footelement[i] + ".AbsY = " + this.ViewMap[this.footelement[i]].AbsY);
+        }
+        return;
+    };
+
     LayoutPortrait.prototype.GetContextIndex = function (Node) {
         var i = 0;
         for (; i < Node.Children.length; i++) {
@@ -136,6 +148,8 @@ var LayoutPortrait = (function (_super) {
 
     LayoutPortrait.prototype.Traverse = function (Element, x, y) {
         if (Element.Children.length == 0) {
+            this.footelement.push(Element.Label);
+            console.log("footelement = " + this.footelement);
             return;
         }
 

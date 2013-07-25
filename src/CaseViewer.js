@@ -363,6 +363,7 @@ var CaseViewer = (function () {
         var layout = new LayoutPortrait(this.ViewMap);
         layout.Init(this.ElementTop, 300, 0);
         layout.Traverse(this.ElementTop, 300, 0);
+        layout.SetFootElementPosition();
     };
 
     CaseViewer.prototype.Draw = function (Screen) {

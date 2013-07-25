@@ -13,6 +13,9 @@ class Layout {
 
 	Traverse(Element: CaseModel, x : number, y : number) : void {
 	}
+
+	SetFootElementPosition() : void {
+	}
 }
 
 class LayoutLandscape extends Layout {
@@ -112,9 +115,18 @@ class LayoutPortrait extends Layout {
 	X_MARGIN = 160;
 	Y_MARGIN = 160;
 	X_CONTEXT_MARGIN : number = 160;
-	
+	footelement : string[] = new Array();
+
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
+	}
+
+	SetFootElementPosition() : void {
+		for(var i in this.footelement) {
+			console.log(this.footelement[i] + ".AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
+			console.log(this.footelement[i] + ".AbsY = " + this.ViewMap[this.footelement[i]].AbsY);
+		}
+		return;
 	}
 
 	GetContextIndex(Node : CaseModel) : number {
@@ -134,6 +146,8 @@ class LayoutPortrait extends Layout {
 
 	Traverse(Element: CaseModel, x : number, y : number) {
 		if(Element.Children.length == 0) {
+			this.footelement.push(Element.Label);
+			console.log("footelement = " + this.footelement);
 			return;
 		}
 
