@@ -110,8 +110,9 @@ var LayoutPortrait = (function (_super) {
         this.ViewMap = ViewMap;
         this.X_MARGIN = 200;
         this.Y_MARGIN = 160;
-        this.X_CONTEXT_MARGIN = 30;
+        this.X_CONTEXT_MARGIN = 200;
         this.footelement = new Array();
+        this.contextId = -1;
     }
     LayoutPortrait.prototype.SetAllElementPosition = function (Element) {
         if (Element.Children.length == 0) {
@@ -122,20 +123,35 @@ var LayoutPortrait = (function (_super) {
             this.SetAllElementPosition(Element.Children[i]);
         }
 
+        var i = 0;
+        i = this.GetContextIndex(Element);
         var xPositionSum = 0;
-        for (var i in Element.Children) {
-            xPositionSum += this.ViewMap[Element.Children[i].Label].AbsX;
+        for (var j in Element.Children) {
+            if (i != j) {
+                xPositionSum += this.ViewMap[Element.Children[j].Label].AbsX;
+            }
         }
-        this.ViewMap[Element.Label].AbsX = xPositionSum / Element.Children.length;
+        if (i == -1) {
+            this.ViewMap[Element.Label].AbsX = xPositionSum / (Element.Children.length);
+        } else {
+            this.ViewMap[Element.Label].AbsX = xPositionSum / (Element.Children.length - 1);
+            this.ViewMap[Element.Children[i].Label].AbsX = (this.ViewMap[Element.Label].AbsX + this.X_CONTEXT_MARGIN);
+        }
         console.log(this.ViewMap[Element.Label].AbsX);
     };
 
     LayoutPortrait.prototype.SetFootElementPosition = function () {
         for (var i in this.footelement) {
+            var PreviousElementShape = this.ViewMap[this.footelement[i - 1]];
+            var CurrentElementShape = this.ViewMap[this.footelement[i]];
             if (i != 0) {
+                if ((PreviousElementShape.ParentShape.Source.Label != CurrentElementShape.ParentShape.Source.Label) && (this.GetContextIndex(PreviousElementShape.ParentShape.Source) != -1)) {
+                    CurrentElementShape.AbsX += 100;
+                    console.log("Previous Element's Parent has a Context Element.");
+                }
                 console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i - 1]].ParentShape.Source.Label);
-                this.ViewMap[this.footelement[i]].AbsX += (this.ViewMap[this.footelement[i - 1]].AbsX + this.X_MARGIN);
-                console.log("footelement.AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
+                CurrentElementShape.AbsX += (PreviousElementShape.AbsX + this.X_MARGIN);
+                console.log("footelement.AbsX = " + CurrentElementShape.AbsX);
             }
         }
         return;
@@ -159,21 +175,24 @@ var LayoutPortrait = (function (_super) {
             this.ViewMap[Element.Children[i].Label].AbsX += x;
             this.ViewMap[Element.Children[i].Label].AbsY += y;
             this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
-            console.log(Element.Label);
-            console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
-            Element.Children = Element.Children.splice(i - 1, 1);
-            this.Traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+            console.log(Element.Children[i].Label);
+            console.log("(" + this.ViewMap[Element.Children[i].Label].AbsX + ", " + this.ViewMap[Element.Children[i].Label].AbsY + ")");
+            this.EmitChildrenElement(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY, i);
         } else {
-            this.EmitChildrenElement(Element, x, y);
+            this.EmitChildrenElement(Element, x, y, i);
         }
     };
 
-    LayoutPortrait.prototype.EmitChildrenElement = function (Node, x, y) {
+    LayoutPortrait.prototype.EmitChildrenElement = function (Node, x, y, ContextId) {
         var n = Node.Children.length;
         for (var i = 0; i < n; i++) {
-            this.ViewMap[Node.Children[i].Label].AbsY = y;
-            this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
-            this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+            if (ContextId == i) {
+                continue;
+            } else {
+                this.ViewMap[Node.Children[i].Label].AbsY = y;
+                this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
+                this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+            }
         }
         return;
     };
