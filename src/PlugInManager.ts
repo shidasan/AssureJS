@@ -30,7 +30,7 @@ class RenderPlugIn extends PlugIn {
 		return true;
 	}
 
-	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) : void {
+	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery, MetaData: Object) : void {
 	}
 }
 
@@ -82,7 +82,10 @@ class PlugInManager {
 		}
 	}
 	**/
-	
+
+	AddRenderPlugIn(key: string, renderPlugIn: RenderPlugIn) {
+		this.RenderPlugInMap[key] = renderPlugIn;
+	}
 }
 /** this is sample of ActionPlugIn */
 /*

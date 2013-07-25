@@ -4,6 +4,13 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="CaseModel.ts" />
+/// <reference path="CaseDecoder.ts" />
+/// <reference path="Layout.ts" />
+/// <reference path="PlugInManager.ts" />
+/// <reference path="../d.ts/jquery.d.ts" />
+/// <reference path="../d.ts/pointer.d.ts" />
+/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
         this.Width = 0;
@@ -44,13 +51,15 @@ var HTMLDoc = (function () {
     };
 
     HTMLDoc.prototype.InvokePlugInRender = function (CaseViewer, CaseModel, DocBase) {
-        for (var anno in CaseModel.Annotations) {
-            var f = CaseViewer.GetPlugInRender(anno.Name);
-            DocBase.append(f(CaseViewer, CaseModel, anno));
+        for (var i = 0; i < CaseModel.Annotations.length; i++) {
+            var anno = CaseModel.Annotations[i];
+            var f = CaseViewer.GetPlugInRender("annotation");
+            f(CaseViewer, CaseModel, DocBase, anno);
         }
-        for (var note in CaseModel.Notes) {
-            var f = CaseViewer.GetPlugInRender(note.Name);
-            DocBase.append(f(CaseViewer, CaseModel, note));
+        for (var i = 0; i < CaseModel.Notes.length; i++) {
+            var note = CaseModel.Notes[i];
+            var f = CaseViewer.GetPlugInRender("note");
+            f(CaseViewer, CaseModel, DocBase, note);
         }
     };
 
@@ -311,6 +320,8 @@ var ElementShape = (function () {
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
 
+        // TODO
+        // enable color-customization
         this.SVGShape.SetColor("white", "black");
 
         if (this.ParentShape != null) {
@@ -358,8 +369,9 @@ var CaseViewerConfig = (function () {
 var ViewerConfig = new CaseViewerConfig();
 
 var CaseViewer = (function () {
-    function CaseViewer(Source) {
+    function CaseViewer(Source, pluginManager) {
         this.ViewMap = [];
+        this.pluginManager = pluginManager;
         for (var elementkey in Source.ElementMap) {
             var element = Source.ElementMap[elementkey];
             this.ViewMap[element.Label] = new ElementShape(this, element);
@@ -373,8 +385,12 @@ var CaseViewer = (function () {
         this.ElementTop = Source.ElementTop;
         this.Resize();
     }
-    CaseViewer.prototype.GetPlugInRender = function (Name) {
-        return null;
+    CaseViewer.prototype.GetPlugInRender = function (PlugInName) {
+        var _this = this;
+        return function (viewer, model, e, data) {
+            _this.pluginManager.RenderPlugInMap[PlugInName].Delegate(viewer, model, e, data);
+            return null;
+        };
     };
 
     CaseViewer.prototype.Resize = function () {
@@ -385,6 +401,11 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
+        //		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
+        //		layout.Init(this.ElementTop, 300, 0);
+        //		layout.Traverse(this.ElementTop, 300, 0);
+        //		layout.SetFootElementPosition();
+        //		layout.SetAllElementPosition(this.ElementTop);
         var layout = new LayoutLandscape(this.ViewMap);
         layout.Init(this.ElementTop, 0, 200);
         layout.Traverse(this.ElementTop, 0, 200);
@@ -392,13 +413,13 @@ var CaseViewer = (function () {
         layout.SetAllElementPosition(this.ElementTop);
     };
 
-    CaseViewer.prototype.Draw = function (Screen, pluginManager) {
+    CaseViewer.prototype.Draw = function (Screen) {
         var shapelayer = $(Screen.ShapeLayer);
         var screenlayer = $(Screen.ContentLayer);
         for (var viewkey in this.ViewMap) {
             this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
         }
-        pluginManager.RegisterActionEventListeners(this, this.ElementTop);
+        this.pluginManager.RegisterActionEventListeners(this, this.ElementTop);
     };
     CaseViewer.ElementWidth = 150;
     return CaseViewer;
@@ -507,6 +528,13 @@ var ScreenManager = (function () {
             _this.ScrollManager.OnDoubleTap(e, _this);
         }, false);
     }
+    //onScale(e: GestureScaleEvent): void {
+    //	e.preventDefault();
+    //	e.stopPropagation();
+    //	//if (this.viewer.moving) return;
+    //	//var b = e.scale * this.scale0 / this.viewer.scale;
+    //	//this.setScale(e.centerX, e.centerY, b);
+    //}
     ScreenManager.prototype.SetOffset = function (x, y) {
         this.OffsetX = x;
         this.OffsetY = y;
