@@ -209,8 +209,6 @@ class StrategyShape extends SVGShape {
 				return new Point(this.Width / 2, 0);
 			case Direction.Bottom:
 				return new Point(this.Width / 2, this.Height);
-			default: 
-				return new Point(0, 0);
 		}
 	}
 }
@@ -274,6 +272,8 @@ class ElementShape {
 	SVGShape: SVGShape;
 	ParentShape: ElementShape;
 
+	ParentDirection: Direction = Direction.Top;
+
 	AbsX: number = 0;
 	AbsY: number = 0;
 	x: number = 0;
@@ -297,15 +297,35 @@ class ElementShape {
 		divroot.append(this.HTMLDoc.DocBase);
 		this.HTMLDoc.SetPosition(this.AbsX, this.AbsY);
 		this.Resize();
-		// TODO
-		// if it has an parent, add an arrow element. 
+
 		svgroot.append(this.SVGShape.ShapeGroup);
 		this.SVGShape.SetPosition(this.AbsX, this.AbsY);
+		// TODO 
+		// enable color-customization
 		this.SVGShape.SetColor("white", "black");
 
+		// if it has an parent, add an arrow element. 
 		if (this.ParentShape != null) {
-			var p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Bottom);
-			var p2 = this.GetAbsoluteConnectorPosition(Direction.Top);
+			var p1: Point = null;
+			var p2: Point = null;
+			switch (this.ParentDirection) {
+				case Direction.Right:
+					p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Left);
+					p2 = this.GetAbsoluteConnectorPosition(Direction.Right);
+					break;
+				case Direction.Left:
+					p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Right);
+					p2 = this.GetAbsoluteConnectorPosition(Direction.Left);
+					break;
+				case Direction.Top:
+					p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Bottom);
+					p2 = this.GetAbsoluteConnectorPosition(Direction.Top);
+					break;
+				case Direction.Bottom:
+					p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Top);
+					p2 = this.GetAbsoluteConnectorPosition(Direction.Bottom);
+					break;
+			}
 			this.SVGShape.SetArrowPosition(p1.x, p1.y, p2.x, p2.y);
 			svgroot.append(this.SVGShape.ArrowPath);
 		}
@@ -362,6 +382,8 @@ class CaseViewer {
 		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
 		layout.Init(this.ElementTop, 300, 0);
 		layout.Traverse(this.ElementTop, 300, 0);
+		layout.SetFootElementPosition();
+		layout.SetAllElementPosition(this.ElementTop);
 //		var layout : Layout = new LayoutLandscape(this.ViewMap);
 //		layout.Init(this.ElementTop, 0, 200);
 //		layout.Traverse(this.ElementTop, 0, 200);

@@ -223,8 +223,6 @@ var StrategyShape = (function (_super) {
                 return new Point(this.Width / 2, 0);
             case Direction.Bottom:
                 return new Point(this.Width / 2, this.Height);
-            default:
-                return new Point(0, 0);
         }
     };
     return StrategyShape;
@@ -281,6 +279,7 @@ document.createSVGElement = function (name) {
 
 var ElementShape = (function () {
     function ElementShape(CaseViewer, CaseModel) {
+        this.ParentDirection = Direction.Top;
         this.AbsX = 0;
         this.AbsY = 0;
         this.x = 0;
@@ -304,11 +303,30 @@ var ElementShape = (function () {
 
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
+
         this.SVGShape.SetColor("white", "black");
 
         if (this.ParentShape != null) {
-            var p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Bottom);
-            var p2 = this.GetAbsoluteConnectorPosition(Direction.Top);
+            var p1 = null;
+            var p2 = null;
+            switch (this.ParentDirection) {
+                case Direction.Right:
+                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Left);
+                    p2 = this.GetAbsoluteConnectorPosition(Direction.Right);
+                    break;
+                case Direction.Left:
+                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Right);
+                    p2 = this.GetAbsoluteConnectorPosition(Direction.Left);
+                    break;
+                case Direction.Top:
+                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Bottom);
+                    p2 = this.GetAbsoluteConnectorPosition(Direction.Top);
+                    break;
+                case Direction.Bottom:
+                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Top);
+                    p2 = this.GetAbsoluteConnectorPosition(Direction.Bottom);
+                    break;
+            }
             this.SVGShape.SetArrowPosition(p1.x, p1.y, p2.x, p2.y);
             svgroot.append(this.SVGShape.ArrowPath);
         }
@@ -363,6 +381,8 @@ var CaseViewer = (function () {
         var layout = new LayoutPortrait(this.ViewMap);
         layout.Init(this.ElementTop, 300, 0);
         layout.Traverse(this.ElementTop, 300, 0);
+        layout.SetFootElementPosition();
+        layout.SetAllElementPosition(this.ElementTop);
     };
 
     CaseViewer.prototype.Draw = function (Screen, pluginManager) {

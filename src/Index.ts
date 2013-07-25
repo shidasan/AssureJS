@@ -59,7 +59,7 @@ $(function () {
 			},
 			{
 				"Children": [
-					"E2",
+					"E2"
 				],
 				"Statement": "",
 				"NodeType": 0,
@@ -68,7 +68,8 @@ $(function () {
 				"Notes": []
 			},
 			{
-				"Children": [],
+				"Children": [
+				],
 				"Statement": "",
 				"NodeType": 3,
 				"Label": "E1",
@@ -76,7 +77,8 @@ $(function () {
 				"Notes": []
 			},
 			{
-				"Children": [],
+				"Children": [
+				],
 				"Statement": "",
 				"NodeType": 3,
 				"Label": "E2",
@@ -84,7 +86,6 @@ $(function () {
 				"Notes": []
 			},
 		]
-
 	}
 
 	var Case0: Case = new Case();
