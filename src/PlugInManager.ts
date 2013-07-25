@@ -62,7 +62,7 @@ class PlugInManager {
 			}
 		}
 	}
-	/** 
+	/**
 	AddCheckerPlugIn(key: string, f : (x : CaseModel, y: string, z : any) => boolean) {
 		if(key == null) {
 			this.DefaultCheckerPlugIns.push(f);

@@ -307,11 +307,11 @@ class ElementShape {
 
 		svgroot.append(this.SVGShape.ShapeGroup);
 		this.SVGShape.SetPosition(this.AbsX, this.AbsY);
-		// TODO 
+		// TODO
 		// enable color-customization
 		this.SVGShape.SetColor("white", "black");
 
-		// if it has an parent, add an arrow element. 
+		// if it has an parent, add an arrow element.
 		if (this.ParentShape != null) {
 			var p1: Point = null;
 			var p2: Point = null;

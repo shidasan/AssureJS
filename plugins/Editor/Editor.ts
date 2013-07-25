@@ -17,7 +17,8 @@ class EditorPlugIn extends ActionPlugIn {
 	}
 
 	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
-		$('.node').click(function() { //FIXME
+		$('.node').click(function(ev) { //FIXME
+			ev.stopPropagation();
 			var p = $(this).position();
 			$('#editor')
 				.css({position: 'absolute', top: p.top, left: p.left, display: 'block'})
@@ -33,6 +34,9 @@ class EditorPlugIn extends ActionPlugIn {
 						$(this).css({display: 'none'});
 					}
 				});
+		});
+		$('#layer1').click(function(){
+			$('#editor').blur();
 		});
 		return true;
 	}

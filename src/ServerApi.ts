@@ -46,7 +46,7 @@ class ServerAPI {
 		return <Object> this.RemoteCall("getDCase", { dcaseId: CaseId });
 	}
 
-	/** TODO 
+	/** TODO
 	//-------------------------------------
 
 	export var searchDCase = function(pageIndex: any, tags?: string[]) {
@@ -77,7 +77,7 @@ class ServerAPI {
 		return this.call("commit", {
 			contents: tree,
 			commitMessage: msg,
-			commitId: commitId, 
+			commitId: commitId,
 	//		userId: userId
 		}).commitId;
 	};
