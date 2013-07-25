@@ -400,15 +400,6 @@ class CaseViewer {
 
 }
 
-
-class ServerApi {
-	constructor(url: string) {
-	}
-	GetCase(project: string, id: string): string {
-		return "[]";
-	}
-}
-
 class ScrollManager {
 	InitialOffsetX: number = 0;
 	InitialOffsetY: number = 0;
@@ -537,16 +528,4 @@ class ScreenManager {
 		return this.OffsetY;
 	}
 
-}
-
-
-function StartCaseViewer(url: string, id: string) {
-	var loader = new ServerApi(url);
-	var project; // temp
-	var JsonData = loader.GetCase(project, id);
-	var Argument = new Argument();
-	var model = new CaseDecoder().ParseJson(Argument, JsonData);
-	var CaseViewer = new CaseViewer(model);
-	var svg = document.getElementById(id);
-	CaseViewer.Draw(svg);
 }

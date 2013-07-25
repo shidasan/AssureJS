@@ -397,15 +397,6 @@ var CaseViewer = (function () {
     return CaseViewer;
 })();
 
-var ServerApi = (function () {
-    function ServerApi(url) {
-    }
-    ServerApi.prototype.GetCase = function (project, id) {
-        return "[]";
-    };
-    return ServerApi;
-})();
-
 var ScrollManager = (function () {
     function ScrollManager() {
         this.InitialOffsetX = 0;
@@ -534,14 +525,3 @@ var ScreenManager = (function () {
     };
     return ScreenManager;
 })();
-
-function StartCaseViewer(url, id) {
-    var loader = new ServerApi(url);
-    var project;
-    var JsonData = loader.GetCase(project, id);
-    var Argument = new Argument();
-    var model = new CaseDecoder().ParseJson(Argument, JsonData);
-    var CaseViewer = new CaseViewer(model);
-    var svg = document.getElementById(id);
-    CaseViewer.Draw(svg);
-}
