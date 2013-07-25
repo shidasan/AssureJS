@@ -101,17 +101,24 @@ class SVGShape {
 		mat.f = y;
 	}
 
-	SetArrowPosition(x1: number, y1: number, x2: number, y2: number) {
+	SetArrowPosition(p1: Point, p2: Point, dir: Direction) {
 		var start = <SVGPathSegMovetoAbs>this.ArrowPath.pathSegList.getItem(0);
 		var curve = <SVGPathSegCurvetoCubicAbs>this.ArrowPath.pathSegList.getItem(1);
-		start.x = x1;
-		start.y = y1;
-		curve.x = x2;
-		curve.y = y2;
-		curve.x1 = (9 * x1 + x2) / 10;
-		curve.y1 = (y1 + y2) / 2;
-		curve.x2 = (9 * x2 + x1) / 10;
-		curve.y2 = (y1 + y2) / 2;
+		start.x = p1.x;
+		start.y = p1.y;
+		curve.x = p2.x;
+		curve.y = p2.y;
+		if (dir == Direction.Bottom || dir == Direction.Top) {
+			curve.x1 = (9 * p1.x + p2.x) / 10;
+			curve.y1 = (p1.y + p2.y) / 2;
+			curve.x2 = (9 * p2.x + p1.x) / 10;
+			curve.y2 = (p1.y + p2.y) / 2;
+		} else {
+			curve.x1 = (p1.x + p2.x) / 2;
+			curve.y1 = (9 * p1.y + p2.y) / 10;
+			curve.x2 = (p1.x + p2.x) / 2;
+			curve.y2 = (9 * p2.y + p1.y) / 10;
+		}
 	}
 
 	SetColor(fill: string, stroke: string) {
@@ -327,7 +334,7 @@ class ElementShape {
 					p2 = this.GetAbsoluteConnectorPosition(Direction.Bottom);
 					break;
 			}
-			this.SVGShape.SetArrowPosition(p1.x, p1.y, p2.x, p2.y);
+			this.SVGShape.SetArrowPosition(p1, p2, this.ParentDirection);
 			svgroot.append(this.SVGShape.ArrowPath);
 		}
 		return; // TODO
