@@ -386,16 +386,16 @@ class CaseViewer {
 	}
 
 	LayoutElement() : void {
-//		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
-//		layout.Init(this.ElementTop, 300, 0);
-//		layout.Traverse(this.ElementTop, 300, 0);
-//		layout.SetFootElementPosition();
-//		layout.SetAllElementPosition(this.ElementTop);
-		var layout : Layout = new LayoutLandscape(this.ViewMap);
-		layout.Init(this.ElementTop, 0, 200);
-		layout.Traverse(this.ElementTop, 0, 200);
+		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
+		layout.Init(this.ElementTop, 300, 0);
+		layout.Traverse(this.ElementTop, 300, 0);
 		layout.SetFootElementPosition();
 		layout.SetAllElementPosition(this.ElementTop);
+//		var layout : Layout = new LayoutLandscape(this.ViewMap);
+//		layout.Init(this.ElementTop, 0, 200);
+//		layout.Traverse(this.ElementTop, 0, 200);
+//		layout.SetFootElementPosition();
+//		layout.SetAllElementPosition(this.ElementTop);
 	}
 
 	Draw(Screen: ScreenManager, pluginManager: PlugInManager): void {

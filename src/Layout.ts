@@ -121,6 +121,13 @@ class LayoutPortrait extends Layout {
 			return;
 		}
 
+		if(Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context) {
+			this.ViewMap[Element.Children[0].Label].ParentDirection = Direction.Left;
+			this.ViewMap[Element.Children[0].Label].AbsX = (this.ViewMap[Element.Label].AbsX + this.X_CONTEXT_MARGIN);
+			this.ViewMap[Element.Children[0].Label].AbsY = this.ViewMap[Element.Label].AbsY;
+			return;
+		}
+
 		for(var i in Element.Children) {
 			this.SetAllElementPosition(Element.Children[i]);
 		}
@@ -149,8 +156,11 @@ class LayoutPortrait extends Layout {
 			var CurrentElementShape  : ElementShape = this.ViewMap[this.footelement[i]];
 			if(i != 0) {
 				if((PreviousElementShape.ParentShape.Source.Label != CurrentElementShape.ParentShape.Source.Label) && (this.GetContextIndex(PreviousElementShape.ParentShape.Source) != -1)) {
-					CurrentElementShape.AbsX += 100;
+					CurrentElementShape.AbsX += 80;
 					console.log("Previous Element's Parent has a Context Element.");
+				}
+				if(this.GetContextIndex(this.ViewMap[this.footelement[i-1]].Source) != -1) {
+					CurrentElementShape.AbsX += 180;
 				}
 				console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i-1]].ParentShape.Source.Label);
 				CurrentElementShape.AbsX += (PreviousElementShape.AbsX + this.X_MARGIN);
@@ -165,7 +175,7 @@ class LayoutPortrait extends Layout {
 	}
 
 	Traverse(Element: CaseModel, x : number, y : number) {
-		if(Element.Children.length == 0) {
+		if((Element.Children.length == 0 && Element.Type != CaseType.Context)|| (Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context)) {
 			this.footelement.push(Element.Label);
 			console.log("footelement = " + this.footelement);
 			return;
