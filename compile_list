@@ -5,6 +5,6 @@ src/PlugInManager.ts
 src/ServerApi.ts
 src/Index.ts
 src/Layout.ts
-plugins/SamplePlugin.ts
-plugins/Editor/EditorPlugIn.ts
+plugins/Editor/Editor.ts
+plugins/MenuBar/MenuBar.ts
 test/CaseDecoderTest.ts

@@ -1,7 +1,6 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="Layout.ts" />
-/// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 /// <reference path="../d.ts/pointer.d.ts" />
 
@@ -368,12 +367,13 @@ class CaseViewer {
 //		layout.Traverse(this.ElementTop, 0, 200);
 	}
 
-	Draw(Screen: ScreenManager): void {
+	Draw(Screen: ScreenManager, pluginManager: PlugInManager): void {
 		var shapelayer = $(Screen.ShapeLayer);
 		var screenlayer = $(Screen.ContentLayer);
 		for (var viewkey in this.ViewMap) {
 			this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
 		}
+		pluginManager.RegisterActionEventListeners(this, this.ElementTop);
 	}
 
 }

@@ -17,16 +17,13 @@ class EditorPlugIn extends ActionPlugIn {
 	}
 
 	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
-		return true;
-	}
-
-	Event() { //FIXME add parameter Case class
-		$('.node').click(function() {
+		$('.node').click(function() { //FIXME
 			var p = $(this).position();
-			$('#editor').css({position: 'absolute', top: p.top, left: p.left, display: 'block'}).appendTo($('#layer2'));
+			$('#editor').focus().css({position: 'absolute', top: p.top, left: p.left, display: 'block'}).appendTo($('#layer2'));
 			$('#editor').blur(function(e){
 				$(this).css({display: 'none'});
 			});
 		});
+		return true;
 	}
 }

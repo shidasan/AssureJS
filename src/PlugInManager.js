@@ -22,9 +22,6 @@ var ActionPlugIn = (function (_super) {
     ActionPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
         return true;
     };
-
-    ActionPlugIn.prototype.Event = function () {
-    };
     return ActionPlugIn;
 })(PlugIn);
 
@@ -66,8 +63,15 @@ var PlugInManager = (function () {
         this.RenderPlugInMap = {};
     }
     PlugInManager.prototype.AddActionPlugIn = function (key, actionPlugIn) {
-        actionPlugIn.Event();
         this.ActionPlugIns.push(actionPlugIn);
+    };
+
+    PlugInManager.prototype.RegisterActionEventListeners = function (CaseViewer, CaseModel) {
+        for (var i = 0; i < this.ActionPlugIns.length; i++) {
+            if (this.ActionPlugIns[i].IsEnabled(CaseViewer, CaseModel)) {
+                this.ActionPlugIns[i].Delegate(CaseViewer, CaseModel);
+            }
+        }
     };
     return PlugInManager;
 })();

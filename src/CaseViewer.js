@@ -365,12 +365,13 @@ var CaseViewer = (function () {
         layout.Traverse(this.ElementTop, 300, 0);
     };
 
-    CaseViewer.prototype.Draw = function (Screen) {
+    CaseViewer.prototype.Draw = function (Screen, pluginManager) {
         var shapelayer = $(Screen.ShapeLayer);
         var screenlayer = $(Screen.ContentLayer);
         for (var viewkey in this.ViewMap) {
             this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
         }
+        pluginManager.RegisterActionEventListeners(this, this.ElementTop);
     };
     CaseViewer.ElementWidth = 150;
     return CaseViewer;
