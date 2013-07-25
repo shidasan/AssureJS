@@ -33,6 +33,8 @@ class LayoutEngine {
 class LayoutLandscape extends LayoutEngine {
 //	var CaseArray : any[];
 	footelement : string[] = new Array();
+	contextId : number = -1;
+
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
 		this.X_MARGIN = 200;
@@ -44,25 +46,53 @@ class LayoutLandscape extends LayoutEngine {
 			return;
 		}
 
+		if(Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context) {
+			this.ViewMap[Element.Children[0].Label].AbsY = (this.ViewMap[Element.Label].AbsY + this.Y_MARGIN);
+			this.ViewMap[Element.Children[0].Label].AbsX = this.ViewMap[Element.Label].AbsX;
+			return;
+		}
+
 		for(var i in Element.Children) {
 			this.SetAllElementPosition(Element.Children[i]);
 		}
 
-		var yPositionSum = 0;
-		for(var i in Element.Children) {
-			yPositionSum += this.ViewMap[Element.Children[i].Label].AbsY;
+		var i : number = 0;
+		i = this.GetContextIndex(Element);
+		var yPositionSum : number = 0;
+		for(var j in Element.Children) {
+			if(i != j) {
+				yPositionSum += this.ViewMap[Element.Children[j].Label].AbsY;
+			}
 		}
-		this.ViewMap[Element.Label].AbsY = yPositionSum/Element.Children.length;
+		if(i == -1) {
+			if(Element.Children.length == 1 && Element.Children[0].Type == CaseType.Evidence) {
+				this.ViewMap[Element.Label].AbsY = yPositionSum/(Element.Children.length) + 15;
+			} else {
+				this.ViewMap[Element.Label].AbsY = yPositionSum/(Element.Children.length);
+			}
+		}
+		else {
+			this.ViewMap[Element.Label].AbsY = yPositionSum/(Element.Children.length-1);
+			this.ViewMap[Element.Children[i].Label].AbsY = (this.ViewMap[Element.Label].AbsY + 100);
+		}
 		console.log(this.ViewMap[Element.Label].AbsX);
 	}
 
 	SetFootElementPosition() : void {
 		for(var i in this.footelement) {
-//			console.log(this.footelement[i] + ".AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
-//			console.log(this.footelement[i] + ".AbsY = " + this.ViewMap[this.footelement[i]].AbsY);
+			var PreviousElementShape : ElementShape = this.ViewMap[this.footelement[i-1]];
+			var CurrentElementShape  : ElementShape = this.ViewMap[this.footelement[i]];
 			if(i != 0) {
+				if((PreviousElementShape.ParentShape.Source.Label != CurrentElementShape.ParentShape.Source.Label) && (this.GetContextIndex(PreviousElementShape.ParentShape.Source) != -1)) {
+					CurrentElementShape.AbsY += 80;
+					console.log("Previous Element's Parent has a Context Element.");
+				}
+				if(this.GetContextIndex(this.ViewMap[this.footelement[i-1]].Source) != -1) {
+					CurrentElementShape.AbsY += 180;
+				}
 				console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i-1]].ParentShape.Source.Label);
-				this.ViewMap[this.footelement[i]].AbsY += this.ViewMap[this.footelement[i]].AbsY + this.Y_MARGIN;
+				CurrentElementShape.AbsY += (PreviousElementShape.AbsY + this.Y_MARGIN);
+				console.log("footelement.AbsX = " + CurrentElementShape.AbsY);
 			}
 		}
 		return;
@@ -73,7 +103,7 @@ class LayoutLandscape extends LayoutEngine {
 	}
 
 	Traverse(Element: CaseModel, x : number, y : number) {
-		if(Element.Children.length == 0) {
+		if((Element.Children.length == 0 && Element.Type != CaseType.Context)|| (Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context)) {
 			this.footelement.push(Element.Label);
 			console.log("footelement = " + this.footelement);
 			return;
@@ -84,25 +114,30 @@ class LayoutLandscape extends LayoutEngine {
 		if(i != -1) { //emit context element data
 			this.ViewMap[Element.Children[i].Label].AbsX += x;
 			this.ViewMap[Element.Children[i].Label].AbsY += y;
-			Element.Children = Element.Children.splice(i-1,1);
-			this.Traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
+			this.ViewMap[Element.Children[i].Label].AbsY += this.Y_MARGIN;
+			console.log(Element.Children[i].Label);
+			console.log("(" + this.ViewMap[Element.Children[i].Label].AbsX + ", " + this.ViewMap[Element.Children[i].Label].AbsY + ")");
+			this.EmitChildrenElement(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY, i);
 		} else {  //emit element data except context
-				this.EmitChildrenElement(Element, x, y);
+			this.EmitChildrenElement(Element, x, y, i);
 		}
 	}
 
-	EmitChildrenElement(Node : CaseModel, x : number, y : number) : void {
+	EmitChildrenElement(Node : CaseModel, x : number, y : number, ContextId : number) : void {
 		var n : number = Node.Children.length;
 		for(var i : number = 0; i < n; i++) {
-			this.ViewMap[Node.Children[i].Label].AbsX = x;
-			this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
-			this.ViewMap[Node.Children[i].Label].ParentDirection = Direction.Left;
-			this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+			if(ContextId == i) {
+				continue;
+			}
+			else {
+				this.ViewMap[Node.Children[i].Label].AbsX = x;
+				this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
+				this.ViewMap[Node.Children[i].Label].ParentDirection = Direction.Left;
+				this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+			}
 		}
 		return;
 	}
-
-
 }
 
 class LayoutPortrait extends LayoutEngine {
@@ -111,7 +146,7 @@ class LayoutPortrait extends LayoutEngine {
 	X_CONTEXT_MARGIN : number = 200;
 	footelement : string[] = new Array();
 	contextId : number = -1;
-	
+
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
 	}
