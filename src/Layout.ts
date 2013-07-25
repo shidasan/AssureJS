@@ -112,7 +112,7 @@ class LayoutLandscape extends Layout {
 }
 
 class LayoutPortrait extends Layout {
-	X_MARGIN = 160;
+	X_MARGIN = 200;
 	Y_MARGIN = 160;
 	X_CONTEXT_MARGIN : number = 160;
 	footelement : string[] = new Array();
@@ -123,8 +123,11 @@ class LayoutPortrait extends Layout {
 
 	SetFootElementPosition() : void {
 		for(var i in this.footelement) {
-			console.log(this.footelement[i] + ".AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
-			console.log(this.footelement[i] + ".AbsY = " + this.ViewMap[this.footelement[i]].AbsY);
+//			console.log(this.footelement[i] + ".AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
+//			console.log(this.footelement[i] + ".AbsY = " + this.ViewMap[this.footelement[i]].AbsY);
+			if(i != 0) {
+				this.ViewMap[this.footelement[i]].AbsX += this.ViewMap[this.footelement[i]].AbsX + this.X_MARGIN;
+			}
 		}
 		return;
 	}

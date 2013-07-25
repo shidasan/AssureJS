@@ -118,15 +118,16 @@ var LayoutPortrait = (function (_super) {
     function LayoutPortrait(ViewMap) {
         _super.call(this, ViewMap);
         this.ViewMap = ViewMap;
-        this.X_MARGIN = 160;
+        this.X_MARGIN = 200;
         this.Y_MARGIN = 160;
         this.X_CONTEXT_MARGIN = 160;
         this.footelement = new Array();
     }
     LayoutPortrait.prototype.SetFootElementPosition = function () {
         for (var i in this.footelement) {
-            console.log(this.footelement[i] + ".AbsX = " + this.ViewMap[this.footelement[i]].AbsX);
-            console.log(this.footelement[i] + ".AbsY = " + this.ViewMap[this.footelement[i]].AbsY);
+            if (i != 0) {
+                this.ViewMap[this.footelement[i]].AbsX += this.ViewMap[this.footelement[i]].AbsX + this.X_MARGIN;
+            }
         }
         return;
     };
@@ -142,7 +143,6 @@ var LayoutPortrait = (function (_super) {
     };
 
     LayoutPortrait.prototype.Init = function (Element, x, y) {
-        this.ViewMap[Element.Label].AbsX += x;
         this.ViewMap[Element.Label].AbsY += y;
     };
 
@@ -156,9 +156,8 @@ var LayoutPortrait = (function (_super) {
         var i = 0;
         i = this.GetContextIndex(Element);
         if (i != -1) {
-            this.ViewMap[Element.Children[i].Label].AbsX += x;
             this.ViewMap[Element.Children[i].Label].AbsY += y;
-            this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
+
             console.log(Element.Label);
             console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
             Element.Children = Element.Children.splice(i - 1, 1);
@@ -176,14 +175,12 @@ var LayoutPortrait = (function (_super) {
     LayoutPortrait.prototype.EmitOddNumberChildren = function (Node, x, y) {
         var n = Node.Children.length;
         for (var i = 0; i < n; i++) {
-            this.ViewMap[Node.Children[i].Label].AbsX = x;
             this.ViewMap[Node.Children[i].Label].AbsY = y;
             this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
         }
         var num = (n - 1) / 2;
         var k;
         for (var j = -num, k = 0; j <= num; j++, k++) {
-            this.ViewMap[Node.Children[k].Label].AbsX += this.X_MARGIN * j;
         }
 
         for (var i = 0; i < Node.Children.length; i++) {
@@ -207,9 +204,8 @@ var LayoutPortrait = (function (_super) {
         }
 
         for (var i = 0; i < Node.Children.length; i++) {
-            this.ViewMap[Node.Children[i].Label].AbsX += x;
             this.ViewMap[Node.Children[i].Label].AbsY += y;
-            this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN * index[i];
+
             this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
             console.log(Node.Children[i].Label);
             console.log("(" + this.ViewMap[Node.Children[i].Label].AbsX + ", " + this.ViewMap[Node.Children[i].Label].AbsY + ")");
