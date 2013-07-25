@@ -47,7 +47,8 @@ var LayoutLandscape = (function (_super) {
         }
 
         if (Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context) {
-            this.ViewMap[Element.Children[0].Label].AbsY = (this.ViewMap[Element.Label].AbsY + this.Y_MARGIN);
+            this.ViewMap[Element.Children[0].Label].AbsY = (this.ViewMap[Element.Label].AbsY - 100);
+            this.ViewMap[Element.Children[0].Label].ParentDirection = Direction.Bottom;
             this.ViewMap[Element.Children[0].Label].AbsX = this.ViewMap[Element.Label].AbsX;
             return;
         }
@@ -72,7 +73,7 @@ var LayoutLandscape = (function (_super) {
             }
         } else {
             this.ViewMap[Element.Label].AbsY = yPositionSum / (Element.Children.length - 1);
-            this.ViewMap[Element.Children[i].Label].AbsY = (this.ViewMap[Element.Label].AbsY + 100);
+            this.ViewMap[Element.Children[i].Label].AbsY = (this.ViewMap[Element.Label].AbsY - 100);
         }
         console.log(this.ViewMap[Element.Label].AbsX);
     };
@@ -107,13 +108,13 @@ var LayoutLandscape = (function (_super) {
             console.log("footelement = " + this.footelement);
             return;
         }
-
         var i = 0;
         i = this.GetContextIndex(Element);
         if (i != -1) {
             this.ViewMap[Element.Children[i].Label].AbsX += x;
             this.ViewMap[Element.Children[i].Label].AbsY += y;
             this.ViewMap[Element.Children[i].Label].AbsY += this.Y_MARGIN;
+            this.ViewMap[Element.Children[i].Label].ParentDirection = Direction.Bottom;
             console.log(Element.Children[i].Label);
             console.log("(" + this.ViewMap[Element.Children[i].Label].AbsX + ", " + this.ViewMap[Element.Children[i].Label].AbsY + ")");
             this.EmitChildrenElement(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY, i);
