@@ -1,7 +1,7 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseViewer.ts" />
 
-class Layout {
+class LayoutEngine {
 	X_MARGIN : number;
 	Y_MARGIN : number;
 
@@ -30,7 +30,7 @@ class Layout {
 	}
 }
 
-class LayoutLandscape extends Layout {
+class LayoutLandscape extends LayoutEngine {
 //	var CaseArray : any[];
 	footelement : string[] = new Array();
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
@@ -105,7 +105,7 @@ class LayoutLandscape extends Layout {
 
 }
 
-class LayoutPortrait extends Layout {
+class LayoutPortrait extends LayoutEngine {
 	X_MARGIN = 200;
 	Y_MARGIN = 160;
 	X_CONTEXT_MARGIN : number = 200;
@@ -121,10 +121,16 @@ class LayoutPortrait extends Layout {
 			return;
 		}
 
+		var ParentView = this.ViewMap[Element.Label];
+
 		if(Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context) {
-			this.ViewMap[Element.Children[0].Label].ParentDirection = Direction.Left;
-			this.ViewMap[Element.Children[0].Label].AbsX = (this.ViewMap[Element.Label].AbsX + this.X_CONTEXT_MARGIN);
-			this.ViewMap[Element.Children[0].Label].AbsY = this.ViewMap[Element.Label].AbsY;
+			var ContextView = this.ViewMap[Element.Children[0].Label];
+			var h1 = this.ViewMap[Element.Children[0].Label].HTMLDoc.Height;
+			var h2 = this.ViewMap[Element.Label].HTMLDoc.Height;
+			var h = (h1 - h2) / 2;
+			ContextView.ParentDirection = Direction.Left;
+			ContextView.AbsX = (ParentView.AbsX + this.X_CONTEXT_MARGIN);
+			ContextView.AbsY = (ParentView.AbsY - h);
 			return;
 		}
 
@@ -141,13 +147,12 @@ class LayoutPortrait extends Layout {
 			}
 		}
 		if(i == -1) {
-			this.ViewMap[Element.Label].AbsX = xPositionSum/(Element.Children.length);
+			ParentView.AbsX = xPositionSum/(Element.Children.length);
 		}
 		else {
-			this.ViewMap[Element.Label].AbsX = xPositionSum/(Element.Children.length-1);
-			this.ViewMap[Element.Children[i].Label].AbsX = (this.ViewMap[Element.Label].AbsX + this.X_CONTEXT_MARGIN);
+			ParentView.AbsX = xPositionSum/(Element.Children.length-1);
+			this.ViewMap[Element.Children[i].Label].AbsX = (ParentView.AbsX + this.X_CONTEXT_MARGIN);
 		}
-		console.log(this.ViewMap[Element.Label].AbsX);
 	}
 
 	SetFootElementPosition() : void {
@@ -156,15 +161,12 @@ class LayoutPortrait extends Layout {
 			var CurrentElementShape  : ElementShape = this.ViewMap[this.footelement[i]];
 			if(i != 0) {
 				if((PreviousElementShape.ParentShape.Source.Label != CurrentElementShape.ParentShape.Source.Label) && (this.GetContextIndex(PreviousElementShape.ParentShape.Source) != -1)) {
-					CurrentElementShape.AbsX += 80;
-					console.log("Previous Element's Parent has a Context Element.");
+					CurrentElementShape.AbsX += 10;
 				}
-				if(this.GetContextIndex(this.ViewMap[this.footelement[i-1]].Source) != -1) {
+				if(this.GetContextIndex(PreviousElementShape.Source) != -1) {
 					CurrentElementShape.AbsX += 180;
 				}
-				console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i-1]].ParentShape.Source.Label);
 				CurrentElementShape.AbsX += (PreviousElementShape.AbsX + this.X_MARGIN);
-				console.log("footelement.AbsX = " + CurrentElementShape.AbsX);
 			}
 		}
 		return;
@@ -177,20 +179,22 @@ class LayoutPortrait extends Layout {
 	Traverse(Element: CaseModel, x : number, y : number) {
 		if((Element.Children.length == 0 && Element.Type != CaseType.Context)|| (Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context)) {
 			this.footelement.push(Element.Label);
-			console.log("footelement = " + this.footelement);
 			return;
 		}
 
 		var i : number = 0;
 		i = this.GetContextIndex(Element);
 		if(i != -1) { //emit context element data
-			this.ViewMap[Element.Children[i].Label].ParentDirection = Direction.Left;
-			this.ViewMap[Element.Children[i].Label].AbsX += x;
-			this.ViewMap[Element.Children[i].Label].AbsY += y;
-			this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
-			console.log(Element.Children[i].Label);
-			console.log("(" + this.ViewMap[Element.Children[i].Label].AbsX + ", " + this.ViewMap[Element.Children[i].Label].AbsY + ")");
-			this.EmitChildrenElement(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY, i);
+			var ContextView = this.ViewMap[Element.Children[i].Label];
+			var ParentView = ContextView.ParentShape;
+			var h1 = ContextView.HTMLDoc.Height;
+			var h2 = ParentView.HTMLDoc.Height;
+			var h = (h1 - h2) / 2;
+			ContextView.ParentDirection = Direction.Left;
+			ContextView.AbsX += x;
+			ContextView.AbsY += (y - h);
+			ContextView.AbsX += this.X_CONTEXT_MARGIN;
+			this.EmitChildrenElement(Element, ParentView.AbsX, ParentView.AbsY, i);
 		} else {  //emit element data except context
 			this.EmitChildrenElement(Element, x, y, i);
 		}
@@ -199,13 +203,14 @@ class LayoutPortrait extends Layout {
 	EmitChildrenElement(Node : CaseModel, x : number, y : number, ContextId : number) : void {
 		var n : number = Node.Children.length;
 		for(var i : number = 0; i < n; i++) {
+			var ElementView = this.ViewMap[Node.Children[i].Label];
 			if(ContextId == i) {
 				continue;
 			}
 			else {
-				this.ViewMap[Node.Children[i].Label].AbsY = y;
-				this.ViewMap[Node.Children[i].Label].AbsY += this.Y_MARGIN;
-				this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+				ElementView.AbsY = y;
+				ElementView.AbsY += this.Y_MARGIN;
+				this.Traverse(Node.Children[i], ElementView.AbsX, ElementView.AbsY);
 			}
 		}
 		return;

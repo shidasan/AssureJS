@@ -386,7 +386,7 @@ class CaseViewer {
 	}
 
 	LayoutElement() : void {
-		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
+		var layout : LayoutEngine = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
 		layout.Init(this.ElementTop, 300, 0);
 		layout.Traverse(this.ElementTop, 300, 0);
 		layout.SetFootElementPosition();
