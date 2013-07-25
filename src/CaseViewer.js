@@ -385,31 +385,23 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
-        var layout = new LayoutPortrait(this.ViewMap);
-        layout.Init(this.ElementTop, 300, 0);
-        layout.Traverse(this.ElementTop, 300, 0);
+        var layout = new LayoutLandscape(this.ViewMap);
+        layout.Init(this.ElementTop, 0, 200);
+        layout.Traverse(this.ElementTop, 0, 200);
         layout.SetFootElementPosition();
         layout.SetAllElementPosition(this.ElementTop);
     };
 
-    CaseViewer.prototype.Draw = function (Screen) {
+    CaseViewer.prototype.Draw = function (Screen, pluginManager) {
         var shapelayer = $(Screen.ShapeLayer);
         var screenlayer = $(Screen.ContentLayer);
         for (var viewkey in this.ViewMap) {
             this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
         }
+        pluginManager.RegisterActionEventListeners(this, this.ElementTop);
     };
     CaseViewer.ElementWidth = 150;
     return CaseViewer;
-})();
-
-var ServerApi = (function () {
-    function ServerApi(url) {
-    }
-    ServerApi.prototype.GetCase = function (project, id) {
-        return "[]";
-    };
-    return ServerApi;
 })();
 
 var ScrollManager = (function () {
@@ -540,14 +532,3 @@ var ScreenManager = (function () {
     };
     return ScreenManager;
 })();
-
-function StartCaseViewer(url, id) {
-    var loader = new ServerApi(url);
-    var project;
-    var JsonData = loader.GetCase(project, id);
-    var Argument = new Argument();
-    var model = new CaseDecoder().ParseJson(Argument, JsonData);
-    var CaseViewer = new CaseViewer(model);
-    var svg = document.getElementById(id);
-    CaseViewer.Draw(svg);
-}

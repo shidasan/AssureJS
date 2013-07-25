@@ -1,13 +1,15 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="CaseViewer.ts" />
-/// <reference path="../plugins/SamplePlugin.ts" />
-/// <reference path="../plugins/Editor/EditorPlugIn.ts" />
+/// <reference path="../plugins/MenuBar/MenuBar.ts" />
+/// <reference path="../plugins/Editor/Editor.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 
 $(function () {
 
 	var pluginManager = new PlugInManager();
+	pluginManager.AddActionPlugIn("menubar", new MenuBarPlugIn());
+	pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
 
 	var JsonData = {
 		"DCaseName": "test",
@@ -57,7 +59,7 @@ $(function () {
 			},
 			{
 				"Children": [
-					"E2",
+					"E2"
 				],
 				"Statement": "",
 				"NodeType": 0,
@@ -66,7 +68,8 @@ $(function () {
 				"Notes": []
 			},
 			{
-				"Children": [],
+				"Children": [
+				],
 				"Statement": "",
 				"NodeType": 3,
 				"Label": "E1",
@@ -74,7 +77,8 @@ $(function () {
 				"Notes": []
 			},
 			{
-				"Children": [],
+				"Children": [
+				],
 				"Statement": "",
 				"NodeType": 3,
 				"Label": "E2",
@@ -82,7 +86,6 @@ $(function () {
 				"Notes": []
 			},
 		]
-
 	}
 
 	var Case0: Case = new Case();
@@ -97,8 +100,6 @@ $(function () {
 	var controllayer = <HTMLDivElement>document.getElementById("layer2");
 
 	var Screen = new ScreenManager(shapelayer, contentlayer, controllayer, backgroundlayer);
-	Viewer.Draw(Screen);
-	pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
-	pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
+	Viewer.Draw(Screen, pluginManager);
 });
 

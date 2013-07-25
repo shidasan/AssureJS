@@ -3,7 +3,8 @@ class PlugIn {
 }
 
 class ActionPlugIn extends PlugIn {
-	EventName: string;
+	EventName   : string;
+	EventTarget : string;
 
 	IsEnabled(caseViewer: CaseViewer, caseModel: CaseModel) : boolean {
 		return true;
@@ -11,9 +12,6 @@ class ActionPlugIn extends PlugIn {
 
 	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
 		return true;
-	}
-
-	Event(): void {
 	}
 }
 
@@ -54,10 +52,16 @@ class PlugInManager {
 
 
 	AddActionPlugIn(key: string, actionPlugIn: ActionPlugIn) {
-		actionPlugIn.Event();
 		this.ActionPlugIns.push(actionPlugIn);
 	}
 
+	RegisterActionEventListeners(CaseViewer: CaseViewer, CaseModel: CaseModel): void {
+		for(var i: number = 0; i < this.ActionPlugIns.length; i++) {
+			if(this.ActionPlugIns[i].IsEnabled(CaseViewer, CaseModel)) {
+				this.ActionPlugIns[i].Delegate(CaseViewer, CaseModel);
+			}
+		}
+	}
 	/** 
 	AddCheckerPlugIn(key: string, f : (x : CaseModel, y: string, z : any) => boolean) {
 		if(key == null) {

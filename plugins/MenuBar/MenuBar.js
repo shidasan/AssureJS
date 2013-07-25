@@ -4,21 +4,16 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var SamplePlugIn = (function (_super) {
-    __extends(SamplePlugIn, _super);
-    function SamplePlugIn() {
+var MenuBarPlugIn = (function (_super) {
+    __extends(MenuBarPlugIn, _super);
+    function MenuBarPlugIn() {
         _super.apply(this, arguments);
     }
-    SamplePlugIn.prototype.IsEnabled = function (caseViewer, caseModel) {
+    MenuBarPlugIn.prototype.IsEnabled = function (caseViewer, caseModel) {
         return true;
     };
 
-    SamplePlugIn.prototype.Delegate = function (caseViewer, caseModel) {
-        $('<a href="#">hogehoge</a>').appendTo($('body'));
-        return true;
-    };
-
-    SamplePlugIn.prototype.Event = function () {
+    MenuBarPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
         $('.node').hover(function () {
             $('#menu').remove();
             var p = $(this).position();
@@ -39,6 +34,7 @@ var SamplePlugIn = (function (_super) {
             });
         }, function () {
         });
+        return true;
     };
-    return SamplePlugIn;
+    return MenuBarPlugIn;
 })(ActionPlugIn);

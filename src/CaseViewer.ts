@@ -1,7 +1,6 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="Layout.ts" />
-/// <reference path="../plugins/SamplePlugin.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
 /// <reference path="../d.ts/pointer.d.ts" />
 
@@ -387,33 +386,27 @@ class CaseViewer {
 	}
 
 	LayoutElement() : void {
-		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
-		layout.Init(this.ElementTop, 300, 0);
-		layout.Traverse(this.ElementTop, 300, 0);
+//		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
+//		layout.Init(this.ElementTop, 300, 0);
+//		layout.Traverse(this.ElementTop, 300, 0);
+//		layout.SetFootElementPosition();
+//		layout.SetAllElementPosition(this.ElementTop);
+		var layout : Layout = new LayoutLandscape(this.ViewMap);
+		layout.Init(this.ElementTop, 0, 200);
+		layout.Traverse(this.ElementTop, 0, 200);
 		layout.SetFootElementPosition();
 		layout.SetAllElementPosition(this.ElementTop);
-//		var layout : Layout = new LayoutLandscape(this.ViewMap);
-//		layout.Init(this.ElementTop, 0, 200);
-//		layout.Traverse(this.ElementTop, 0, 200);
 	}
 
-	Draw(Screen: ScreenManager): void {
+	Draw(Screen: ScreenManager, pluginManager: PlugInManager): void {
 		var shapelayer = $(Screen.ShapeLayer);
 		var screenlayer = $(Screen.ContentLayer);
 		for (var viewkey in this.ViewMap) {
 			this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
 		}
+		pluginManager.RegisterActionEventListeners(this, this.ElementTop);
 	}
 
-}
-
-
-class ServerApi {
-	constructor(url: string) {
-	}
-	GetCase(project: string, id: string): string {
-		return "[]";
-	}
 }
 
 class ScrollManager {
@@ -544,16 +537,4 @@ class ScreenManager {
 		return this.OffsetY;
 	}
 
-}
-
-
-function StartCaseViewer(url: string, id: string) {
-	var loader = new ServerApi(url);
-	var project; // temp
-	var JsonData = loader.GetCase(project, id);
-	var Argument = new Argument();
-	var model = new CaseDecoder().ParseJson(Argument, JsonData);
-	var CaseViewer = new CaseViewer(model);
-	var svg = document.getElementById(id);
-	CaseViewer.Draw(svg);
 }

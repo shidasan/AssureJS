@@ -1,17 +1,12 @@
-/// <reference path="../src/CaseModel.ts" />
-/// <reference path="../src/PlugInManager.ts" />
+/// <reference path="../../src/CaseModel.ts" />
+/// <reference path="../../src/PlugInManager.ts" />
 
-class SamplePlugIn extends ActionPlugIn {
+class MenuBarPlugIn extends ActionPlugIn {
 	IsEnabled (caseViewer: CaseViewer, caseModel: CaseModel) : boolean {
 		return true;
 	}
 
 	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
-		$('<a href="#">hogehoge</a>').appendTo($('body'));
-		return true;
-	}
-
-	Event() {
 		$('.node').hover(function() {
 				$('#menu').remove();
 				var p = $(this).position();
@@ -37,5 +32,6 @@ class SamplePlugIn extends ActionPlugIn {
 //				$('#menu').remove();
 //			}
 		});
+		return true;
 	}
 }

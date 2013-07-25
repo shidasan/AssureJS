@@ -16,17 +16,14 @@ var EditorPlugIn = (function (_super) {
     };
 
     EditorPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
-        return true;
-    };
-
-    EditorPlugIn.prototype.Event = function () {
         $('.node').click(function () {
             var p = $(this).position();
-            $('#editor').css({ position: 'absolute', top: p.top, left: p.left, display: 'block' }).appendTo($('#layer2'));
+            $('#editor').focus().css({ position: 'absolute', top: p.top, left: p.left, display: 'block' }).appendTo($('#layer2'));
             $('#editor').blur(function (e) {
                 $(this).css({ display: 'none' });
             });
         });
+        return true;
     };
     return EditorPlugIn;
 })(ActionPlugIn);

@@ -1,5 +1,7 @@
 $(function () {
     var pluginManager = new PlugInManager();
+    pluginManager.AddActionPlugIn("menubar", new MenuBarPlugIn());
+    pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
 
     var JsonData = {
         "DCaseName": "test",
@@ -87,7 +89,5 @@ $(function () {
     var controllayer = document.getElementById("layer2");
 
     var Screen = new ScreenManager(shapelayer, contentlayer, controllayer, backgroundlayer);
-    Viewer.Draw(Screen);
-    pluginManager.AddActionPlugIn("sample", new SamplePlugIn());
-    pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
+    Viewer.Draw(Screen, pluginManager);
 });
