@@ -4,9 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../../src/CaseModel.ts" />
-/// <reference path="../../src/CaseViewer.ts" />
-/// <reference path="../../src/PlugInManager.ts" />
 var NotePlugIn = (function (_super) {
     __extends(NotePlugIn, _super);
     function NotePlugIn() {

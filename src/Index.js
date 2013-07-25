@@ -1,10 +1,3 @@
-/// <reference path="CaseModel.ts" />
-/// <reference path="CaseDecoder.ts" />
-/// <reference path="CaseViewer.ts" />
-/// <reference path="../plugins/MenuBar/MenuBar.ts" />
-/// <reference path="../plugins/Editor/Editor.ts" />
-/// <reference path="../plugins/Annotation/Annotation.ts" />
-/// <reference path="../d.ts/jquery.d.ts" />
 $(function () {
     var pluginManager = new PlugInManager();
     pluginManager.AddActionPlugIn("menu", new MenuBarPlugIn());

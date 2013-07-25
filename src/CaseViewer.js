@@ -4,13 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="CaseModel.ts" />
-/// <reference path="CaseDecoder.ts" />
-/// <reference path="Layout.ts" />
-/// <reference path="PlugInManager.ts" />
-/// <reference path="../d.ts/jquery.d.ts" />
-/// <reference path="../d.ts/pointer.d.ts" />
-/* VIEW (MVC) */
 var HTMLDoc = (function () {
     function HTMLDoc() {
         this.Width = 0;
@@ -320,8 +313,6 @@ var ElementShape = (function () {
         svgroot.append(this.SVGShape.ShapeGroup);
         this.SVGShape.SetPosition(this.AbsX, this.AbsY);
 
-        // TODO
-        // enable color-customization
         this.SVGShape.SetColor("white", "black");
 
         if (this.ParentShape != null) {
@@ -401,11 +392,6 @@ var CaseViewer = (function () {
     };
 
     CaseViewer.prototype.LayoutElement = function () {
-        //		var layout : Layout = new LayoutPortrait(this.ViewMap); //TODO Enable switch Layout engine
-        //		layout.Init(this.ElementTop, 300, 0);
-        //		layout.Traverse(this.ElementTop, 300, 0);
-        //		layout.SetFootElementPosition();
-        //		layout.SetAllElementPosition(this.ElementTop);
         var layout = new LayoutLandscape(this.ViewMap);
         layout.Init(this.ElementTop, 0, 200);
         layout.Traverse(this.ElementTop, 0, 200);
@@ -528,13 +514,6 @@ var ScreenManager = (function () {
             _this.ScrollManager.OnDoubleTap(e, _this);
         }, false);
     }
-    //onScale(e: GestureScaleEvent): void {
-    //	e.preventDefault();
-    //	e.stopPropagation();
-    //	//if (this.viewer.moving) return;
-    //	//var b = e.scale * this.scale0 / this.viewer.scale;
-    //	//this.setScale(e.centerX, e.centerY, b);
-    //}
     ScreenManager.prototype.SetOffset = function (x, y) {
         this.OffsetX = x;
         this.OffsetY = y;
