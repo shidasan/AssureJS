@@ -178,6 +178,7 @@ var LayoutPortrait = (function (_super) {
         var i = 0;
         i = this.GetContextIndex(Element);
         if (i != -1) {
+            this.ViewMap[Element.Children[i].Label].ParentDirection = Direction.Left;
             this.ViewMap[Element.Children[i].Label].AbsX += x;
             this.ViewMap[Element.Children[i].Label].AbsY += y;
             this.ViewMap[Element.Children[i].Label].AbsX += this.X_CONTEXT_MARGIN;
