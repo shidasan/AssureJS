@@ -83,9 +83,6 @@ var LayoutLandscape = (function (_super) {
         if (i != -1) {
             this.ViewMap[Element.Children[i].Label].AbsX += x;
             this.ViewMap[Element.Children[i].Label].AbsY += y;
-
-            console.log(Element.Label);
-            console.log("(" + this.ViewMap[Element.Label].AbsX + ", " + this.ViewMap[Element.Label].AbsY + ")");
             Element.Children = Element.Children.splice(i - 1, 1);
             this.Traverse(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY);
         } else {
@@ -98,6 +95,7 @@ var LayoutLandscape = (function (_super) {
         for (var i = 0; i < n; i++) {
             this.ViewMap[Node.Children[i].Label].AbsX = x;
             this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
+            this.ViewMap[Node.Children[i].Label].ParentDirection = Direction.Left;
             this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
         }
         return;
