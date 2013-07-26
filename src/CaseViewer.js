@@ -77,11 +77,15 @@ var Point = (function () {
 
 var Direction;
 (function (Direction) {
-    Direction[Direction["Right"] = 0] = "Right";
-    Direction[Direction["Left"] = 1] = "Left";
-    Direction[Direction["Top"] = 2] = "Top";
+    Direction[Direction["Left"] = 0] = "Left";
+    Direction[Direction["Top"] = 1] = "Top";
+    Direction[Direction["Right"] = 2] = "Right";
     Direction[Direction["Bottom"] = 3] = "Bottom";
 })(Direction || (Direction = {}));
+
+function ReverseDirection(Dir) {
+    return (Dir + 2) & 3;
+}
 
 var SVGShape = (function () {
     function SVGShape() {
@@ -289,6 +293,7 @@ document.createSVGElement = function (name) {
 var ElementShape = (function () {
     function ElementShape(CaseViewer, CaseModel) {
         this.ParentDirection = Direction.Top;
+        this.IsArrowReversed = false;
         this.AbsX = 0;
         this.AbsY = 0;
         this.x = 0;
@@ -318,25 +323,13 @@ var ElementShape = (function () {
         if (this.ParentShape != null) {
             var p1 = null;
             var p2 = null;
-            switch (this.ParentDirection) {
-                case Direction.Right:
-                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Left);
-                    p2 = this.GetAbsoluteConnectorPosition(Direction.Right);
-                    break;
-                case Direction.Left:
-                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Right);
-                    p2 = this.GetAbsoluteConnectorPosition(Direction.Left);
-                    break;
-                case Direction.Top:
-                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Bottom);
-                    p2 = this.GetAbsoluteConnectorPosition(Direction.Top);
-                    break;
-                case Direction.Bottom:
-                    p1 = this.ParentShape.GetAbsoluteConnectorPosition(Direction.Top);
-                    p2 = this.GetAbsoluteConnectorPosition(Direction.Bottom);
-                    break;
+            p1 = this.ParentShape.GetAbsoluteConnectorPosition(ReverseDirection(this.ParentDirection));
+            p2 = this.GetAbsoluteConnectorPosition(this.ParentDirection);
+            if (this.IsArrowReversed) {
+                this.SVGShape.SetArrowPosition(p2, p1, this.ParentDirection);
+            } else {
+                this.SVGShape.SetArrowPosition(p1, p2, this.ParentDirection);
             }
-            this.SVGShape.SetArrowPosition(p1, p2, this.ParentDirection);
             svgroot.append(this.SVGShape.ArrowPath);
         }
         return;
