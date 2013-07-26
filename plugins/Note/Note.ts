@@ -7,8 +7,7 @@ class NotePlugIn extends RenderPlugIn {
 		return true;
 	}
 
-	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, anno: Object) : void {
-		console.log("note");
+	Delegate(caseViewer: CaseViewer, caseModel: CaseModel) : void {
 		// TODO
 	}
 }

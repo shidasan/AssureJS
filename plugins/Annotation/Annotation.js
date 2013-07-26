@@ -13,10 +13,15 @@ var AnnotationPlugIn = (function (_super) {
         return true;
     };
 
-    AnnotationPlugIn.prototype.Delegate = function (caseViewer, caseModel, element, anno) {
-        var a = anno;
+    AnnotationPlugIn.prototype.Delegate = function (caseViewer, caseModel, element) {
+        var text = "";
         var p = element.position();
-        $('<div class="anno">' + '<font size="5" color="gray">' + '<p>@' + a.Name + '</p>' + '</font></div>').css({ position: 'absolute', top: p.top - 20, left: p.left + 80 }).appendTo(element);
+
+        for (var i = 0; i < caseModel.Annotations.length; i++) {
+            text += "@" + caseModel.Annotations[i].Name + "<br>";
+        }
+
+        $('<div class="anno">' + '<p>' + text + '</p>' + '</div>').css({ position: 'absolute', 'font-size': 25, color: 'gray', top: p.top - 20, left: p.left + 80 }).appendTo(element);
     };
     return AnnotationPlugIn;
 })(RenderPlugIn);

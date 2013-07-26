@@ -49,7 +49,7 @@ var RenderPlugIn = (function (_super) {
         return true;
     };
 
-    RenderPlugIn.prototype.Delegate = function (caseViewer, caseModel, element, MetaData) {
+    RenderPlugIn.prototype.Delegate = function (caseViewer, caseModel, element) {
     };
     return RenderPlugIn;
 })(PlugIn);

@@ -7,13 +7,17 @@ class AnnotationPlugIn extends RenderPlugIn {
 		return true;
 	}
 
-	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery, anno: Object) : void {
-		var a : CaseAnnotation = <CaseAnnotation>anno;
+	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) : void {
+		var text : string = "";
 		var p : {top: number; left: number} = element.position();
+
+		for(var i : number = 0; i < caseModel.Annotations.length; i++) {
+			text += "@" + caseModel.Annotations[i].Name + "<br>";
+		}
+
 		$('<div class="anno">' +
-			'<font size="5" color="gray">' +
-			'<p>@' + a.Name + '</p>' +
-			'</font></div>')
-			.css({position: 'absolute', top: p.top - 20, left: p.left + 80}).appendTo(element);
+			'<p>' + text + '</p>' +
+			'</div>')
+			.css({position: 'absolute', 'font-size': 25, color: 'gray', top: p.top - 20, left: p.left + 80}).appendTo(element);
 	}
 }

@@ -45,17 +45,11 @@ class HTMLDoc {
 		this.DocBase.width(CaseViewer.ElementWidth * 2 - this.DocBase.outerWidth());
 	}
 
-	InvokePlugInRender(CaseViewer: CaseViewer, CaseModel: CaseModel, DocBase: JQuery): void {
-		for (var i : number = 0; i < CaseModel.Annotations.length; i++) {
-			var anno : CaseAnnotation = CaseModel.Annotations[i];
-			var f = CaseViewer.GetPlugInRender("annotation");
-			f(CaseViewer, CaseModel, DocBase, anno);
-		}
-		for (var i : number = 0; i < CaseModel.Notes.length; i++) {
-			var note : CaseNote = CaseModel.Notes[i];
-			var f = CaseViewer.GetPlugInRender("note");
-			f(CaseViewer, CaseModel, DocBase, note);
-		}
+	InvokePlugInRender(caseViewer: CaseViewer, caseModel: CaseModel, DocBase: JQuery): void {
+		var AnnotationRender = caseViewer.GetPlugInRender("annotation");
+		AnnotationRender(caseViewer, caseModel, DocBase);
+		var NoteRender = caseViewer.GetPlugInRender("note");
+		NoteRender(caseViewer, caseModel, DocBase);
 	}
 
 	Resize(Viewer: CaseViewer, Source: CaseModel): void {
@@ -372,9 +366,9 @@ class CaseViewer {
 		this.Resize();
 	}
 
-	GetPlugInRender(PlugInName: string): (caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery, MetaData: Object) => string {
-		return (viewer: CaseViewer, model: CaseModel, e: JQuery, data: Object) : string => {
-			this.pluginManager.RenderPlugInMap[PlugInName].Delegate(viewer, model, e, data);
+	GetPlugInRender(PlugInName: string): (caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) => string {
+		return (viewer: CaseViewer, model: CaseModel, e: JQuery) : string => {
+			this.pluginManager.RenderPlugInMap[PlugInName].Delegate(viewer, model, e);
 			return null;
 		};
 	}

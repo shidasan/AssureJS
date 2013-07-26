@@ -30,7 +30,7 @@ class RenderPlugIn extends PlugIn {
 		return true;
 	}
 
-	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery, MetaData: Object) : void {
+	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) : void {
 	}
 }
 

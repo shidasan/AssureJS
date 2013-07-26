@@ -13,8 +13,7 @@ var NotePlugIn = (function (_super) {
         return true;
     };
 
-    NotePlugIn.prototype.Delegate = function (caseViewer, caseModel, anno) {
-        console.log("note");
+    NotePlugIn.prototype.Delegate = function (caseViewer, caseModel) {
     };
     return NotePlugIn;
 })(RenderPlugIn);
