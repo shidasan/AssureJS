@@ -32,179 +32,123 @@ class LayoutEngine {
 
 class LayoutLandscape extends LayoutEngine {
 //	var CaseArray : any[];
-	footelement : string[] = new Array();
-	contextId : number = -1;
-//	MaxDepth : number = 0;
-//	ElemHeight : number = 0;
-//	LeafNodeNames : string[] = new Array();
+//	footelement : string[] = new Array();
+//	contextId : number = -1;
+	LeafNodeNames : string[] = new Array();
+	CONTEXT_MARGIN : number = 140;
 
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
 		this.X_MARGIN = 200;
-		this.Y_MARGIN = 140;
+		this.Y_MARGIN = 180;
 	}
 
-//	Traverse(Element : CaseModel, Depth : number, x : number) : void {
-//
-//		this.SetXpos(Element, Depth);
-//		this.SetLeafYpos(Element);
-////TODO	this.SetOtherYpos(Element, this.ElemHeight);
-//
-//	}
-//
-//	SetXpos(Element : CaseModel, Depth : number) : void {
-//		if(Element.Type == CaseType.Context) {
-//			Depth -= 1;
-//		}
-//
-//		if(Depth > this.MaxDepth) {
-//			this.MaxDepth = Depth;
-//		}
-//
-//		this.SetVector(Element);
-//
-//		this.ViewMap[Element.Label].AbsX = Depth*this.X_MARGIN;
-//
-//		if(Element.Children.length == 0) {
-//			if(Element.Type == CaseType.Context && Element.Parent.Children.length == 1) {//
-//				this.LeafNodeNames.push(Element.Label);
-//				this.LeafNodeNames.push(Element.Parent.Label);
-//				this.ElemHeight += this.Y_MARGIN + this.Y_MARGIN;
-//			} else {
-//				this.LeafNodeNames.push(Element.Label);//if not Context
-//				this.ElemHeight += this.Y_MARGIN;
-//			}
-//			return;
-//		}
-//
-//		for(var i : number = 0; i < Element.Children.length; i++) {
-//			this.SetXpos(Element.Children[i], Depth + 1);
-//		}
-//		return;
-//	}
-//
-//	SetVector(Element : CaseModel) : void {
-//		if(Element.Type == CaseType.Context) {
-//			this.ViewMap[Element.Label].ParentDirection = Direction.Bottom;
-//		} else {
-//			this.ViewMap[Element.Label].ParentDirection = Direction.Left;
-//		}
-//		return;
-//	}
-//
-//	SetLeafYpos(Element : CaseModel) : void {
-//		for(var i : number = 1; i < this.LeafNodeNames.length; i++) { 
-//			this.ViewMap[this.LeafNodeNames[i]].AbsY = i*this.Y_MARGIN;
-//		}
-//	}
-//
-//	SetYpos(Element : CaseModel, ElemHeight : number) : void {
-//		if(Element.Children.length == 0) {
-//			return;
-//		}
-//
-//	}
+	Traverse(Element : CaseModel, Depth : number, x : number) : void {
 
+		this.SetXpos(Element, Depth);
+		this.SetLeafYpos(Element);
+		this.SetOtherYpos(Element);
 
+	}
 
-	SetAllElementPosition(Element : CaseModel) : void {
+	SetXpos(Element : CaseModel, Depth : number) : void {
+		if(Element.Type == CaseType.Context) {
+			Depth -= 1;
+		}
+
+		this.SetVector(Element);
+
+		this.ViewMap[Element.Label].AbsX = Depth*this.X_MARGIN;
+
+		if(Element.Children.length == 0) {
+			if(Element.Type != CaseType.Context) {//
+				this.LeafNodeNames.push(Element.Label);
+			}
+		} else if (Element.Children.length == 1) {
+			if(Element.Children[0].Type == CaseType.Context) {
+				this.LeafNodeNames.push(Element.Label);//if not Context
+			}
+		}
+
+		for(var i : number = 0; i < Element.Children.length; i++) {
+			this.SetXpos(Element.Children[i], Depth + 1);
+		}
+		return;
+	}
+
+	SetVector(Element : CaseModel) : void {
+		if(Element.Type == CaseType.Context) {
+			this.ViewMap[Element.Label].ParentDirection = Direction.Bottom;
+		} else {
+			this.ViewMap[Element.Label].ParentDirection = Direction.Left;
+		}
+		return;
+	}
+
+	SetLeafYpos(Element : CaseModel) : void {
+		for(var i : number = 1; i < this.LeafNodeNames.length; i++) {
+			if(this.ViewMap[this.LeafNodeNames[i]].Source.Children.length == 1 && this.ViewMap[this.LeafNodeNames[i]].Source.Type != CaseType.Context) {
+				this.ViewMap[this.LeafNodeNames[i]].AbsY += this.ViewMap[this.LeafNodeNames[i-1]].AbsY +
+				this.Y_MARGIN*2;
+			} else {
+			this.ViewMap[this.LeafNodeNames[i]].AbsY += this.ViewMap[this.LeafNodeNames[i-1]].AbsY +
+				this.Y_MARGIN; 
+			}
+		}
+	}
+
+	SetOtherYpos(Element : CaseModel) : void {
 		if(Element.Children.length == 0) {
 			return;
 		}
 
 		if(Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context) {
-			this.ViewMap[Element.Children[0].Label].AbsY = (this.ViewMap[Element.Label].AbsY - 100);
-			this.ViewMap[Element.Children[0].Label].ParentDirection = Direction.Bottom;
-			this.ViewMap[Element.Children[0].Label].AbsX = this.ViewMap[Element.Label].AbsX;
+			this.ViewMap[Element.Children[0].Label].AbsY = (this.ViewMap[Element.Label].AbsY - this.CONTEXT_MARGIN);
 			return;
 		}
 
-		var n : number = Element.Children.length;
-		for(var i : number = 0; i < n; i++) {
-			this.SetAllElementPosition(Element.Children[i]);
+		for(var i : number = 0; i < Element.Children.length; i++) {
+			this.SetOtherYpos(Element.Children[i]);
 		}
 
-		var i : number = 0;
-		i = this.GetContextIndex(Element);
-		var yPositionSum : number = 0;
+		var IntermediatePos : number = 0;
 
-		for(var j : number = 0; j < n; j++) {
-			if(i != j) {
-				yPositionSum += this.ViewMap[Element.Children[j].Label].AbsY;
-			}
-		}
-		if(i == -1) {
+		var ContextIndex : number = this.GetContextIndex(Element);
+
+		IntermediatePos = this.CalcIntermediatePos(Element, ContextIndex);
+
+		if(ContextIndex == -1) {
 			if(Element.Children.length == 1 && Element.Children[0].Type == CaseType.Evidence) {
-				this.ViewMap[Element.Label].AbsY = yPositionSum/(Element.Children.length) + 15;
-			} else {
-				this.ViewMap[Element.Label].AbsY = yPositionSum/(Element.Children.length);
-			}
-		}
-		else {
-			this.ViewMap[Element.Label].AbsY = yPositionSum/(Element.Children.length-1);
-			this.ViewMap[Element.Children[i].Label].AbsY = (this.ViewMap[Element.Label].AbsY - 100);
-		}
-		console.log(this.ViewMap[Element.Label].AbsX);
-	}
-
-	SetFootElementPosition() : void {
-		var n : number = this.footelement.length;
-		for(var i : number = 0; i < n; i++) {
-			var PreviousElementShape : ElementShape = this.ViewMap[this.footelement[i-1]];
-			var CurrentElementShape  : ElementShape = this.ViewMap[this.footelement[i]];
-			if(i != 0) {
-				if((PreviousElementShape.ParentShape.Source.Label != CurrentElementShape.ParentShape.Source.Label) && (this.GetContextIndex(PreviousElementShape.ParentShape.Source) != -1)) {
-					CurrentElementShape.AbsY += 80;
-					console.log("Previous Element's Parent has a Context Element.");
-				}
-				if(this.GetContextIndex(this.ViewMap[this.footelement[i-1]].Source) != -1) {
-					PreviousElementShape.AbsY += 180;
-				}
-				CurrentElementShape.AbsY += (PreviousElementShape.AbsY + this.Y_MARGIN);
-			}
-		}
-		return;
-	}
-
-	Init(Element: CaseModel, x : number, y : number) : void {
-		this.ViewMap[Element.Label].AbsX += x;
-	}
-
-	Traverse(Element: CaseModel, x : number, y : number) {
-		if((Element.Children.length == 0 && Element.Type != CaseType.Context)|| (Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context)) {
-			this.footelement.push(Element.Label);
-		console.log("footelement = " + this.footelement);
-			return;
-		}
-		var i : number = 0;
-		i = this.GetContextIndex(Element);
-		if(i != -1) { //emit context element data
-			this.ViewMap[Element.Children[i].Label].AbsX += x;
-			this.ViewMap[Element.Children[i].Label].AbsY += y;
-			this.ViewMap[Element.Children[i].Label].AbsY += this.Y_MARGIN;
-			this.ViewMap[Element.Children[i].Label].ParentDirection = Direction.Bottom;
-			console.log(Element.Children[i].Label);
-			console.log("(" + this.ViewMap[Element.Children[i].Label].AbsX + ", " + this.ViewMap[Element.Children[i].Label].AbsY + ")");
-			this.EmitChildrenElement(Element, this.ViewMap[Element.Label].AbsX, this.ViewMap[Element.Label].AbsY, i);
-		} else {  //emit element data except context
-			this.EmitChildrenElement(Element, x, y, i);
-		}
-	}
-
-	EmitChildrenElement(Node : CaseModel, x : number, y : number, ContextId : number) : void {
-		var n : number = Node.Children.length;
-		for(var i : number = 0; i < n; i++) {
-			if(ContextId == i) {
-				continue;
+				this.ViewMap[Element.Label].AbsY = this.ViewMap[Element.Children[0].Label].AbsY + 15;
 			}
 			else {
-				this.ViewMap[Node.Children[i].Label].AbsX = x;
-				this.ViewMap[Node.Children[i].Label].AbsX += this.X_MARGIN;
-				this.ViewMap[Node.Children[i].Label].ParentDirection = Direction.Left;
-				this.Traverse(Node.Children[i], this.ViewMap[Node.Children[i].Label].AbsX, this.ViewMap[Node.Children[i].Label].AbsY);
+				this.ViewMap[Element.Label].AbsY = IntermediatePos;
 			}
+		} else {
+			this.ViewMap[Element.Label].AbsY = IntermediatePos;
+			this.ViewMap[Element.Children[ContextIndex].Label].AbsY = this.ViewMap[Element.Label].AbsY - this.CONTEXT_MARGIN;
 		}
 		return;
+	}
+
+	CalcIntermediatePos(Element : CaseModel, ContextIndex : number) : number {
+		var ChildLen = Element.Children.length;
+
+		if(ContextIndex == ChildLen - 1) {
+			return (this.ViewMap[Element.Children[0].Label].AbsY
+				+ (this.ViewMap[Element.Children[ChildLen - 2].Label].AbsY
+				- this.ViewMap[Element.Children[0].Label].AbsY)/2);
+		}
+		else if (ContextIndex == 0) {
+			return (this.ViewMap[Element.Children[1].Label].AbsY
+				+ (this.ViewMap[Element.Children[ChildLen - 1].Label].AbsY
+				- this.ViewMap[Element.Children[1].Label].AbsY)/2);
+		}
+		else {
+			return (this.ViewMap[Element.Children[0].Label].AbsY
+				+ (this.ViewMap[Element.Children[ChildLen - 1].Label].AbsY
+				- this.ViewMap[Element.Children[0].Label].AbsY)/2);
+		}
 	}
 }
 
