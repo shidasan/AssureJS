@@ -39,7 +39,7 @@ var LayoutLandscape = (function (_super) {
         this.footelement = new Array();
         this.contextId = -1;
         this.X_MARGIN = 200;
-        this.Y_MARGIN = 200;
+        this.Y_MARGIN = 140;
     }
     LayoutLandscape.prototype.SetAllElementPosition = function (Element) {
         if (Element.Children.length == 0) {
@@ -88,11 +88,9 @@ var LayoutLandscape = (function (_super) {
                     console.log("Previous Element's Parent has a Context Element.");
                 }
                 if (this.GetContextIndex(this.ViewMap[this.footelement[i - 1]].Source) != -1) {
-                    CurrentElementShape.AbsY += 180;
+                    PreviousElementShape.AbsY += 180;
                 }
-                console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i - 1]].ParentShape.Source.Label);
                 CurrentElementShape.AbsY += (PreviousElementShape.AbsY + this.Y_MARGIN);
-                console.log("footelement.AbsX = " + CurrentElementShape.AbsY);
             }
         }
         return;

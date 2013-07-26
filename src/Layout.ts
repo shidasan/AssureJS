@@ -34,12 +34,78 @@ class LayoutLandscape extends LayoutEngine {
 //	var CaseArray : any[];
 	footelement : string[] = new Array();
 	contextId : number = -1;
+//	MaxDepth : number = 0;
+//	ElemHeight : number = 0;
+//	LeafNodeNames : string[] = new Array();
 
 	constructor(public ViewMap : { [index: string]: ElementShape; } ) {
 		super(ViewMap);
 		this.X_MARGIN = 200;
-		this.Y_MARGIN = 200;
+		this.Y_MARGIN = 140;
 	}
+
+//	Traverse(Element : CaseModel, Depth : number, x : number) : void {
+//
+//		this.SetXpos(Element, Depth);
+//		this.SetLeafYpos(Element);
+////TODO	this.SetOtherYpos(Element, this.ElemHeight);
+//
+//	}
+//
+//	SetXpos(Element : CaseModel, Depth : number) : void {
+//		if(Element.Type == CaseType.Context) {
+//			Depth -= 1;
+//		}
+//
+//		if(Depth > this.MaxDepth) {
+//			this.MaxDepth = Depth;
+//		}
+//
+//		this.SetVector(Element);
+//
+//		this.ViewMap[Element.Label].AbsX = Depth*this.X_MARGIN;
+//
+//		if(Element.Children.length == 0) {
+//			if(Element.Type == CaseType.Context && Element.Parent.Children.length == 1) {//
+//				this.LeafNodeNames.push(Element.Label);
+//				this.LeafNodeNames.push(Element.Parent.Label);
+//				this.ElemHeight += this.Y_MARGIN + this.Y_MARGIN;
+//			} else {
+//				this.LeafNodeNames.push(Element.Label);//if not Context
+//				this.ElemHeight += this.Y_MARGIN;
+//			}
+//			return;
+//		}
+//
+//		for(var i : number = 0; i < Element.Children.length; i++) {
+//			this.SetXpos(Element.Children[i], Depth + 1);
+//		}
+//		return;
+//	}
+//
+//	SetVector(Element : CaseModel) : void {
+//		if(Element.Type == CaseType.Context) {
+//			this.ViewMap[Element.Label].ParentDirection = Direction.Bottom;
+//		} else {
+//			this.ViewMap[Element.Label].ParentDirection = Direction.Left;
+//		}
+//		return;
+//	}
+//
+//	SetLeafYpos(Element : CaseModel) : void {
+//		for(var i : number = 1; i < this.LeafNodeNames.length; i++) { 
+//			this.ViewMap[this.LeafNodeNames[i]].AbsY = i*this.Y_MARGIN;
+//		}
+//	}
+//
+//	SetYpos(Element : CaseModel, ElemHeight : number) : void {
+//		if(Element.Children.length == 0) {
+//			return;
+//		}
+//
+//	}
+
+
 
 	SetAllElementPosition(Element : CaseModel) : void {
 		if(Element.Children.length == 0) {
@@ -89,11 +155,9 @@ class LayoutLandscape extends LayoutEngine {
 					console.log("Previous Element's Parent has a Context Element.");
 				}
 				if(this.GetContextIndex(this.ViewMap[this.footelement[i-1]].Source) != -1) {
-					CurrentElementShape.AbsY += 180;
+					PreviousElementShape.AbsY += 180;
 				}
-				console.log("parent label of previous element in footelement= " + this.ViewMap[this.footelement[i-1]].ParentShape.Source.Label);
 				CurrentElementShape.AbsY += (PreviousElementShape.AbsY + this.Y_MARGIN);
-				console.log("footelement.AbsX = " + CurrentElementShape.AbsY);
 			}
 		}
 		return;

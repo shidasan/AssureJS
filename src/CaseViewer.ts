@@ -401,7 +401,7 @@ class CaseViewer {
 //		layout.SetAllElementPosition(this.ElementTop);
 		var layout : LayoutEngine = new LayoutLandscape(this.ViewMap);
 		layout.Init(this.ElementTop, 0, 200);
-		layout.Traverse(this.ElementTop, 0, 200);
+		layout.Traverse(this.ElementTop, 0, 0);
 		layout.SetFootElementPosition();
 		layout.SetAllElementPosition(this.ElementTop);
 	}
