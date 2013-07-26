@@ -34,10 +34,22 @@ class JsonParser extends Parser {
 		var Type : CaseType = CaseModelData["NodeType"]; // fix NodeType's type
 		var Statement : string = CaseModelData["Statement"];
 		var Children : string[] = CaseModelData["Children"];
-		var Notes : CaseNote[] = CaseModelData["Notes"];
-		var Annotations : CaseAnnotation[] = CaseModelData["Annotations"];
+		var NoteData : CaseNote[] = CaseModelData["Notes"];
+		var AnnotationData : any[] = CaseModelData["Annotations"];
 
 		var ChildCaseModel : CaseModel = new CaseModel(this.Case, Parent, Type, childLabel, Statement);
+
+		for(var i : number = 0; i < NoteData.length; i++) {
+			var note : CaseNote =
+							 new CaseNote(NoteData[i].Name, NoteData[i].Body);
+			ChildCaseModel.Notes.push(note);
+		}
+
+		for(var i : number = 0; i < AnnotationData.length; i++) {
+			var annotation : CaseAnnotation =
+							 new CaseAnnotation(AnnotationData[i].Name, AnnotationData[i].Body);
+			ChildCaseModel.Annotations.push(annotation);
+		}
 
 		for(var i : number = 0; i < Children.length; i++) {
 			this.ParseChild(Children[i], ChildCaseModel);

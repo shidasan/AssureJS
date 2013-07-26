@@ -25,7 +25,7 @@ $(function () {
                 "Statement": "",
                 "NodeType": 1,
                 "Label": "C1",
-                "Annotations": [],
+                "Annotations": [{ "Name": "Def", "Body": "a = 1" }],
                 "Notes": []
             },
             {
@@ -107,7 +107,7 @@ $(function () {
                 "Statement": "",
                 "NodeType": 1,
                 "Label": "C2",
-                "Annotations": [],
+                "Annotations": [{ "Name": "Def", "Body": "a = 2" }],
                 "Notes": []
             },
             {
@@ -125,7 +125,7 @@ $(function () {
                 "Statement": "",
                 "NodeType": 1,
                 "Label": "C4",
-                "Annotations": [],
+                "Annotations": [{ "Name": "Def", "Body": "a = 4" }],
                 "Notes": []
             },
             {
@@ -133,7 +133,7 @@ $(function () {
                 "Statement": "",
                 "NodeType": 1,
                 "Label": "C3",
-                "Annotations": [],
+                "Annotations": [{ "Name": "Def", "Body": "a = 3" }],
                 "Notes": []
             },
             {
@@ -223,7 +223,6 @@ $(function () {
     var Case0 = new Case();
     var caseDecoder = new CaseDecoder();
     var root = caseDecoder.ParseJson(Case0, JsonData);
-    root.Annotations = [new CaseAnnotation("Task", "test")];
 
     Case0.SetElementTop(root);
     var Viewer = new CaseViewer(Case0, pluginManager);

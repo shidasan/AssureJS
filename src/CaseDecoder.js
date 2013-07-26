@@ -35,10 +35,20 @@ var JsonParser = (function (_super) {
         var Type = CaseModelData["NodeType"];
         var Statement = CaseModelData["Statement"];
         var Children = CaseModelData["Children"];
-        var Notes = CaseModelData["Notes"];
-        var Annotations = CaseModelData["Annotations"];
+        var NoteData = CaseModelData["Notes"];
+        var AnnotationData = CaseModelData["Annotations"];
 
         var ChildCaseModel = new CaseModel(this.Case, Parent, Type, childLabel, Statement);
+
+        for (var i = 0; i < NoteData.length; i++) {
+            var note = new CaseNote(NoteData[i].Name, NoteData[i].Body);
+            ChildCaseModel.Notes.push(note);
+        }
+
+        for (var i = 0; i < AnnotationData.length; i++) {
+            var annotation = new CaseAnnotation(AnnotationData[i].Name, AnnotationData[i].Body);
+            ChildCaseModel.Annotations.push(annotation);
+        }
 
         for (var i = 0; i < Children.length; i++) {
             this.ParseChild(Children[i], ChildCaseModel);
