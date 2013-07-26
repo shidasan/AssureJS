@@ -46,74 +46,63 @@ class ServerAPI {
 		return <Object> this.RemoteCall("getDCase", { dcaseId: CaseId });
 	}
 
-	/** TODO
 	//-------------------------------------
 
-	export var searchDCase = function(pageIndex: any, tags?: string[]) {
+	SearchDCase(pageIndex: any, tags?: string[]) {
 		if(tags == null) {
 			tags = [];
 		}
 		try{
-			return this.call("searchDCase", {page: pageIndex, tagList: tags});
+			return this.RemoteCall("searchDCase", {page: pageIndex, tagList: tags});
 		}catch(e){
 			return [];
 		}
-	};
+	}
 
-	export var createDCase = function(name, tree) {
-		return this.call("createDCase", {
+	CreateDCase(name, tree) {
+		return this.RemoteCall("createDCase", {
 			dcaseName: name, contents: tree });
-	};
+	}
 
-	export var getCommitList = function(dcaseId) {
-		return this.call("getCommitList", { dcaseId:dcaseId }).commitList;
-	};
+	GetCommitList(dcaseId) {
+		return this.RemoteCall("getCommitList", { dcaseId:dcaseId }).commitList;
+	}
 
-	export var getTagList = function() {
-		return this.call("getTagList", {});
-	};
+	GetTagList() {
+		return this.RemoteCall("getTagList", {});
+	}
 
-	export var commit = function(tree, msg, commitId) {
-		return this.call("commit", {
+	Commit(tree, msg, commitId) {
+		return this.RemoteCall("commit", {
 			contents: tree,
 			commitMessage: msg,
 			commitId: commitId,
 	//		userId: userId
 		}).commitId;
-	};
+	}
 
 
-	export var editDCase = function(dcaseId, name) {
-		return this.call("editDCase", {
+	EditDCase(dcaseId, name) {
+		return this.RemoteCall("editDCase", {
 			dcaseId: dcaseId,
 			dcaseName: name
 		});
-	};
+	}
 
-	export var deleteDCase = function(dcaseId) {
-		return this.call("deleteDCase", { dcaseId: dcaseId });
-	};
+	DeleteDCase(dcaseId) {
+		return this.RemoteCall("deleteDCase", { dcaseId: dcaseId });
+	}
 
-	export var getNodeTree = function(commitId) {
-		return JSON.parse(this.call("getNodeTree", { commitId: commitId }).contents);
-	};
+	GetNodeTree(commitId) {
+		return JSON.parse(this.RemoteCall("getNodeTree", { commitId: commitId }).contents);
+	}
 
-	export var searchNode = function(text) {
-		return this.call("searchNode", { text: text }).searchResultList;
-	};
+	SearchNode(text) {
+		return this.RemoteCall("searchNode", { text: text }).searchResultList;
+	}
 
-	export var searchDCaseHistory = function(dcaseId, text) {
-		return this.call("searchDCaseHistory", {dcaseId: dcaseId, text: text});
-	};
-
-	export var createTicket = function(nodeId, subject, description, userName) {
-	    return this.call("createTicket", {
-	        nodeId: nodeId,
-	        subject: subject,
-	        description: description,
-	        userName: userName
-	    });
-	};
-     ***/
+	SearchDCaseHistory(dcaseId, text) {
+		return this.RemoteCall("searchDCaseHistory", {dcaseId: dcaseId, text: text});
+	}
 }
 
