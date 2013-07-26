@@ -53,14 +53,16 @@ var LayoutLandscape = (function (_super) {
             return;
         }
 
-        for (var i in Element.Children) {
+        var n = Element.Children.length;
+        for (var i = 0; i < n; i++) {
             this.SetAllElementPosition(Element.Children[i]);
         }
 
         var i = 0;
         i = this.GetContextIndex(Element);
         var yPositionSum = 0;
-        for (var j in Element.Children) {
+
+        for (var j = 0; j < n; j++) {
             if (i != j) {
                 yPositionSum += this.ViewMap[Element.Children[j].Label].AbsY;
             }
@@ -79,7 +81,8 @@ var LayoutLandscape = (function (_super) {
     };
 
     LayoutLandscape.prototype.SetFootElementPosition = function () {
-        for (var i in this.footelement) {
+        var n = this.footelement.length;
+        for (var i = 0; i < n; i++) {
             var PreviousElementShape = this.ViewMap[this.footelement[i - 1]];
             var CurrentElementShape = this.ViewMap[this.footelement[i]];
             if (i != 0) {
@@ -146,6 +149,8 @@ var LayoutPortrait = (function (_super) {
         this.X_MARGIN = 200;
         this.Y_MARGIN = 160;
         this.X_CONTEXT_MARGIN = 200;
+        this.X_FOOT_MARGIN = 100;
+        this.X_MULTI_ELEMENT_MARGIN = 20;
         this.footelement = new Array();
         this.contextId = -1;
     }
@@ -166,15 +171,16 @@ var LayoutPortrait = (function (_super) {
             ContextView.AbsY = (ParentView.AbsY - h);
             return;
         }
-
-        for (var i in Element.Children) {
+        var n = Element.Children.length;
+        for (var i = 0; i < n; i++) {
             this.SetAllElementPosition(Element.Children[i]);
         }
 
         var i = 0;
         i = this.GetContextIndex(Element);
         var xPositionSum = 0;
-        for (var j in Element.Children) {
+        n = Element.Children.length;
+        for (var j = 0; j < n; j++) {
             if (i != j) {
                 xPositionSum += this.ViewMap[Element.Children[j].Label].AbsX;
             }
@@ -184,19 +190,68 @@ var LayoutPortrait = (function (_super) {
         } else {
             ParentView.AbsX = xPositionSum / (Element.Children.length - 1);
             this.ViewMap[Element.Children[i].Label].AbsX = (ParentView.AbsX + this.X_CONTEXT_MARGIN);
+            this.ViewMap[Element.Children[i].Label].AbsY = ParentView.AbsY;
         }
     };
 
+    LayoutPortrait.prototype.CalculateMinPosition = function (ElementList) {
+        if (ElementList[0].Type == CaseType.Context) {
+            var xPosition = this.ViewMap[ElementList[1].Label].AbsX;
+        } else {
+            var xPosition = this.ViewMap[ElementList[0].Label].AbsX;
+        }
+        var n = ElementList.length;
+        for (var i = 0; i < n; i++) {
+            console.log(this.ViewMap[ElementList[i].Label].AbsX);
+            if (ElementList[i].Type == CaseType.Context) {
+                continue;
+            }
+            if (xPosition > this.ViewMap[ElementList[i].Label].AbsX) {
+                xPosition = this.ViewMap[ElementList[i].Label].AbsX;
+            }
+        }
+        return xPosition;
+    };
+
+    LayoutPortrait.prototype.CalculateMaxPosition = function (ElementList) {
+        if (ElementList[0].Type == CaseType.Context) {
+            var xPosition = this.ViewMap[ElementList[1].Label].AbsX;
+        } else {
+            var xPosition = this.ViewMap[ElementList[0].Label].AbsX;
+        }
+
+        var n = ElementList.length;
+        for (var i = 0; i < n; i++) {
+            var ChildView = this.ViewMap[ElementList[i].Label];
+            if (ElementList[i].Type == CaseType.Context) {
+                continue;
+            }
+            if (xPosition < ChildView.AbsX) {
+                xPosition = ChildView.AbsX;
+            }
+        }
+        return xPosition;
+    };
+
     LayoutPortrait.prototype.SetFootElementPosition = function () {
-        for (var i in this.footelement) {
+        var n = this.footelement.length;
+        for (var i = 0; i < n; i++) {
             var PreviousElementShape = this.ViewMap[this.footelement[i - 1]];
             var CurrentElementShape = this.ViewMap[this.footelement[i]];
             if (i != 0) {
                 if ((PreviousElementShape.ParentShape.Source.Label != CurrentElementShape.ParentShape.Source.Label) && (this.GetContextIndex(PreviousElementShape.ParentShape.Source) != -1)) {
-                    CurrentElementShape.AbsX += 10;
+                    var PreviousParentChildren = PreviousElementShape.ParentShape.Source.Children;
+                    var Min_xPosition = this.CalculateMinPosition(PreviousParentChildren);
+                    var Max_xPosition = this.CalculateMaxPosition(PreviousParentChildren);
+                    var ArgumentMargin = (Max_xPosition - Min_xPosition) / 2;
+                    if (ArgumentMargin > (this.X_CONTEXT_MARGIN - this.X_MULTI_ELEMENT_MARGIN)) {
+                        CurrentElementShape.AbsX += this.X_MULTI_ELEMENT_MARGIN;
+                    } else {
+                        CurrentElementShape.AbsX += this.X_FOOT_MARGIN;
+                    }
                 }
                 if (this.GetContextIndex(PreviousElementShape.Source) != -1) {
-                    CurrentElementShape.AbsX += 180;
+                    CurrentElementShape.AbsX += this.X_MARGIN;
                 }
                 CurrentElementShape.AbsX += (PreviousElementShape.AbsX + this.X_MARGIN);
             }

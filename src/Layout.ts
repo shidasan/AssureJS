@@ -119,14 +119,16 @@ class LayoutLandscape extends LayoutEngine {
 			return;
 		}
 
-		for(var i in Element.Children) {
+		var n : number = Element.Children.length;
+		for(var i : number = 0; i < n; i++) {
 			this.SetAllElementPosition(Element.Children[i]);
 		}
 
 		var i : number = 0;
 		i = this.GetContextIndex(Element);
 		var yPositionSum : number = 0;
-		for(var j in Element.Children) {
+
+		for(var j : number = 0; j < n; j++) {
 			if(i != j) {
 				yPositionSum += this.ViewMap[Element.Children[j].Label].AbsY;
 			}
@@ -146,7 +148,8 @@ class LayoutLandscape extends LayoutEngine {
 	}
 
 	SetFootElementPosition() : void {
-		for(var i in this.footelement) {
+		var n : number = this.footelement.length;
+		for(var i : number = 0; i < n; i++) {
 			var PreviousElementShape : ElementShape = this.ViewMap[this.footelement[i-1]];
 			var CurrentElementShape  : ElementShape = this.ViewMap[this.footelement[i]];
 			if(i != 0) {
@@ -209,6 +212,8 @@ class LayoutPortrait extends LayoutEngine {
 	X_MARGIN = 200;
 	Y_MARGIN = 160;
 	X_CONTEXT_MARGIN : number = 200;
+	X_FOOT_MARGIN : number = 100;
+	X_MULTI_ELEMENT_MARGIN : number = 20;
 	footelement : string[] = new Array();
 	contextId : number = -1;
 
@@ -221,27 +226,28 @@ class LayoutPortrait extends LayoutEngine {
 			return;
 		}
 
-		var ParentView = this.ViewMap[Element.Label];
+		var ParentView : ElementShape = this.ViewMap[Element.Label];
 
 		if(Element.Children.length == 1 && Element.Children[0].Type == CaseType.Context) {
-			var ContextView = this.ViewMap[Element.Children[0].Label];
-			var h1 = this.ViewMap[Element.Children[0].Label].HTMLDoc.Height;
-			var h2 = this.ViewMap[Element.Label].HTMLDoc.Height;
-			var h = (h1 - h2) / 2;
+			var ContextView : ElementShape = this.ViewMap[Element.Children[0].Label];
+			var h1 : number = this.ViewMap[Element.Children[0].Label].HTMLDoc.Height;
+			var h2 : number = this.ViewMap[Element.Label].HTMLDoc.Height;
+			var h : number = (h1 - h2) / 2;
 			ContextView.ParentDirection = Direction.Left;
 			ContextView.AbsX = (ParentView.AbsX + this.X_CONTEXT_MARGIN);
 			ContextView.AbsY = (ParentView.AbsY - h);
 			return;
 		}
-
-		for(var i in Element.Children) {
+		var n : number = Element.Children.length;
+		for(var i : number = 0; i < n; i++) {
 			this.SetAllElementPosition(Element.Children[i]);
 		}
 
 		var i : number = 0;
 		i = this.GetContextIndex(Element);
 		var xPositionSum : number = 0;
-		for(var j in Element.Children) {
+		n = Element.Children.length;
+		for(var j : number = 0; j < n; j++) {
 			if(i != j) {
 				xPositionSum += this.ViewMap[Element.Children[j].Label].AbsX;
 			}
@@ -249,22 +255,74 @@ class LayoutPortrait extends LayoutEngine {
 		if(i == -1) {
 			ParentView.AbsX = xPositionSum/(Element.Children.length);
 		}
-		else {
+		else {//set context (x, y) position
 			ParentView.AbsX = xPositionSum/(Element.Children.length-1);
 			this.ViewMap[Element.Children[i].Label].AbsX = (ParentView.AbsX + this.X_CONTEXT_MARGIN);
+			this.ViewMap[Element.Children[i].Label].AbsY = ParentView.AbsY;
 		}
 	}
 
+	CalculateMinPosition(ElementList : CaseModel[]) : number {
+		if(ElementList[0].Type == CaseType.Context) {
+			var xPosition : number = this.ViewMap[ElementList[1].Label].AbsX;
+		}
+		else {
+			var xPosition : number = this.ViewMap[ElementList[0].Label].AbsX;
+		}
+		var n : number = ElementList.length;
+		for(var i : number = 0; i < n; i++) {
+			console.log(this.ViewMap[ElementList[i].Label].AbsX);
+			if(ElementList[i].Type == CaseType.Context) {
+				continue;
+			}
+			if(xPosition > this.ViewMap[ElementList[i].Label].AbsX) {
+				xPosition = this.ViewMap[ElementList[i].Label].AbsX;
+			}
+		}
+		return xPosition;
+	}
+
+	CalculateMaxPosition(ElementList : CaseModel[]) : number {
+		if(ElementList[0].Type == CaseType.Context) {
+			var xPosition : number = this.ViewMap[ElementList[1].Label].AbsX;
+		}
+		else {
+			var xPosition : number = this.ViewMap[ElementList[0].Label].AbsX;
+		}
+
+		var n : number = ElementList.length;
+		for(var i : number = 0; i < n; i++) {
+			var ChildView : ElementShape = this.ViewMap[ElementList[i].Label];
+			if(ElementList[i].Type == CaseType.Context) {
+				continue;
+			}
+			if(xPosition < ChildView.AbsX) {
+				xPosition = ChildView.AbsX;
+			}
+		}
+		return xPosition;
+	}
+
 	SetFootElementPosition() : void {
-		for(var i in this.footelement) {
+		var n : number = this.footelement.length;
+		for(var i : number = 0; i < n; i++) {
 			var PreviousElementShape : ElementShape = this.ViewMap[this.footelement[i-1]];
 			var CurrentElementShape  : ElementShape = this.ViewMap[this.footelement[i]];
 			if(i != 0) {
 				if((PreviousElementShape.ParentShape.Source.Label != CurrentElementShape.ParentShape.Source.Label) && (this.GetContextIndex(PreviousElementShape.ParentShape.Source) != -1)) {
-					CurrentElementShape.AbsX += 10;
+					var PreviousParentChildren : CaseModel[] = PreviousElementShape.ParentShape.Source.Children;
+					var Min_xPosition : number = this.CalculateMinPosition(PreviousParentChildren);
+					var Max_xPosition : number = this.CalculateMaxPosition(PreviousParentChildren);
+					var ArgumentMargin : number = (Max_xPosition - Min_xPosition) / 2;
+					if(ArgumentMargin > (this.X_CONTEXT_MARGIN - this.X_MULTI_ELEMENT_MARGIN)) {
+						CurrentElementShape.AbsX += this.X_MULTI_ELEMENT_MARGIN;
+					}
+					else {
+						CurrentElementShape.AbsX += this.X_FOOT_MARGIN;
+					}
 				}
 				if(this.GetContextIndex(PreviousElementShape.Source) != -1) {
-					CurrentElementShape.AbsX += 180;
+					CurrentElementShape.AbsX += this.X_MARGIN;
 				}
 				CurrentElementShape.AbsX += (PreviousElementShape.AbsX + this.X_MARGIN);
 			}
@@ -285,11 +343,11 @@ class LayoutPortrait extends LayoutEngine {
 		var i : number = 0;
 		i = this.GetContextIndex(Element);
 		if(i != -1) { //emit context element data
-			var ContextView = this.ViewMap[Element.Children[i].Label];
-			var ParentView = ContextView.ParentShape;
-			var h1 = ContextView.HTMLDoc.Height;
-			var h2 = ParentView.HTMLDoc.Height;
-			var h = (h1 - h2) / 2;
+			var ContextView : ElementShape = this.ViewMap[Element.Children[i].Label];
+			var ParentView : ElementShape = ContextView.ParentShape;
+			var h1 : number = ContextView.HTMLDoc.Height;
+			var h2 : number = ParentView.HTMLDoc.Height;
+			var h : number = (h1 - h2) / 2;
 			ContextView.ParentDirection = Direction.Left;
 			ContextView.AbsX += x;
 			ContextView.AbsY += (y - h);
@@ -303,7 +361,7 @@ class LayoutPortrait extends LayoutEngine {
 	EmitChildrenElement(Node : CaseModel, x : number, y : number, ContextId : number) : void {
 		var n : number = Node.Children.length;
 		for(var i : number = 0; i < n; i++) {
-			var ElementView = this.ViewMap[Node.Children[i].Label];
+			var ElementView : ElementShape = this.ViewMap[Node.Children[i].Label];
 			if(ContextId == i) {
 				continue;
 			}

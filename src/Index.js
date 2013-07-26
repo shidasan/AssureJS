@@ -6,7 +6,7 @@ $(function () {
 
     var JsonData = {
         "DCaseName": "test",
-        "NodeCount": 22,
+        "NodeCount": 23,
         "TopGoalLabel": "G1",
         "NodeList": [
             {
@@ -176,6 +176,7 @@ $(function () {
             },
             {
                 "Children": [
+                    "C5",
                     "E5",
                     "E6"
                 ],
@@ -198,6 +199,14 @@ $(function () {
                 "Statement": "",
                 "NodeType": 3,
                 "Label": "E6",
+                "Annotations": [],
+                "Notes": []
+            },
+            {
+                "Children": [],
+                "Statement": "",
+                "NodeType": 1,
+                "Label": "C5",
                 "Annotations": [],
                 "Notes": []
             },
