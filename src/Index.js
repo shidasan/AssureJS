@@ -3,6 +3,7 @@ $(function () {
     pluginManager.AddActionPlugIn("menu", new MenuBarPlugIn());
     pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
     pluginManager.AddRenderPlugIn("annotation", new AnnotationPlugIn());
+    pluginManager.AddRenderPlugIn("note", new NotePlugIn());
 
     var JsonData = {
         "DCaseName": "test",

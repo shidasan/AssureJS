@@ -43,17 +43,11 @@ var HTMLDoc = (function () {
         this.DocBase.width(CaseViewer.ElementWidth * 2 - this.DocBase.outerWidth());
     };
 
-    HTMLDoc.prototype.InvokePlugInRender = function (CaseViewer, CaseModel, DocBase) {
-        for (var i = 0; i < CaseModel.Annotations.length; i++) {
-            var anno = CaseModel.Annotations[i];
-            var f = CaseViewer.GetPlugInRender("annotation");
-            f(CaseViewer, CaseModel, DocBase, anno);
-        }
-        for (var i = 0; i < CaseModel.Notes.length; i++) {
-            var note = CaseModel.Notes[i];
-            var f = CaseViewer.GetPlugInRender("note");
-            f(CaseViewer, CaseModel, DocBase, note);
-        }
+    HTMLDoc.prototype.InvokePlugInRender = function (caseViewer, caseModel, DocBase) {
+        var AnnotationRender = caseViewer.GetPlugInRender("annotation");
+        AnnotationRender(caseViewer, caseModel, DocBase);
+        var NoteRender = caseViewer.GetPlugInRender("note");
+        NoteRender(caseViewer, caseModel, DocBase);
     };
 
     HTMLDoc.prototype.Resize = function (Viewer, Source) {
@@ -371,8 +365,8 @@ var CaseViewer = (function () {
     }
     CaseViewer.prototype.GetPlugInRender = function (PlugInName) {
         var _this = this;
-        return function (viewer, model, e, data) {
-            _this.pluginManager.RenderPlugInMap[PlugInName].Delegate(viewer, model, e, data);
+        return function (viewer, model, e) {
+            _this.pluginManager.RenderPlugInMap[PlugInName].Delegate(viewer, model, e);
             return null;
         };
     };
