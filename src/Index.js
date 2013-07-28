@@ -1,4 +1,5 @@
 $(function () {
+    var serverApi = new ServerAPI('http://192.168.189.142/ait');
     var pluginManager = new PlugInManager();
     pluginManager.AddActionPlugIn("menu", new MenuBarPlugIn());
     pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
@@ -235,7 +236,7 @@ $(function () {
     var root = caseDecoder.ParseJson(Case0, JsonData);
 
     Case0.SetElementTop(root);
-    var Viewer = new CaseViewer(Case0, pluginManager);
+    var Viewer = new CaseViewer(Case0, pluginManager, serverApi);
     var backgroundlayer = document.getElementById("background");
     var shapelayer = document.getElementById("layer0");
     var contentlayer = document.getElementById("layer1");

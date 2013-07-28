@@ -11,11 +11,11 @@ var EditorPlugIn = (function (_super) {
         wideArea();
         $('#editor').css({ display: 'none' });
     }
-    EditorPlugIn.prototype.IsEnabled = function (caseViewer, caseModel) {
+    EditorPlugIn.prototype.IsEnabled = function (caseViewer, case0) {
         return true;
     };
 
-    EditorPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
+    EditorPlugIn.prototype.Delegate = function (caseViewer, case0, serverApi) {
         $('.node').click(function (ev) {
             ev.stopPropagation();
             var p = $(this).position();

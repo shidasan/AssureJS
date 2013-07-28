@@ -347,9 +347,11 @@ var CaseViewerConfig = (function () {
 var ViewerConfig = new CaseViewerConfig();
 
 var CaseViewer = (function () {
-    function CaseViewer(Source, pluginManager) {
-        this.ViewMap = [];
+    function CaseViewer(Source, pluginManager, serverApi) {
+        this.Source = Source;
         this.pluginManager = pluginManager;
+        this.serverApi = serverApi;
+        this.ViewMap = [];
         for (var elementkey in Source.ElementMap) {
             var element = Source.ElementMap[elementkey];
             this.ViewMap[element.Label] = new ElementShape(this, element);
@@ -392,7 +394,7 @@ var CaseViewer = (function () {
         for (var viewkey in this.ViewMap) {
             this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
         }
-        this.pluginManager.RegisterActionEventListeners(this, this.ElementTop);
+        this.pluginManager.RegisterActionEventListeners(this, this.Source, this.serverApi);
         this.Resize();
     };
     CaseViewer.ElementWidth = 150;

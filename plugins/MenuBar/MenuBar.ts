@@ -2,13 +2,13 @@
 /// <reference path="../../src/PlugInManager.ts" />
 
 class MenuBarPlugIn extends ActionPlugIn {
-	IsEnabled(caseViewer: CaseViewer, caseModel: CaseModel): boolean {
+	IsEnabled(caseViewer: CaseViewer, case0: Case): boolean {
 		return true;
 	}
 
 	static DelegateInvoked: boolean = false;
 
-	Delegate(caseViewer: CaseViewer, caseModel: CaseModel): boolean {
+	Delegate(caseViewer: CaseViewer, case0: Case, serverApi: ServerAPI): boolean {
 		if (MenuBarPlugIn.DelegateInvoked) return;
 		$('.node').hover(function () {
 			var node = $(this);

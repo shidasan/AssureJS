@@ -1,6 +1,7 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
 /// <reference path="CaseViewer.ts" />
+/// <reference path="ServerApi.ts" />
 /// <reference path="../plugins/MenuBar/MenuBar.ts" />
 /// <reference path="../plugins/Editor/Editor.ts" />
 /// <reference path="../plugins/Annotation/Annotation.ts" />
@@ -9,6 +10,7 @@
 
 $(function () {
 
+	var serverApi = new ServerAPI('http://localhost/ait'); //TODO config for Path
 	var pluginManager = new PlugInManager();
 	pluginManager.AddActionPlugIn("menu", new MenuBarPlugIn());
 	pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
@@ -257,7 +259,7 @@ $(function () {
 	var root: CaseModel = caseDecoder.ParseJson(Case0, JsonData);
 
 	Case0.SetElementTop(root);
-	var Viewer = new CaseViewer(Case0, pluginManager);
+	var Viewer = new CaseViewer(Case0, pluginManager, serverApi);
 	var backgroundlayer = <HTMLDivElement>document.getElementById("background");
 	var shapelayer = <SVGGElement><any>document.getElementById("layer0");
 	var contentlayer = <HTMLDivElement>document.getElementById("layer1");

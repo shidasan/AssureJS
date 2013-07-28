@@ -1,4 +1,5 @@
 /// <reference path="../../src/CaseModel.ts" />
+/// <reference path="../../src/ServerApi.ts" />
 /// <reference path="../../src/PlugInManager.ts" />
 
 //--- Interface for widearea.js
@@ -12,11 +13,11 @@ class EditorPlugIn extends ActionPlugIn {
 		$('#editor').css({display: 'none'});
 	}
 
-	IsEnabled (caseViewer: CaseViewer, caseModel: CaseModel) : boolean {
+	IsEnabled (caseViewer: CaseViewer, case0: Case) : boolean {
 		return true;
 	}
 
-	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
+	Delegate(caseViewer: CaseViewer, case0: Case, serverApi: ServerAPI)  : boolean {
 		$('.node').click(function(ev) { //FIXME
 			ev.stopPropagation();
 			var p = $(this).position();

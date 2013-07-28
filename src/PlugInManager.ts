@@ -1,3 +1,7 @@
+/// <reference path="CaseModel.ts" />
+/// <reference path="CaseViewer.ts" />
+/// <reference path="ServerApi.ts" />
+
 class PlugIn {
 	Name : string;
 }
@@ -6,11 +10,11 @@ class ActionPlugIn extends PlugIn {
 	EventName   : string;
 	EventTarget : string;
 
-	IsEnabled(caseViewer: CaseViewer, caseModel: CaseModel) : boolean {
+	IsEnabled(caseViewer: CaseViewer, case0: Case) : boolean {
 		return true;
 	}
 
-	Delegate(caseViewer: CaseViewer, caseModel: CaseModel)  : boolean {
+	Delegate(caseViewer: CaseViewer, case0: Case, serverApi: ServerAPI)  : boolean {
 		return true;
 	}
 }
@@ -55,10 +59,10 @@ class PlugInManager {
 		this.ActionPlugIns.push(actionPlugIn);
 	}
 
-	RegisterActionEventListeners(CaseViewer: CaseViewer, CaseModel: CaseModel): void {
+	RegisterActionEventListeners(CaseViewer: CaseViewer, case0: Case, serverApi: ServerAPI): void {
 		for(var i: number = 0; i < this.ActionPlugIns.length; i++) {
-			if(this.ActionPlugIns[i].IsEnabled(CaseViewer, CaseModel)) {
-				this.ActionPlugIns[i].Delegate(CaseViewer, CaseModel);
+			if(this.ActionPlugIns[i].IsEnabled(CaseViewer, case0)) {
+				this.ActionPlugIns[i].Delegate(CaseViewer, case0, serverApi);
 			}
 		}
 	}

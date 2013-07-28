@@ -1,5 +1,6 @@
 /// <reference path="CaseModel.ts" />
 /// <reference path="CaseDecoder.ts" />
+/// <reference path="ServerApi.ts" />
 /// <reference path="Layout.ts" />
 /// <reference path="PlugInManager.ts" />
 /// <reference path="../d.ts/jquery.d.ts" />
@@ -347,12 +348,10 @@ var ViewerConfig = new CaseViewerConfig();
 class CaseViewer {
 	ViewMap: { [index: string]: ElementShape; };
 	ElementTop : CaseModel;
-	pluginManager : PlugInManager;
 	static ElementWidth = 150;
 
-	constructor(Source: Case, pluginManager : PlugInManager) {
+	constructor(public Source: Case, public pluginManager : PlugInManager, public serverApi: ServerAPI) {
 		this.ViewMap = <any>[]; // a hack to avoid tsc's problem.
-		this.pluginManager = pluginManager;
 		for (var elementkey in Source.ElementMap) {
 			var element = Source.ElementMap[elementkey];
 			this.ViewMap[element.Label] = new ElementShape(this, element);
@@ -400,7 +399,7 @@ class CaseViewer {
 		for (var viewkey in this.ViewMap) {
 			this.ViewMap[viewkey].AppendHTMLElement(shapelayer, screenlayer);
 		}
-		this.pluginManager.RegisterActionEventListeners(this, this.ElementTop);
+		this.pluginManager.RegisterActionEventListeners(this, this.Source, this.serverApi);
 		this.Resize();
 	}
 

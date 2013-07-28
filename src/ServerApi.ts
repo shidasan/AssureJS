@@ -10,7 +10,7 @@ var default_error_callback = function(req, stat, err) {
 
 class ServerAPI {
 	uri : string;
-	
+
 	constructor(basepath : string) {
 		this.uri = basepath + "/api/1.0/";
 	}

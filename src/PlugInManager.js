@@ -15,11 +15,11 @@ var ActionPlugIn = (function (_super) {
     function ActionPlugIn() {
         _super.apply(this, arguments);
     }
-    ActionPlugIn.prototype.IsEnabled = function (caseViewer, caseModel) {
+    ActionPlugIn.prototype.IsEnabled = function (caseViewer, case0) {
         return true;
     };
 
-    ActionPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
+    ActionPlugIn.prototype.Delegate = function (caseViewer, case0, serverApi) {
         return true;
     };
     return ActionPlugIn;
@@ -66,10 +66,10 @@ var PlugInManager = (function () {
         this.ActionPlugIns.push(actionPlugIn);
     };
 
-    PlugInManager.prototype.RegisterActionEventListeners = function (CaseViewer, CaseModel) {
+    PlugInManager.prototype.RegisterActionEventListeners = function (CaseViewer, case0, serverApi) {
         for (var i = 0; i < this.ActionPlugIns.length; i++) {
-            if (this.ActionPlugIns[i].IsEnabled(CaseViewer, CaseModel)) {
-                this.ActionPlugIns[i].Delegate(CaseViewer, CaseModel);
+            if (this.ActionPlugIns[i].IsEnabled(CaseViewer, case0)) {
+                this.ActionPlugIns[i].Delegate(CaseViewer, case0, serverApi);
             }
         }
     };

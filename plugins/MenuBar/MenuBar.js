@@ -9,11 +9,11 @@ var MenuBarPlugIn = (function (_super) {
     function MenuBarPlugIn() {
         _super.apply(this, arguments);
     }
-    MenuBarPlugIn.prototype.IsEnabled = function (caseViewer, caseModel) {
+    MenuBarPlugIn.prototype.IsEnabled = function (caseViewer, case0) {
         return true;
     };
 
-    MenuBarPlugIn.prototype.Delegate = function (caseViewer, caseModel) {
+    MenuBarPlugIn.prototype.Delegate = function (caseViewer, case0, serverApi) {
         if (MenuBarPlugIn.DelegateInvoked)
             return;
         $('.node').hover(function () {
