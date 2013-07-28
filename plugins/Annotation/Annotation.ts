@@ -8,6 +8,8 @@ class AnnotationPlugIn extends RenderPlugIn {
 	}
 
 	Delegate(caseViewer: CaseViewer, caseModel: CaseModel, element: JQuery) : void {
+		if(caseModel.Annotations.length == 0) return;
+
 		var text : string = "";
 		var p : {top: number; left: number} = element.position();
 

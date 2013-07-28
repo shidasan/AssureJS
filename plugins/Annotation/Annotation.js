@@ -14,6 +14,9 @@ var AnnotationPlugIn = (function (_super) {
     };
 
     AnnotationPlugIn.prototype.Delegate = function (caseViewer, caseModel, element) {
+        if (caseModel.Annotations.length == 0)
+            return;
+
         var text = "";
         var p = element.position();
 
