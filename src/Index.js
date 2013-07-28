@@ -1,5 +1,5 @@
 $(function () {
-    var serverApi = new ServerAPI('http://192.168.189.142/ait');
+    var serverApi = new ServerAPI('http://localhost/ait');
     var pluginManager = new PlugInManager();
     pluginManager.AddActionPlugIn("menu", new MenuBarPlugIn());
     pluginManager.AddActionPlugIn("editor", new EditorPlugIn());
