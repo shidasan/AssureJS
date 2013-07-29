@@ -46,6 +46,7 @@ class HTMLDoc {
 	}
 
 	InvokePlugInRender(caseViewer: CaseViewer, caseModel: CaseModel, DocBase: JQuery): void {
+		// FIXME remove hard-coded invocation
 		var AnnotationRender = caseViewer.GetPlugInRender("annotation");
 		AnnotationRender(caseViewer, caseModel, DocBase);
 		var NoteRender = caseViewer.GetPlugInRender("note");
